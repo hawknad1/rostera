@@ -1,0 +1,196 @@
+enum OrganizationStatus {
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
+enum MembershipStatus {
+  INVITED
+  ACTIVE
+  SUSPENDED
+  REMOVED
+}
+
+enum EmploymentStatus {
+  ACTIVE
+  ON_LEAVE
+  SUSPENDED
+  TERMINATED
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  LOCUM
+  CASUAL
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  logoUrl   String?
+  phone     String?
+  email     String?
+  address   String?
+  city      String?
+  region    String?
+  country   String   @default("Ghana")
+  timezone  String   @default("Africa/Accra")
+  status    OrganizationStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+
+  members   OrganizationMember[]
+  departments Department[]
+  professions Profession[]
+  staff     StaffProfile[]
+  roles     Role[]
+}
+
+model User {
+  id             String   @id @default(uuid())
+  authProviderId String   @unique
+
+  email          String?
+  phone          String?
+
+  createdAt      DateTime @default(now())
+  updatedAt      temporal.updatedAt()
+
+  memberships    OrganizationMember[]
+  staffProfile   StaffProfile?
+}
+
+model OrganizationMember {
+  id             String   @id @default(uuid())
+
+  organizationId String
+  userId         String
+  roleId         String
+
+  status         MembershipStatus @default(INVITED)
+
+  createdAt      DateTime @default(now())
+  updatedAt      temporal.updatedAt()
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           Role         @relation(fields: [roleId], references: [id])
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+model Role {
+  id             String   @id @default(uuid())
+
+  organizationId String
+  name           String
+  description    String?
+
+  createdAt      DateTime @default(now())
+  updatedAt      temporal.updatedAt()
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  members        OrganizationMember[]
+  permissions    RolePermission[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  description String?
+
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model Department {
+  id             String   @id @default(uuid())
+
+  organizationId String
+  name           String
+  description    String?
+
+  headStaffId    String?
+
+  createdAt      DateTime @default(now())
+  updatedAt      temporal.updatedAt()
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  staff          StaffProfile[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+}
+
+model Profession {
+  id             String   @id @default(uuid())
+
+  organizationId String?
+  name           String
+  description    String?
+  isActive       Boolean  @default(true)
+
+  createdAt      DateTime @default(now())
+  updatedAt      temporal.updatedAt()
+
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  staff          StaffProfile[]
+
+  @@index([organizationId])
+}
+
+model StaffProfile {
+  id               String   @id @default(uuid())
+
+  organizationId   String
+  userId           String?  @unique
+
+  staffNumber      String
+
+  firstName        String
+  middleName       String?
+  lastName         String
+
+  phone            String?
+  email            String?
+
+  professionId     String
+  departmentId     String
+
+  employmentStatus EmploymentStatus @default(ACTIVE)
+  employmentType   EmploymentType   @default(FULL_TIME)
+
+  dateJoined       DateTime?
+  photoUrl         String?
+
+  createdAt        DateTime @default(now())
+  updatedAt        temporal.updatedAt()
+
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user             User? @relation(fields: [userId], references: [id])
+  profession       Profession @relation(fields: [professionId], references: [id])
+  department       Department @relation(fields: [departmentId], references: [id])
+
+  @@unique([organizationId, staffNumber])
+  @@index([organizationId])
+  @@index([departmentId])
+  @@index([professionId])
+}
