@@ -6,10 +6,7 @@ import type { Permission } from "@/lib/permissions/permissions"
 import { permissions } from "@/lib/permissions/permissions"
 import { RosterError, rosterError } from "@/modules/rosters/errors"
 import { rosterStatusChangeAuditPoint } from "@/modules/rosters/services/audit"
-import {
-  evaluateRosterValidation,
-  type ValidateRosterOptions,
-} from "@/modules/rosters/services/validation"
+import { evaluateRosterValidation } from "@/modules/rosters/services/validation"
 import {
   assertRosterTransition,
   isRosterStatus,
@@ -72,10 +69,7 @@ async function deleteRosterAssignments(
   }
 }
 
-export async function submitRosterForReview(
-  rosterId: string,
-  options: ValidateRosterOptions = {},
-) {
+export async function submitRosterForReview(rosterId: string) {
   const membership = await requireRosterAccess(permissions.rosterReview)
   const organizationId = membership.organizationId
   const timeZone = String(membership.organization.timezone)
@@ -95,7 +89,6 @@ export async function submitRosterForReview(
         organizationId,
         timeZone,
         roster,
-        options,
       })
 
       if (!validation.valid) {
@@ -181,7 +174,7 @@ export async function returnRosterToDraft(rosterId: string) {
   }
 }
 
-export async function publishRoster(rosterId: string, options: ValidateRosterOptions = {}) {
+export async function publishRoster(rosterId: string) {
   const membership = await requireRosterAccess(permissions.rosterPublish)
   const organizationId = membership.organizationId
   const timeZone = String(membership.organization.timezone)
@@ -201,7 +194,6 @@ export async function publishRoster(rosterId: string, options: ValidateRosterOpt
         organizationId,
         timeZone,
         roster,
-        options,
       })
 
       if (!validation.valid) {

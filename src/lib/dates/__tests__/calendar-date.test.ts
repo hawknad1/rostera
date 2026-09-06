@@ -3,8 +3,10 @@ import { describe, expect, it } from "vitest"
 import {
   assertValidDateRange,
   CalendarDateError,
+  calendarDateRangesOverlap,
   compareCalendarDates,
   enumerateCalendarDates,
+  inclusiveCalendarDayCount,
   isDateInInclusiveRange,
   isDateInIsoWeek,
   isoWeekBounds,
@@ -53,6 +55,29 @@ describe("calendar date ranges", () => {
     expect(isDateInInclusiveRange("2026-09-30", "2026-09-01", "2026-09-30")).toBe(true)
     expect(isDateInInclusiveRange("2026-08-31", "2026-09-01", "2026-09-30")).toBe(false)
     expect(isDateInInclusiveRange("2026-10-01", "2026-09-01", "2026-09-30")).toBe(false)
+  })
+
+  it("counts inclusive calendar days without using timestamps", () => {
+    expect(inclusiveCalendarDayCount("2026-09-10", "2026-09-10")).toBe(1)
+    expect(inclusiveCalendarDayCount("2026-09-10", "2026-09-12")).toBe(3)
+  })
+
+  it("detects inclusive date-range overlap and allows adjacent ranges", () => {
+    expect(calendarDateRangesOverlap("2026-09-10", "2026-09-15", "2026-09-10", "2026-09-15")).toBe(
+      true,
+    )
+    expect(calendarDateRangesOverlap("2026-09-10", "2026-09-15", "2026-09-13", "2026-09-17")).toBe(
+      true,
+    )
+    expect(calendarDateRangesOverlap("2026-09-10", "2026-09-20", "2026-09-12", "2026-09-14")).toBe(
+      true,
+    )
+    expect(calendarDateRangesOverlap("2026-09-12", "2026-09-14", "2026-09-10", "2026-09-20")).toBe(
+      true,
+    )
+    expect(calendarDateRangesOverlap("2026-09-10", "2026-09-12", "2026-09-13", "2026-09-15")).toBe(
+      false,
+    )
   })
 })
 

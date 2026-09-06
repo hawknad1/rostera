@@ -33,6 +33,23 @@ enum RosterStatus {
   AMENDED
 }
 
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum LeaveType {
+  ANNUAL
+  SICK
+  MATERNITY
+  PATERNITY
+  STUDY
+  COMPASSIONATE
+  OTHER
+}
+
 model Organization {
   id        String   @id @default(uuid())
   name      String
@@ -60,6 +77,7 @@ model Organization {
   rosters              Roster[]
   shiftAssignments     ShiftAssignment[]
   schedulingPolicy     OrganizationSchedulingPolicy?
+  leaveRequests        LeaveRequest[]
 
   @@rls
 }
@@ -74,9 +92,11 @@ model User {
   createdAt      DateTime @default(now())
   updatedAt      temporal.updatedAt()
 
-  memberships    OrganizationMember[]
-  staffProfiles  StaffProfile[]
-  createdRosters Roster[]
+  memberships            OrganizationMember[]
+  staffProfiles          StaffProfile[]
+  createdRosters         Roster[]
+  requestedLeaveRequests LeaveRequest[] @relation("LeaveRequestedBy")
+  reviewedLeaveRequests  LeaveRequest[] @relation("LeaveReviewedBy")
 
   @@rls
 }
@@ -220,6 +240,7 @@ model StaffProfile {
   department       Department @relation("DepartmentStaff", fields: [departmentId], references: [id])
   headedDepartment Department? @relation("DepartmentHead")
   shiftAssignments ShiftAssignment[]
+  leaveRequests    LeaveRequest[]
 
   @@unique([organizationId, staffNumber])
   @@unique([organizationId, userId])
@@ -345,5 +366,33 @@ model OrganizationSchedulingPolicy {
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  @@rls
+}
+
+model LeaveRequest {
+  id                String      @id @default(uuid())
+  organizationId    String
+  staffId           String
+  leaveType         LeaveType
+  startDate         String
+  endDate           String
+  status            LeaveStatus @default(PENDING)
+  notes             String?
+  requestedByUserId String
+  reviewedByUserId  String?
+  reviewedAt        DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         temporal.updatedAt()
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  staff        StaffProfile @relation(fields: [staffId], references: [id])
+  requestedBy  User         @relation("LeaveRequestedBy", fields: [requestedByUserId], references: [id])
+  reviewedBy   User?        @relation("LeaveReviewedBy", fields: [reviewedByUserId], references: [id])
+
+  @@check(expression: "\"startDate\" <= \"endDate\"", name: "leaveRequest_date_order")
+  @@index([organizationId])
+  @@index([organizationId, staffId])
+  @@index([organizationId, status])
+  @@index([staffId, status, startDate, endDate])
   @@rls
 }

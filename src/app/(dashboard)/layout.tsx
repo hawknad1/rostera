@@ -62,6 +62,12 @@ export default async function DashboardLayout({
             </Link>
             <Link
               className="text-foreground underline-offset-4 hover:underline"
+              href="/leave"
+            >
+              Leave
+            </Link>
+            <Link
+              className="text-foreground underline-offset-4 hover:underline"
               href="/departments"
             >
               Departments

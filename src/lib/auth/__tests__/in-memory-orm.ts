@@ -1,4 +1,5 @@
 import { intervalsOverlap, toInstant } from "@/lib/dates/assignment-window"
+import { calendarDateRangesOverlap } from "@/lib/dates/calendar-date"
 
 type Row = Record<string, unknown>
 
@@ -23,6 +24,7 @@ const MODEL_NAMES = [
   "StaffingRequirement",
   "Roster",
   "ShiftAssignment",
+  "LeaveRequest",
 ] as const
 
 type ModelName = (typeof MODEL_NAMES)[number]
@@ -235,6 +237,33 @@ function assertUnique(tables: Record<ModelName, Row[]>, model: ModelName, row: R
   }
 }
 
+function assertNoActiveLeaveOverlap(tables: Record<ModelName, Row[]>, model: ModelName, row: Row) {
+  if (model !== "LeaveRequest") {
+    return
+  }
+
+  if (row.status !== "PENDING" && row.status !== "APPROVED") {
+    return
+  }
+
+  const overlapping = tables.LeaveRequest.some(
+    (existing) =>
+      existing !== row &&
+      existing.staffId === row.staffId &&
+      (existing.status === "PENDING" || existing.status === "APPROVED") &&
+      calendarDateRangesOverlap(
+        String(existing.startDate),
+        String(existing.endDate),
+        String(row.startDate),
+        String(row.endDate),
+      ),
+  )
+
+  if (overlapping) {
+    throw exclusionViolation("leaveRequest", "leaveRequest_staff_active_overlap_excl")
+  }
+}
+
 function assertNoStaffTimeOverlap(tables: Record<ModelName, Row[]>, model: ModelName, row: Row) {
   if (model !== "ShiftAssignment") {
     return
@@ -310,6 +339,10 @@ function withCreateDefaults(model: ModelName, data: Row): Row {
 
   if (model === "Roster") {
     row.status ??= "DRAFT"
+  }
+
+  if (model === "LeaveRequest") {
+    row.status ??= "PENDING"
   }
 
   return row
@@ -434,6 +467,7 @@ function createCollection(
       const row = withCreateDefaults(model, data)
       assertUnique(tables, model, row)
       assertNoStaffTimeOverlap(tables, model, row)
+      assertNoActiveLeaveOverlap(tables, model, row)
       tables[model].push(row)
       return hydrate(tables, model, row, includes)
     },
@@ -460,6 +494,7 @@ function createCollection(
       Object.assign(row, data)
       assertUnique(tables, model, row)
       assertNoStaffTimeOverlap(tables, model, row)
+      assertNoActiveLeaveOverlap(tables, model, row)
       return hydrate(tables, model, row, includes)
     },
     async delete() {
@@ -516,6 +551,7 @@ function createPublicOrm(
     ),
     Roster: createCollection(tables, queries, failCreates, "Roster", {}, []),
     ShiftAssignment: createCollection(tables, queries, failCreates, "ShiftAssignment", {}, []),
+    LeaveRequest: createCollection(tables, queries, failCreates, "LeaveRequest", {}, []),
   }
 }
 
@@ -535,6 +571,7 @@ function emptyTables(): Record<ModelName, Row[]> {
     StaffingRequirement: [],
     Roster: [],
     ShiftAssignment: [],
+    LeaveRequest: [],
   }
 }
 
@@ -560,6 +597,7 @@ export function createInMemoryPrisma() {
       StaffingRequirement: tables.StaffingRequirement.map((row) => ({ ...row })),
       Roster: tables.Roster.map((row) => ({ ...row })),
       ShiftAssignment: tables.ShiftAssignment.map((row) => ({ ...row })),
+      LeaveRequest: tables.LeaveRequest.map((row) => ({ ...row })),
     }
   }
 

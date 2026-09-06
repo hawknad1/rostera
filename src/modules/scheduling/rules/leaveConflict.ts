@@ -1,4 +1,4 @@
-import { intervalsOverlap } from "@/lib/dates/assignment-window"
+import { isDateInInclusiveRange } from "@/lib/dates/calendar-date"
 import { assignmentsForStaff } from "@/modules/scheduling/engine/groupAssignments"
 import { schedulingConflict } from "@/modules/scheduling/types/scheduling-conflict"
 import type { SchedulingConflict } from "@/modules/scheduling/types/scheduling-conflict"
@@ -26,14 +26,7 @@ export const leaveConflictRule: SchedulingRule = {
           continue
         }
 
-        if (
-          !intervalsOverlap(
-            period.start,
-            period.end,
-            assignment.startDateTime,
-            assignment.endDateTime,
-          )
-        ) {
+        if (!isDateInInclusiveRange(assignment.date, period.startDate, period.endDate)) {
           continue
         }
 
