@@ -24,6 +24,12 @@ export function auditEntityHref(entityType: AuditEntityType, entityId: string) {
       return `/settings/attendance`
     case "PROFESSION":
       return `/professions`
+    case "ORGANIZATION":
+      return `/settings/organization`
+    case "INVITATION":
+      return `/settings/invitations`
+    case "ROLE":
+      return `/settings/roles/${entityId}`
     default:
       return null
   }

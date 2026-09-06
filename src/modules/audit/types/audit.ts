@@ -48,6 +48,18 @@ export const auditActions = [
   "ATTENDANCE_VOIDED",
   "ATTENDANCE_EXCEPTION_RESOLVED",
   "ATTENDANCE_POLICY_UPDATED",
+  "ORGANIZATION_CREATED",
+  "ORGANIZATION_UPDATED",
+  "ORGANIZATION_SUSPENDED",
+  "ORGANIZATION_REACTIVATED",
+  "INVITATION_RESENT",
+  "INVITATION_REVOKED",
+  "INVITATION_ACCEPTED",
+  "ROLE_CREATED",
+  "ROLE_UPDATED",
+  "ROLE_DEACTIVATED",
+  "STAFF_ACCOUNT_LINKED",
+  "STAFF_ACCOUNT_UNLINKED",
 ] as const
 
 export type AuditAction = (typeof auditActions)[number]
@@ -67,6 +79,9 @@ export const auditEntityTypes = [
   "MEMBERSHIP",
   "ATTENDANCE",
   "ATTENDANCE_POLICY",
+  "ORGANIZATION",
+  "INVITATION",
+  "ROLE",
 ] as const
 
 export type AuditEntityType = (typeof auditEntityTypes)[number]
@@ -152,6 +167,18 @@ export const auditActionLabels: Record<AuditAction, string> = {
   ATTENDANCE_VOIDED: "Voided attendance",
   ATTENDANCE_EXCEPTION_RESOLVED: "Resolved attendance exception",
   ATTENDANCE_POLICY_UPDATED: "Updated attendance policy",
+  ORGANIZATION_CREATED: "Created organization",
+  ORGANIZATION_UPDATED: "Updated organization",
+  ORGANIZATION_SUSPENDED: "Suspended organization",
+  ORGANIZATION_REACTIVATED: "Reactivated organization",
+  INVITATION_RESENT: "Resent invitation",
+  INVITATION_REVOKED: "Revoked invitation",
+  INVITATION_ACCEPTED: "Accepted invitation",
+  ROLE_CREATED: "Created role",
+  ROLE_UPDATED: "Updated role",
+  ROLE_DEACTIVATED: "Deactivated role",
+  STAFF_ACCOUNT_LINKED: "Linked staff account",
+  STAFF_ACCOUNT_UNLINKED: "Unlinked staff account",
 }
 
 export const auditEntityLabels: Record<AuditEntityType, string> = {
@@ -169,4 +196,7 @@ export const auditEntityLabels: Record<AuditEntityType, string> = {
   MEMBERSHIP: "Membership",
   ATTENDANCE: "Attendance",
   ATTENDANCE_POLICY: "Attendance policy",
+  ORGANIZATION: "Organization",
+  INVITATION: "Invitation",
+  ROLE: "Role",
 }

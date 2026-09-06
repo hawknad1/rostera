@@ -14,11 +14,18 @@ export const notificationTypes = [
   "ATTENDANCE_CORRECTED",
   "ATTENDANCE_APPROVED",
   "ATTENDANCE_REJECTED",
+  "ORGANIZATION_INVITED",
 ] as const
 
 export type NotificationType = (typeof notificationTypes)[number]
 
-export const notificationEntityTypes = ["LEAVE_REQUEST", "SHIFT_SWAP", "ROSTER", "ATTENDANCE"] as const
+export const notificationEntityTypes = [
+  "LEAVE_REQUEST",
+  "SHIFT_SWAP",
+  "ROSTER",
+  "ATTENDANCE",
+  "ORGANIZATION_INVITATION",
+] as const
 
 export type NotificationEntityType = (typeof notificationEntityTypes)[number]
 
@@ -68,6 +75,7 @@ export type NotificationIntent = {
   entityId?: string
   title: string
   body: string
+  destinationEmail?: string
 }
 
 export type OutboxPayload = {
@@ -132,6 +140,16 @@ export type DomainNotificationEvent =
       eventId: string
       actorUserId: string
       staffId: string
+    }
+  | {
+      type: "ORGANIZATION_INVITED"
+      organizationId: string
+      eventId: string
+      actorUserId: string
+      inviteeEmail: string
+      organizationName: string
+      roleName: string
+      acceptUrl: string
     }
 
 export const NOTIFICATION_PAGE_SIZE = 25

@@ -32,6 +32,16 @@ export async function ensureDefaultRoleGrants(orm: PublicOrm, organizationId: st
       continue
     }
 
+    if (!role.isSystem || !role.isActive) {
+      await orm.public.Role.where({
+        id: role.id,
+        organizationId,
+      }).update({
+        isSystem: true,
+        isActive: true,
+      })
+    }
+
     for (const permissionKey of DEFAULT_ROLE_PERMISSIONS[roleName]) {
       const permission = catalog.get(permissionKey)
 

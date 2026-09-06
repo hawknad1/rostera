@@ -17,6 +17,8 @@ export function notificationHref(
       return `/rosters/${entityId}`
     case "ATTENDANCE":
       return `/attendance/${entityId}`
+    case "ORGANIZATION_INVITATION":
+      return `/settings/invitations`
   }
 }
 
@@ -37,6 +39,10 @@ export function entityTypeForNotification(
 
   if (type.startsWith("ATTENDANCE_")) {
     return "ATTENDANCE"
+  }
+
+  if (type === "ORGANIZATION_INVITED") {
+    return "ORGANIZATION_INVITATION"
   }
 
   return undefined

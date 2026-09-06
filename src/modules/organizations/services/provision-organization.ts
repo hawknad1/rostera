@@ -1,5 +1,6 @@
 import { db } from "@/prisma/db"
 
+import { recordUserAudit } from "@/modules/audit/services/record"
 import { getAuthUser } from "@/lib/auth/get-auth-user"
 import {
   isOrganizationSlugUniqueViolation,
@@ -11,7 +12,10 @@ import {
 } from "@/modules/organizations/default-roles"
 import { OrganizationProvisioningError } from "@/modules/organizations/errors"
 import { ensurePermissionCatalog } from "@/modules/organizations/ensure-permissions"
-import type { ProvisionOrganizationInput } from "@/modules/organizations/schemas/provision-organization"
+import {
+  provisionOrganizationInputSchema,
+  type ProvisionOrganizationInput,
+} from "@/modules/organizations/schemas/provision-organization"
 import {
   organizationSlugCandidate,
   toOrganizationSlug,
@@ -25,6 +29,7 @@ type PublicOrm = typeof db.orm
 const SLUG_RETRY_LIMIT = 8
 
 export async function provisionOrganization(input: ProvisionOrganizationInput) {
+  const parsed = provisionOrganizationInputSchema.parse(input)
   const authUser = await getAuthUser()
 
   if (!authUser) {
@@ -33,8 +38,6 @@ export async function provisionOrganization(input: ProvisionOrganizationInput) {
       "You must be signed in to create an organization.",
     )
   }
-
-  await rejectIfAlreadyMember(db.orm, authUser.id)
 
   const {
     name,
@@ -45,7 +48,8 @@ export async function provisionOrganization(input: ProvisionOrganizationInput) {
     region,
     country,
     timezone,
-  } = input
+    organizationType = "HOSPITAL",
+  } = parsed
 
   const baseSlug = toOrganizationSlug(name)
   let slugOffset = 0
@@ -59,8 +63,6 @@ export async function provisionOrganization(input: ProvisionOrganizationInput) {
           phone: authUser.phone,
         })
 
-        await rejectIfAlreadyMemberByUserId(tx.orm, user.id)
-
         const permissionCatalog = await ensurePermissionCatalog(tx.orm)
         const slug = await allocateOrganizationSlug(tx.orm, baseSlug, slugOffset)
 
@@ -68,6 +70,7 @@ export async function provisionOrganization(input: ProvisionOrganizationInput) {
           name,
           slug,
           status: "ACTIVE",
+          organizationType,
           country,
           timezone,
           ...(phone ? { phone } : {}),
@@ -81,6 +84,8 @@ export async function provisionOrganization(input: ProvisionOrganizationInput) {
           DEFAULT_ROLE_NAMES.map((roleName) => ({
             organizationId: organization.id,
             name: roleName,
+            isSystem: true,
+            isActive: true,
           })),
         )
 
@@ -145,6 +150,13 @@ export async function provisionOrganization(input: ProvisionOrganizationInput) {
           )
         }
 
+        await recordUserAudit(tx, membership, {
+          action: "ORGANIZATION_CREATED",
+          entityType: "ORGANIZATION",
+          entityId: organization.id,
+          summary: `Created organization ${organization.name}.`,
+        })
+
         return {
           organization,
           membership,
@@ -180,30 +192,6 @@ export async function provisionOrganization(input: ProvisionOrganizationInput) {
     "PROVISIONING_FAILED",
     "Unable to create the organization. Please try again.",
   )
-}
-
-async function rejectIfAlreadyMember(orm: PublicOrm, authProviderId: string) {
-  const user = await orm.public.User.where({ authProviderId }).first()
-
-  if (!user) {
-    return
-  }
-
-  await rejectIfAlreadyMemberByUserId(orm, user.id)
-}
-
-async function rejectIfAlreadyMemberByUserId(orm: PublicOrm, userId: string) {
-  const membership = await orm.public.OrganizationMember.where({
-    userId,
-    status: "ACTIVE",
-  }).first()
-
-  if (membership) {
-    throw new OrganizationProvisioningError(
-      "ALREADY_MEMBER",
-      "You already belong to an organization.",
-    )
-  }
 }
 
 async function allocateOrganizationSlug(

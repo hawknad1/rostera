@@ -4,13 +4,17 @@ import { redirect } from "next/navigation"
 
 import { hasAdminSurfaceAccess } from "@/lib/auth/admin-surface"
 import { getAuthUser } from "@/lib/auth/get-auth-user"
-import { getCurrentMembership } from "@/lib/auth/get-current-membership"
+import {
+  getUserOrganizations,
+  resolveMembership,
+} from "@/lib/auth/get-current-membership"
 import { hasPermission } from "@/lib/auth/has-permission"
 import { permissions } from "@/lib/permissions/permissions"
 import { ensureDefaultAttendancePolicy } from "@/modules/attendance/services/policy"
 import { NotificationBell } from "@/modules/notifications/ui/notification-bell"
 import { ensureDefaultRoleGrants } from "@/modules/organizations/ensure-permissions"
 import { ensureDefaultSchedulingPolicy } from "@/modules/organizations/services/ensure-scheduling-policy"
+import { OrganizationSwitcher } from "@/modules/organizations/ui/organization-switcher"
 import { db } from "@/prisma/db"
 
 export default async function DashboardLayout({
@@ -24,11 +28,25 @@ export default async function DashboardLayout({
     redirect("/login")
   }
 
-  const membership = await getCurrentMembership()
+  const resolved = await resolveMembership()
 
-  if (!membership) {
+  if (resolved.status === "no_membership") {
     redirect("/onboarding")
   }
+
+  if (resolved.status === "needs_selection") {
+    redirect("/select-organization")
+  }
+
+  if (resolved.status === "suspended") {
+    redirect("/organization-suspended")
+  }
+
+  if (resolved.status !== "ready") {
+    redirect("/login")
+  }
+
+  const membership = resolved.membership
 
   await ensureDefaultRoleGrants(db.orm, membership.organizationId)
   await ensureDefaultSchedulingPolicy(db.orm, membership.organizationId)
@@ -37,6 +55,8 @@ export default async function DashboardLayout({
   if (!(await hasAdminSurfaceAccess(membership))) {
     redirect("/forbidden")
   }
+
+  const organizations = await getUserOrganizations()
   const [
     canManageRosters,
     canManageStaff,
@@ -80,7 +100,12 @@ export default async function DashboardLayout({
       hasPermission(membership, permissions.shiftSwapApprove),
       hasPermission(membership, permissions.shiftSwapReject),
     ]).then((flags) => flags.some(Boolean)),
-    hasPermission(membership, permissions.settingsView),
+    Promise.all([
+      hasPermission(membership, permissions.settingsView),
+      hasPermission(membership, permissions.organizationView),
+      hasPermission(membership, permissions.usersView),
+      hasPermission(membership, permissions.rolesView),
+    ]).then((flags) => flags.some(Boolean)),
     hasPermission(membership, permissions.auditView),
     hasPermission(membership, permissions.notificationsView),
     hasPermission(membership, permissions.attendanceView),
@@ -91,9 +116,12 @@ export default async function DashboardLayout({
     <div className="flex min-h-full flex-col">
       <header className="border-b border-border">
         <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 px-6 py-4">
-          <p className="text-sm font-medium text-foreground">
-            {String(membership.organization.name)}
-          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="text-sm font-medium text-foreground">
+              {String(membership.organization.name)}
+            </p>
+            <OrganizationSwitcher membership={membership} organizations={organizations} />
+          </div>
           <nav className="flex flex-wrap items-center gap-4 text-sm">
             <Link
               className="text-foreground underline-offset-4 hover:underline"

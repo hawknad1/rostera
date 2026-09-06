@@ -56,6 +56,10 @@
       "model": "OrganizationAttendancePolicy",
       "namespace": "public"
     },
+    "organizationInvitation": {
+      "model": "OrganizationInvitation",
+      "namespace": "public"
+    },
     "organizationMember": {
       "model": "OrganizationMember",
       "namespace": "public"
@@ -474,6 +478,54 @@
               {
                 "name": "ATTENDANCE_POLICY_UPDATED",
                 "value": "ATTENDANCE_POLICY_UPDATED"
+              },
+              {
+                "name": "ORGANIZATION_CREATED",
+                "value": "ORGANIZATION_CREATED"
+              },
+              {
+                "name": "ORGANIZATION_UPDATED",
+                "value": "ORGANIZATION_UPDATED"
+              },
+              {
+                "name": "ORGANIZATION_SUSPENDED",
+                "value": "ORGANIZATION_SUSPENDED"
+              },
+              {
+                "name": "ORGANIZATION_REACTIVATED",
+                "value": "ORGANIZATION_REACTIVATED"
+              },
+              {
+                "name": "INVITATION_RESENT",
+                "value": "INVITATION_RESENT"
+              },
+              {
+                "name": "INVITATION_REVOKED",
+                "value": "INVITATION_REVOKED"
+              },
+              {
+                "name": "INVITATION_ACCEPTED",
+                "value": "INVITATION_ACCEPTED"
+              },
+              {
+                "name": "ROLE_CREATED",
+                "value": "ROLE_CREATED"
+              },
+              {
+                "name": "ROLE_UPDATED",
+                "value": "ROLE_UPDATED"
+              },
+              {
+                "name": "ROLE_DEACTIVATED",
+                "value": "ROLE_DEACTIVATED"
+              },
+              {
+                "name": "STAFF_ACCOUNT_LINKED",
+                "value": "STAFF_ACCOUNT_LINKED"
+              },
+              {
+                "name": "STAFF_ACCOUNT_UNLINKED",
+                "value": "STAFF_ACCOUNT_UNLINKED"
               }
             ]
           },
@@ -548,6 +600,18 @@
               {
                 "name": "ATTENDANCE_POLICY",
                 "value": "ATTENDANCE_POLICY"
+              },
+              {
+                "name": "ORGANIZATION",
+                "value": "ORGANIZATION"
+              },
+              {
+                "name": "INVITATION",
+                "value": "INVITATION"
+              },
+              {
+                "name": "ROLE",
+                "value": "ROLE"
               }
             ]
           },
@@ -594,6 +658,27 @@
               {
                 "name": "CASUAL",
                 "value": "CASUAL"
+              }
+            ]
+          },
+          "InvitationStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "PENDING",
+                "value": "PENDING"
+              },
+              {
+                "name": "ACCEPTED",
+                "value": "ACCEPTED"
+              },
+              {
+                "name": "REVOKED",
+                "value": "REVOKED"
+              },
+              {
+                "name": "EXPIRED",
+                "value": "EXPIRED"
               }
             ]
           },
@@ -761,6 +846,10 @@
               {
                 "name": "ATTENDANCE",
                 "value": "ATTENDANCE"
+              },
+              {
+                "name": "ORGANIZATION_INVITATION",
+                "value": "ORGANIZATION_INVITATION"
               }
             ]
           },
@@ -847,6 +936,10 @@
               {
                 "name": "ATTENDANCE_REJECTED",
                 "value": "ATTENDANCE_REJECTED"
+              },
+              {
+                "name": "ORGANIZATION_INVITED",
+                "value": "ORGANIZATION_INVITED"
               }
             ]
           },
@@ -864,6 +957,27 @@
               {
                 "name": "ARCHIVED",
                 "value": "ARCHIVED"
+              }
+            ]
+          },
+          "OrganizationType": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "HOSPITAL",
+                "value": "HOSPITAL"
+              },
+              {
+                "name": "CLINIC",
+                "value": "CLINIC"
+              },
+              {
+                "name": "HEALTH_SYSTEM",
+                "value": "HEALTH_SYSTEM"
+              },
+              {
+                "name": "OTHER",
+                "value": "OTHER"
               }
             ]
           },
@@ -3339,6 +3453,19 @@
                   "kind": "scalar"
                 }
               },
+              "organizationType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "OrganizationType",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
               "phone": {
                 "nullable": true,
                 "type": {
@@ -3476,6 +3603,21 @@
                 },
                 "to": {
                   "model": "Department",
+                  "namespace": "public"
+                }
+              },
+              "invitations": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "OrganizationInvitation",
                   "namespace": "public"
                 }
               },
@@ -3746,6 +3888,9 @@
                 "name": {
                   "column": "name"
                 },
+                "organizationType": {
+                  "column": "organizationType"
+                },
                 "phone": {
                   "column": "phone"
                 },
@@ -3914,6 +4059,204 @@
               },
               "namespaceId": "public",
               "table": "organizationAttendancePolicy"
+            }
+          },
+          "OrganizationInvitation": {
+            "fields": {
+              "acceptedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "acceptedByUserId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "email": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "expiresAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "invitedByUserId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "roleId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "InvitationStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "tokenHash": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "acceptedBy": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "acceptedByUserId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              },
+              "invitedBy": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "invitedByUserId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              },
+              "organization": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              },
+              "role": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "roleId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Role",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "acceptedAt": {
+                  "column": "acceptedAt"
+                },
+                "acceptedByUserId": {
+                  "column": "acceptedByUserId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "email": {
+                  "column": "email"
+                },
+                "expiresAt": {
+                  "column": "expiresAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "invitedByUserId": {
+                  "column": "invitedByUserId"
+                },
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "roleId": {
+                  "column": "roleId"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "tokenHash": {
+                  "column": "tokenHash"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "organizationInvitation"
             }
           },
           "OrganizationMember": {
@@ -4403,6 +4746,20 @@
                   "kind": "scalar"
                 }
               },
+              "isActive": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "isSystem": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "name": {
                 "nullable": false,
                 "type": {
@@ -4426,6 +4783,21 @@
               }
             },
             "relations": {
+              "invitations": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "roleId"
+                  ]
+                },
+                "to": {
+                  "model": "OrganizationInvitation",
+                  "namespace": "public"
+                }
+              },
               "members": {
                 "cardinality": "1:N",
                 "on": {
@@ -4482,6 +4854,12 @@
                 },
                 "id": {
                   "column": "id"
+                },
+                "isActive": {
+                  "column": "isActive"
+                },
+                "isSystem": {
+                  "column": "isSystem"
                 },
                 "name": {
                   "column": "name"
@@ -6151,6 +6529,13 @@
                   "kind": "scalar"
                 }
               },
+              "displayName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "email": {
                 "nullable": true,
                 "type": {
@@ -6181,6 +6566,21 @@
               }
             },
             "relations": {
+              "acceptedInvitations": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "acceptedByUserId"
+                  ]
+                },
+                "to": {
+                  "model": "OrganizationInvitation",
+                  "namespace": "public"
+                }
+              },
               "approvedAttendance": {
                 "cardinality": "1:N",
                 "on": {
@@ -6376,6 +6776,21 @@
                   "namespace": "public"
                 }
               },
+              "sentInvitations": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "invitedByUserId"
+                  ]
+                },
+                "to": {
+                  "model": "OrganizationInvitation",
+                  "namespace": "public"
+                }
+              },
               "staffProfiles": {
                 "cardinality": "1:N",
                 "on": {
@@ -6399,6 +6814,9 @@
                 },
                 "createdAt": {
                   "column": "createdAt"
+                },
+                "displayName": {
+                  "column": "displayName"
                 },
                 "email": {
                   "column": "email"
@@ -6490,6 +6908,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "organizationAttendancePolicy"
+            },
+            "organizationInvitation": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "organizationInvitation"
             },
             "organizationMember": {
               "kind": "rls",
@@ -7380,8 +7803,8 @@
             "auditEvent": {
               "checks": [
                 {
-                  "expression": "\"action\" IN ('ROSTER_CREATED', 'ROSTER_UPDATED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_PUBLISHED', 'ROSTER_AMENDMENT_CREATED', 'ROSTER_DELETED', 'ASSIGNMENT_CREATED', 'ASSIGNMENT_DELETED', 'LEAVE_CREATED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'STAFF_CREATED', 'STAFF_UPDATED', 'STAFF_DEACTIVATED', 'DEPARTMENT_CREATED', 'DEPARTMENT_UPDATED', 'DEPARTMENT_DELETED', 'DEPARTMENT_HEAD_ASSIGNED', 'DEPARTMENT_HEAD_REMOVED', 'PROFESSION_CREATED', 'PROFESSION_UPDATED', 'PROFESSION_DEACTIVATED', 'SHIFT_TYPE_CREATED', 'SHIFT_TYPE_UPDATED', 'SHIFT_TYPE_DEACTIVATED', 'STAFFING_REQUIREMENT_CREATED', 'STAFFING_REQUIREMENT_UPDATED', 'STAFFING_REQUIREMENT_DELETED', 'SCHEDULING_POLICY_UPDATED', 'USER_INVITED', 'USER_UPDATED', 'USER_DEACTIVATED', 'MEMBERSHIP_ROLE_CHANGED', 'MEMBERSHIP_ACTIVATED', 'MEMBERSHIP_DEACTIVATED', 'ATTENDANCE_CLOCKED_IN', 'ATTENDANCE_CLOCKED_OUT', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED', 'ATTENDANCE_VOIDED', 'ATTENDANCE_EXCEPTION_RESOLVED', 'ATTENDANCE_POLICY_UPDATED')",
-                  "name": "auditEvent_action_check_c0c9e06e",
+                  "expression": "\"action\" IN ('ROSTER_CREATED', 'ROSTER_UPDATED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_PUBLISHED', 'ROSTER_AMENDMENT_CREATED', 'ROSTER_DELETED', 'ASSIGNMENT_CREATED', 'ASSIGNMENT_DELETED', 'LEAVE_CREATED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'STAFF_CREATED', 'STAFF_UPDATED', 'STAFF_DEACTIVATED', 'DEPARTMENT_CREATED', 'DEPARTMENT_UPDATED', 'DEPARTMENT_DELETED', 'DEPARTMENT_HEAD_ASSIGNED', 'DEPARTMENT_HEAD_REMOVED', 'PROFESSION_CREATED', 'PROFESSION_UPDATED', 'PROFESSION_DEACTIVATED', 'SHIFT_TYPE_CREATED', 'SHIFT_TYPE_UPDATED', 'SHIFT_TYPE_DEACTIVATED', 'STAFFING_REQUIREMENT_CREATED', 'STAFFING_REQUIREMENT_UPDATED', 'STAFFING_REQUIREMENT_DELETED', 'SCHEDULING_POLICY_UPDATED', 'USER_INVITED', 'USER_UPDATED', 'USER_DEACTIVATED', 'MEMBERSHIP_ROLE_CHANGED', 'MEMBERSHIP_ACTIVATED', 'MEMBERSHIP_DEACTIVATED', 'ATTENDANCE_CLOCKED_IN', 'ATTENDANCE_CLOCKED_OUT', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED', 'ATTENDANCE_VOIDED', 'ATTENDANCE_EXCEPTION_RESOLVED', 'ATTENDANCE_POLICY_UPDATED', 'ORGANIZATION_CREATED', 'ORGANIZATION_UPDATED', 'ORGANIZATION_SUSPENDED', 'ORGANIZATION_REACTIVATED', 'INVITATION_RESENT', 'INVITATION_REVOKED', 'INVITATION_ACCEPTED', 'ROLE_CREATED', 'ROLE_UPDATED', 'ROLE_DEACTIVATED', 'STAFF_ACCOUNT_LINKED', 'STAFF_ACCOUNT_UNLINKED')",
+                  "name": "auditEvent_action_check_c40f2472",
                   "prefix": "auditEvent_action_check"
                 },
                 {
@@ -7390,8 +7813,8 @@
                   "prefix": "auditEvent_actorType_check"
                 },
                 {
-                  "expression": "\"entityType\" IN ('ROSTER', 'ASSIGNMENT', 'LEAVE_REQUEST', 'SHIFT_SWAP', 'STAFF', 'DEPARTMENT', 'PROFESSION', 'SHIFT_TYPE', 'STAFFING_REQUIREMENT', 'SCHEDULING_POLICY', 'USER', 'MEMBERSHIP', 'ATTENDANCE', 'ATTENDANCE_POLICY')",
-                  "name": "auditEvent_entityType_check_98d0e24c",
+                  "expression": "\"entityType\" IN ('ROSTER', 'ASSIGNMENT', 'LEAVE_REQUEST', 'SHIFT_SWAP', 'STAFF', 'DEPARTMENT', 'PROFESSION', 'SHIFT_TYPE', 'STAFFING_REQUIREMENT', 'SCHEDULING_POLICY', 'USER', 'MEMBERSHIP', 'ATTENDANCE', 'ATTENDANCE_POLICY', 'ORGANIZATION', 'INVITATION', 'ROLE')",
+                  "name": "auditEvent_entityType_check_a5d82518",
                   "prefix": "auditEvent_entityType_check"
                 }
               ],
@@ -7976,13 +8399,13 @@
             "notification": {
               "checks": [
                 {
-                  "expression": "\"entityType\" IN ('LEAVE_REQUEST', 'SHIFT_SWAP', 'ROSTER', 'ATTENDANCE')",
-                  "name": "notification_entityType_check_7c527aeb",
+                  "expression": "\"entityType\" IN ('LEAVE_REQUEST', 'SHIFT_SWAP', 'ROSTER', 'ATTENDANCE', 'ORGANIZATION_INVITATION')",
+                  "name": "notification_entityType_check_bb9b415e",
                   "prefix": "notification_entityType_check"
                 },
                 {
-                  "expression": "\"type\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED')",
-                  "name": "notification_type_check_e6328a7f",
+                  "expression": "\"type\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED', 'ORGANIZATION_INVITED')",
+                  "name": "notification_type_check_2949696f",
                   "prefix": "notification_type_check"
                 }
               ],
@@ -8161,8 +8584,8 @@
                   "prefix": "notificationDelivery_channel_check"
                 },
                 {
-                  "expression": "\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED')",
-                  "name": "notificationDelivery_eventType_check_1f1ba224",
+                  "expression": "\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED', 'ORGANIZATION_INVITED')",
+                  "name": "notificationDelivery_eventType_check_fb5469f3",
                   "prefix": "notificationDelivery_eventType_check"
                 },
                 {
@@ -8595,8 +9018,8 @@
             "notificationOutbox": {
               "checks": [
                 {
-                  "expression": "\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED')",
-                  "name": "notificationOutbox_eventType_check_1f1ba224",
+                  "expression": "\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED', 'ORGANIZATION_INVITED')",
+                  "name": "notificationOutbox_eventType_check_fb5469f3",
                   "prefix": "notificationOutbox_eventType_check"
                 },
                 {
@@ -8762,8 +9185,8 @@
                   "prefix": "notificationPreference_channel_check"
                 },
                 {
-                  "expression": "\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED')",
-                  "name": "notificationPreference_eventType_check_1f1ba224",
+                  "expression": "\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED', 'ORGANIZATION_INVITED')",
+                  "name": "notificationPreference_eventType_check_fb5469f3",
                   "prefix": "notificationPreference_eventType_check"
                 }
               ],
@@ -8907,6 +9330,11 @@
             "organization": {
               "checks": [
                 {
+                  "expression": "\"organizationType\" IN ('HOSPITAL', 'CLINIC', 'HEALTH_SYSTEM', 'OTHER')",
+                  "name": "organization_organizationType_check_93b3d7c9",
+                  "prefix": "organization_organizationType_check"
+                },
+                {
                   "expression": "\"status\" IN ('ACTIVE', 'SUSPENDED', 'ARCHIVED')",
                   "name": "organization_status_check_0f44f6b1",
                   "prefix": "organization_status_check"
@@ -8960,6 +9388,21 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "organizationType": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "HOSPITAL"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "OrganizationType",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
                 },
                 "phone": {
                   "codecId": "pg/text@1",
@@ -9176,6 +9619,223 @@
                 {
                   "columns": [
                     "organizationId"
+                  ]
+                }
+              ]
+            },
+            "organizationInvitation": {
+              "checks": [
+                {
+                  "expression": "\"status\" IN ('PENDING', 'ACCEPTED', 'REVOKED', 'EXPIRED')",
+                  "name": "organizationInvitation_status_check_c603248a",
+                  "prefix": "organizationInvitation_status_check"
+                }
+              ],
+              "columns": {
+                "acceptedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "acceptedByUserId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "email": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "expiresAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "invitedByUserId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "roleId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "PENDING"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "InvitationStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "tokenHash": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organizationInvitation"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organization"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "roleId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organizationInvitation"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "role"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "invitedByUserId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organizationInvitation"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "acceptedByUserId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organizationInvitation"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "acceptedByUserId"
+                  ],
+                  "name": "organizationInvitation_acceptedByUserId_idx_5a9dcbb3",
+                  "prefix": "organizationInvitation_acceptedByUserId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "invitedByUserId"
+                  ],
+                  "name": "organizationInvitation_invitedByUserId_idx_ad3f61d3",
+                  "prefix": "organizationInvitation_invitedByUserId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "email",
+                    "status"
+                  ],
+                  "name": "organizationInvitation_organizationId_email_status_idx_8f900090",
+                  "prefix": "organizationInvitation_organizationId_email_status_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId"
+                  ],
+                  "name": "organizationInvitation_organizationId_idx_2e17ef41",
+                  "prefix": "organizationInvitation_organizationId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "status"
+                  ],
+                  "name": "organizationInvitation_organizationId_status_idx_21af5e82",
+                  "prefix": "organizationInvitation_organizationId_status_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "roleId"
+                  ],
+                  "name": "organizationInvitation_roleId_idx_ffccc9a4",
+                  "prefix": "organizationInvitation_roleId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tokenHash"
                   ]
                 }
               ]
@@ -9550,6 +10210,24 @@
                 "id": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
+                  "nullable": false
+                },
+                "isActive": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "isSystem": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
                   "nullable": false
                 },
                 "name": {
@@ -11092,6 +11770,11 @@
                   "nativeType": "timestamptz",
                   "nullable": false
                 },
+                "displayName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "email": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -11248,7 +11931,19 @@
                 "ATTENDANCE_REJECTED",
                 "ATTENDANCE_VOIDED",
                 "ATTENDANCE_EXCEPTION_RESOLVED",
-                "ATTENDANCE_POLICY_UPDATED"
+                "ATTENDANCE_POLICY_UPDATED",
+                "ORGANIZATION_CREATED",
+                "ORGANIZATION_UPDATED",
+                "ORGANIZATION_SUSPENDED",
+                "ORGANIZATION_REACTIVATED",
+                "INVITATION_RESENT",
+                "INVITATION_REVOKED",
+                "INVITATION_ACCEPTED",
+                "ROLE_CREATED",
+                "ROLE_UPDATED",
+                "ROLE_DEACTIVATED",
+                "STAFF_ACCOUNT_LINKED",
+                "STAFF_ACCOUNT_UNLINKED"
               ]
             },
             "AuditActorType": {
@@ -11274,7 +11969,10 @@
                 "USER",
                 "MEMBERSHIP",
                 "ATTENDANCE",
-                "ATTENDANCE_POLICY"
+                "ATTENDANCE_POLICY",
+                "ORGANIZATION",
+                "INVITATION",
+                "ROLE"
               ]
             },
             "EmploymentStatus": {
@@ -11294,6 +11992,15 @@
                 "CONTRACT",
                 "LOCUM",
                 "CASUAL"
+              ]
+            },
+            "InvitationStatus": {
+              "kind": "valueSet",
+              "values": [
+                "PENDING",
+                "ACCEPTED",
+                "REVOKED",
+                "EXPIRED"
               ]
             },
             "LeaveStatus": {
@@ -11361,7 +12068,8 @@
                 "LEAVE_REQUEST",
                 "SHIFT_SWAP",
                 "ROSTER",
-                "ATTENDANCE"
+                "ATTENDANCE",
+                "ORGANIZATION_INVITATION"
               ]
             },
             "NotificationOutboxStatus": {
@@ -11390,7 +12098,8 @@
                 "ROSTER_AMENDMENT_CREATED",
                 "ATTENDANCE_CORRECTED",
                 "ATTENDANCE_APPROVED",
-                "ATTENDANCE_REJECTED"
+                "ATTENDANCE_REJECTED",
+                "ORGANIZATION_INVITED"
               ]
             },
             "OrganizationStatus": {
@@ -11399,6 +12108,15 @@
                 "ACTIVE",
                 "SUSPENDED",
                 "ARCHIVED"
+              ]
+            },
+            "OrganizationType": {
+              "kind": "valueSet",
+              "values": [
+                "HOSPITAL",
+                "CLINIC",
+                "HEALTH_SYSTEM",
+                "OTHER"
               ]
             },
             "RosterStatus": {
@@ -11426,10 +12144,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "9acf65ad5ff2677c6d472b262ceff9e6b72a2e164d849d856c3efebb57d0f246"
+    "storageHash": "c2b000c793ecfbc1868c2b3020d3e747248d787429ecd6d32ae9ff9044b85b5b"
   },
   "execution": {
-    "executionHash": "05c8d6cc589fd1ec3e088083a6491b21681e9490aa80bc5b5d6115f7ec1f7394",
+    "executionHash": "71b8c3d6d5bf75f5b1ed29041f8b89839d00023a23f3eab23645691f2c811c5e",
     "mutations": {
       "defaults": [
         {
@@ -11723,6 +12441,32 @@
             "column": "updatedAt",
             "namespace": "public",
             "table": "organizationAttendancePolicy"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "organizationInvitation"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "organizationInvitation"
           }
         },
         {

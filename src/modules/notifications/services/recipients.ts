@@ -173,6 +173,8 @@ async function resolveRecipientUserIds(orm: PublicOrm, event: DomainNotification
       return uniqueIds([
         await linkedUserIdForStaff(orm, event.organizationId, event.staffId),
       ])
+    case "ORGANIZATION_INVITED":
+      return [event.actorUserId]
   }
 }
 
@@ -183,9 +185,13 @@ export async function resolveNotificationIntents(
   const copy = notificationCopy(event)
   const entityType = entityTypeForNotification(event.type)
   const recipients = await resolveRecipientUserIds(orm, event)
+  const destinationEmail =
+    event.type === "ORGANIZATION_INVITED" ? event.inviteeEmail : undefined
 
   return recipients
-    .filter((recipientUserId) => recipientUserId !== event.actorUserId)
+    .filter((recipientUserId) =>
+      event.type === "ORGANIZATION_INVITED" ? true : recipientUserId !== event.actorUserId,
+    )
     .map((recipientUserId) => ({
       organizationId: event.organizationId,
       eventId: event.eventId,
@@ -194,5 +200,6 @@ export async function resolveNotificationIntents(
       ...(entityType ? { entityType, entityId: event.eventId } : {}),
       title: copy.title,
       body: copy.body,
+      ...(destinationEmail ? { destinationEmail } : {}),
     }))
 }

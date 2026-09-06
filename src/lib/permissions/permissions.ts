@@ -39,6 +39,15 @@ export const permissions = {
   usersEdit: "users.edit",
   usersDeactivate: "users.deactivate",
 
+  organizationView: "organization.view",
+  organizationEdit: "organization.edit",
+  organizationSuspend: "organization.suspend",
+
+  rolesView: "roles.view",
+  rolesCreate: "roles.create",
+  rolesEdit: "roles.edit",
+  rolesDeactivate: "roles.deactivate",
+
   settingsView: "settings.view",
   settingsEdit: "settings.edit",
 

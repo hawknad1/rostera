@@ -52,6 +52,7 @@ export const provisionOrganizationInputSchema = z.object({
       .refine(isIanaTimeZone, "Enter a valid timezone.")
       .default(DEFAULT_TIMEZONE),
   ),
+  organizationType: z.enum(["HOSPITAL", "CLINIC", "HEALTH_SYSTEM", "OTHER"]).optional(),
 })
 
-export type ProvisionOrganizationInput = z.output<typeof provisionOrganizationInputSchema>
+export type ProvisionOrganizationInput = z.input<typeof provisionOrganizationInputSchema>

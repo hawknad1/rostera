@@ -112,5 +112,10 @@ export function notificationCopy(event: DomainNotificationEvent): { title: strin
         title: "Attendance correction rejected",
         body: "Your attendance correction has been rejected.",
       }
+    case "ORGANIZATION_INVITED":
+      return {
+        title: `Invitation to ${event.organizationName}`,
+        body: `You have been invited to join ${event.organizationName} as ${event.roleName}. Accept the invitation: ${event.acceptUrl}`,
+      }
   }
 }

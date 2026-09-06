@@ -15,6 +15,7 @@ import type {
   DepartmentHeadInput,
   LinkStaffToUserInput,
   StaffIdInput,
+  UnlinkStaffFromUserInput,
   UpdateStaffInput,
 } from "@/modules/staff/schemas/staff"
 import { db } from "@/prisma/db"
@@ -651,18 +652,28 @@ export async function linkStaffToUser(input: LinkStaffToUserInput) {
   }
 
   try {
-    const updated = await db.orm.public.StaffProfile.where({
-      id: staff.id,
-      organizationId,
-    }).update({
-      userId: input.userId,
+    return await db.transaction(async (tx) => {
+      const updated = await tx.orm.public.StaffProfile.where({
+        id: staff.id,
+        organizationId,
+      }).update({
+        userId: input.userId,
+      })
+
+      if (!updated) {
+        throw new StaffError("NOT_FOUND", "Staff member not found.")
+      }
+
+      await recordUserAudit(tx, membership, {
+        action: "STAFF_ACCOUNT_LINKED",
+        entityType: "STAFF",
+        entityId: staff.id,
+        summary: "Linked a workforce profile to an application account.",
+        metadata: { userId: input.userId },
+      })
+
+      return updated
     })
-
-    if (!updated) {
-      throw new StaffError("NOT_FOUND", "Staff member not found.")
-    }
-
-    return updated
   } catch (error) {
     if (error instanceof StaffError) {
       throw error
@@ -674,4 +685,42 @@ export async function linkStaffToUser(input: LinkStaffToUserInput) {
 
     throw new StaffError("FAILED", "Unable to link the staff member. Please try again.")
   }
+}
+
+export async function unlinkStaffFromUser(input: UnlinkStaffFromUserInput) {
+  const membership = await requireStaffAccess(permissions.staffEdit)
+  const organizationId = membership.organizationId
+  const staff = await findOwnedStaff(db.orm, organizationId, input.staffId)
+
+  if (!staff) {
+    throw new StaffError("NOT_FOUND", "Staff member not found.")
+  }
+
+  if (!staff.userId) {
+    return staff
+  }
+
+  return db.transaction(async (tx) => {
+    const updated = await tx.orm.public.StaffProfile.where({
+      id: staff.id,
+      organizationId,
+      userId: staff.userId,
+    }).update({
+      userId: null,
+    })
+
+    if (!updated) {
+      throw new StaffError("NOT_FOUND", "Staff member not found.")
+    }
+
+    await recordUserAudit(tx, membership, {
+      action: "STAFF_ACCOUNT_UNLINKED",
+      entityType: "STAFF",
+      entityId: staff.id,
+      summary: "Unlinked a workforce profile from an application account.",
+      metadata: { userId: staff.userId },
+    })
+
+    return updated
+  })
 }

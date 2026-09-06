@@ -1,0 +1,1322 @@
+[
+  {
+    "id": "dropCheckConstraint.auditEvent.auditEvent_action_check_c0c9e06e",
+    "label": "Drop check constraint \"auditEvent_action_check_c0c9e06e\" on \"auditEvent\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "auditEvent_action_check_c0c9e06e",
+        "table": "auditEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"auditEvent_action_check_c0c9e06e\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_action_check_c0c9e06e",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"auditEvent_action_check_c0c9e06e\"",
+        "sql": "ALTER TABLE \"public\".\"auditEvent\" DROP CONSTRAINT \"auditEvent_action_check_c0c9e06e\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"auditEvent_action_check_c0c9e06e\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_action_check_c0c9e06e",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.auditEvent.auditEvent_entityType_check_98d0e24c",
+    "label": "Drop check constraint \"auditEvent_entityType_check_98d0e24c\" on \"auditEvent\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "auditEvent_entityType_check_98d0e24c",
+        "table": "auditEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"auditEvent_entityType_check_98d0e24c\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_entityType_check_98d0e24c",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"auditEvent_entityType_check_98d0e24c\"",
+        "sql": "ALTER TABLE \"public\".\"auditEvent\" DROP CONSTRAINT \"auditEvent_entityType_check_98d0e24c\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"auditEvent_entityType_check_98d0e24c\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_entityType_check_98d0e24c",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.notification.notification_entityType_check_7c527aeb",
+    "label": "Drop check constraint \"notification_entityType_check_7c527aeb\" on \"notification\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notification_entityType_check_7c527aeb",
+        "table": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notification_entityType_check_7c527aeb\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_entityType_check_7c527aeb",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"notification_entityType_check_7c527aeb\"",
+        "sql": "ALTER TABLE \"public\".\"notification\" DROP CONSTRAINT \"notification_entityType_check_7c527aeb\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notification_entityType_check_7c527aeb\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_entityType_check_7c527aeb",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.notification.notification_type_check_e6328a7f",
+    "label": "Drop check constraint \"notification_type_check_e6328a7f\" on \"notification\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notification_type_check_e6328a7f",
+        "table": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notification_type_check_e6328a7f\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_type_check_e6328a7f",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"notification_type_check_e6328a7f\"",
+        "sql": "ALTER TABLE \"public\".\"notification\" DROP CONSTRAINT \"notification_type_check_e6328a7f\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notification_type_check_e6328a7f\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_type_check_e6328a7f",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.notificationDelivery.notificationDelivery_eventType_check_1f1ba224",
+    "label": "Drop check constraint \"notificationDelivery_eventType_check_1f1ba224\" on \"notificationDelivery\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notificationDelivery_eventType_check_1f1ba224",
+        "table": "notificationDelivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notificationDelivery_eventType_check_1f1ba224\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationDelivery_eventType_check_1f1ba224",
+          "public",
+          "\"public\".\"notificationDelivery\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"notificationDelivery_eventType_check_1f1ba224\"",
+        "sql": "ALTER TABLE \"public\".\"notificationDelivery\" DROP CONSTRAINT \"notificationDelivery_eventType_check_1f1ba224\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notificationDelivery_eventType_check_1f1ba224\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationDelivery_eventType_check_1f1ba224",
+          "public",
+          "\"public\".\"notificationDelivery\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.notificationOutbox.notificationOutbox_eventType_check_1f1ba224",
+    "label": "Drop check constraint \"notificationOutbox_eventType_check_1f1ba224\" on \"notificationOutbox\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notificationOutbox_eventType_check_1f1ba224",
+        "table": "notificationOutbox"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notificationOutbox_eventType_check_1f1ba224\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationOutbox_eventType_check_1f1ba224",
+          "public",
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"notificationOutbox_eventType_check_1f1ba224\"",
+        "sql": "ALTER TABLE \"public\".\"notificationOutbox\" DROP CONSTRAINT \"notificationOutbox_eventType_check_1f1ba224\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notificationOutbox_eventType_check_1f1ba224\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationOutbox_eventType_check_1f1ba224",
+          "public",
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.notificationPreference.notificationPreference_eventType_check_1f1ba224",
+    "label": "Drop check constraint \"notificationPreference_eventType_check_1f1ba224\" on \"notificationPreference\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notificationPreference_eventType_check_1f1ba224",
+        "table": "notificationPreference"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notificationPreference_eventType_check_1f1ba224\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationPreference_eventType_check_1f1ba224",
+          "public",
+          "\"public\".\"notificationPreference\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"notificationPreference_eventType_check_1f1ba224\"",
+        "sql": "ALTER TABLE \"public\".\"notificationPreference\" DROP CONSTRAINT \"notificationPreference_eventType_check_1f1ba224\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notificationPreference_eventType_check_1f1ba224\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationPreference_eventType_check_1f1ba224",
+          "public",
+          "\"public\".\"notificationPreference\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.organizationInvitation",
+    "label": "Create table \"organizationInvitation\"",
+    "summary": "Creates table \"organizationInvitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "organizationInvitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"organizationInvitation\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationInvitation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"organizationInvitation\"",
+        "sql": "CREATE TABLE \"public\".\"organizationInvitation\" (\n  \"acceptedAt\" timestamptz,\n  \"acceptedByUserId\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"email\" text NOT NULL,\n  \"expiresAt\" timestamptz NOT NULL,\n  \"id\" text NOT NULL,\n  \"invitedByUserId\" text NOT NULL,\n  \"organizationId\" text NOT NULL,\n  \"roleId\" text NOT NULL,\n  \"status\" text DEFAULT 'PENDING' NOT NULL,\n  \"tokenHash\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"organizationInvitation_status_check_c603248a\" CHECK (\"status\" IN ('PENDING', 'ACCEPTED', 'REVOKED', 'EXPIRED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"organizationInvitation\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationInvitation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.organization.organizationType",
+    "label": "Add column \"organizationType\" to \"organization\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "organizationType",
+        "table": "organization"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"organizationType\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "organization",
+          "organizationType"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"organizationType\"",
+        "sql": "ALTER TABLE \"public\".\"organization\" ADD COLUMN \"organizationType\" text DEFAULT 'HOSPITAL' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"organizationType\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "organization",
+          "organizationType"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.role.isActive",
+    "label": "Add column \"isActive\" to \"role\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "isActive",
+        "table": "role"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"isActive\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "role",
+          "isActive"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"isActive\"",
+        "sql": "ALTER TABLE \"public\".\"role\" ADD COLUMN \"isActive\" bool DEFAULT true NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"isActive\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "role",
+          "isActive"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.role.isSystem",
+    "label": "Add column \"isSystem\" to \"role\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "isSystem",
+        "table": "role"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"isSystem\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "role",
+          "isSystem"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"isSystem\"",
+        "sql": "ALTER TABLE \"public\".\"role\" ADD COLUMN \"isSystem\" bool DEFAULT false NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"isSystem\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "role",
+          "isSystem"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.user.displayName",
+    "label": "Add column \"displayName\" to \"user\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "displayName",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"displayName\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "displayName"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"displayName\"",
+        "sql": "ALTER TABLE \"public\".\"user\" ADD COLUMN \"displayName\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"displayName\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "displayName"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.auditEvent.auditEvent_action_check_c40f2472",
+    "label": "Add check constraint \"auditEvent_action_check_c40f2472\" on \"auditEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "auditEvent_action_check_c40f2472",
+        "table": "auditEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"auditEvent_action_check_c40f2472\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_action_check_c40f2472",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"auditEvent_action_check_c40f2472\"",
+        "sql": "ALTER TABLE \"public\".\"auditEvent\" ADD CONSTRAINT \"auditEvent_action_check_c40f2472\" CHECK (\"action\" IN ('ROSTER_CREATED', 'ROSTER_UPDATED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_PUBLISHED', 'ROSTER_AMENDMENT_CREATED', 'ROSTER_DELETED', 'ASSIGNMENT_CREATED', 'ASSIGNMENT_DELETED', 'LEAVE_CREATED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'STAFF_CREATED', 'STAFF_UPDATED', 'STAFF_DEACTIVATED', 'DEPARTMENT_CREATED', 'DEPARTMENT_UPDATED', 'DEPARTMENT_DELETED', 'DEPARTMENT_HEAD_ASSIGNED', 'DEPARTMENT_HEAD_REMOVED', 'PROFESSION_CREATED', 'PROFESSION_UPDATED', 'PROFESSION_DEACTIVATED', 'SHIFT_TYPE_CREATED', 'SHIFT_TYPE_UPDATED', 'SHIFT_TYPE_DEACTIVATED', 'STAFFING_REQUIREMENT_CREATED', 'STAFFING_REQUIREMENT_UPDATED', 'STAFFING_REQUIREMENT_DELETED', 'SCHEDULING_POLICY_UPDATED', 'USER_INVITED', 'USER_UPDATED', 'USER_DEACTIVATED', 'MEMBERSHIP_ROLE_CHANGED', 'MEMBERSHIP_ACTIVATED', 'MEMBERSHIP_DEACTIVATED', 'ATTENDANCE_CLOCKED_IN', 'ATTENDANCE_CLOCKED_OUT', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED', 'ATTENDANCE_VOIDED', 'ATTENDANCE_EXCEPTION_RESOLVED', 'ATTENDANCE_POLICY_UPDATED', 'ORGANIZATION_CREATED', 'ORGANIZATION_UPDATED', 'ORGANIZATION_SUSPENDED', 'ORGANIZATION_REACTIVATED', 'INVITATION_RESENT', 'INVITATION_REVOKED', 'INVITATION_ACCEPTED', 'ROLE_CREATED', 'ROLE_UPDATED', 'ROLE_DEACTIVATED', 'STAFF_ACCOUNT_LINKED', 'STAFF_ACCOUNT_UNLINKED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"auditEvent_action_check_c40f2472\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_action_check_c40f2472",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.auditEvent.auditEvent_entityType_check_a5d82518",
+    "label": "Add check constraint \"auditEvent_entityType_check_a5d82518\" on \"auditEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "auditEvent_entityType_check_a5d82518",
+        "table": "auditEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"auditEvent_entityType_check_a5d82518\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_entityType_check_a5d82518",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"auditEvent_entityType_check_a5d82518\"",
+        "sql": "ALTER TABLE \"public\".\"auditEvent\" ADD CONSTRAINT \"auditEvent_entityType_check_a5d82518\" CHECK (\"entityType\" IN ('ROSTER', 'ASSIGNMENT', 'LEAVE_REQUEST', 'SHIFT_SWAP', 'STAFF', 'DEPARTMENT', 'PROFESSION', 'SHIFT_TYPE', 'STAFFING_REQUIREMENT', 'SCHEDULING_POLICY', 'USER', 'MEMBERSHIP', 'ATTENDANCE', 'ATTENDANCE_POLICY', 'ORGANIZATION', 'INVITATION', 'ROLE'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"auditEvent_entityType_check_a5d82518\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_entityType_check_a5d82518",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.notification.notification_entityType_check_bb9b415e",
+    "label": "Add check constraint \"notification_entityType_check_bb9b415e\" on \"notification\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notification_entityType_check_bb9b415e",
+        "table": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notification_entityType_check_bb9b415e\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_entityType_check_bb9b415e",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"notification_entityType_check_bb9b415e\"",
+        "sql": "ALTER TABLE \"public\".\"notification\" ADD CONSTRAINT \"notification_entityType_check_bb9b415e\" CHECK (\"entityType\" IN ('LEAVE_REQUEST', 'SHIFT_SWAP', 'ROSTER', 'ATTENDANCE', 'ORGANIZATION_INVITATION'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notification_entityType_check_bb9b415e\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_entityType_check_bb9b415e",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.notification.notification_type_check_2949696f",
+    "label": "Add check constraint \"notification_type_check_2949696f\" on \"notification\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notification_type_check_2949696f",
+        "table": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notification_type_check_2949696f\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_type_check_2949696f",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"notification_type_check_2949696f\"",
+        "sql": "ALTER TABLE \"public\".\"notification\" ADD CONSTRAINT \"notification_type_check_2949696f\" CHECK (\"type\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED', 'ORGANIZATION_INVITED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notification_type_check_2949696f\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_type_check_2949696f",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.notificationDelivery.notificationDelivery_eventType_check_fb5469f3",
+    "label": "Add check constraint \"notificationDelivery_eventType_check_fb5469f3\" on \"notificationDelivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notificationDelivery_eventType_check_fb5469f3",
+        "table": "notificationDelivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notificationDelivery_eventType_check_fb5469f3\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationDelivery_eventType_check_fb5469f3",
+          "public",
+          "\"public\".\"notificationDelivery\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"notificationDelivery_eventType_check_fb5469f3\"",
+        "sql": "ALTER TABLE \"public\".\"notificationDelivery\" ADD CONSTRAINT \"notificationDelivery_eventType_check_fb5469f3\" CHECK (\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED', 'ORGANIZATION_INVITED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notificationDelivery_eventType_check_fb5469f3\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationDelivery_eventType_check_fb5469f3",
+          "public",
+          "\"public\".\"notificationDelivery\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.notificationOutbox.notificationOutbox_eventType_check_fb5469f3",
+    "label": "Add check constraint \"notificationOutbox_eventType_check_fb5469f3\" on \"notificationOutbox\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notificationOutbox_eventType_check_fb5469f3",
+        "table": "notificationOutbox"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notificationOutbox_eventType_check_fb5469f3\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationOutbox_eventType_check_fb5469f3",
+          "public",
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"notificationOutbox_eventType_check_fb5469f3\"",
+        "sql": "ALTER TABLE \"public\".\"notificationOutbox\" ADD CONSTRAINT \"notificationOutbox_eventType_check_fb5469f3\" CHECK (\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED', 'ORGANIZATION_INVITED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notificationOutbox_eventType_check_fb5469f3\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationOutbox_eventType_check_fb5469f3",
+          "public",
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.notificationPreference.notificationPreference_eventType_check_fb5469f3",
+    "label": "Add check constraint \"notificationPreference_eventType_check_fb5469f3\" on \"notificationPreference\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notificationPreference_eventType_check_fb5469f3",
+        "table": "notificationPreference"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notificationPreference_eventType_check_fb5469f3\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationPreference_eventType_check_fb5469f3",
+          "public",
+          "\"public\".\"notificationPreference\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"notificationPreference_eventType_check_fb5469f3\"",
+        "sql": "ALTER TABLE \"public\".\"notificationPreference\" ADD CONSTRAINT \"notificationPreference_eventType_check_fb5469f3\" CHECK (\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED', 'ORGANIZATION_INVITED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notificationPreference_eventType_check_fb5469f3\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationPreference_eventType_check_fb5469f3",
+          "public",
+          "\"public\".\"notificationPreference\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.organization.organization_organizationType_check_93b3d7c9",
+    "label": "Add check constraint \"organization_organizationType_check_93b3d7c9\" on \"organization\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "organization_organizationType_check_93b3d7c9",
+        "table": "organization"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"organization_organizationType_check_93b3d7c9\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organization_organizationType_check_93b3d7c9",
+          "public",
+          "\"public\".\"organization\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"organization_organizationType_check_93b3d7c9\"",
+        "sql": "ALTER TABLE \"public\".\"organization\" ADD CONSTRAINT \"organization_organizationType_check_93b3d7c9\" CHECK (\"organizationType\" IN ('HOSPITAL', 'CLINIC', 'HEALTH_SYSTEM', 'OTHER'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"organization_organizationType_check_93b3d7c9\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organization_organizationType_check_93b3d7c9",
+          "public",
+          "\"public\".\"organization\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.organizationInvitation.organizationInvitation_tokenHash_key",
+    "label": "Add unique constraint on \"organizationInvitation\" (tokenHash)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "organizationInvitation_tokenHash_key",
+        "table": "organizationInvitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"organizationInvitation_tokenHash_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationInvitation_tokenHash_key",
+          "public",
+          "\"public\".\"organizationInvitation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"organizationInvitation_tokenHash_key\"",
+        "sql": "ALTER TABLE \"public\".\"organizationInvitation\" ADD CONSTRAINT \"organizationInvitation_tokenHash_key\" UNIQUE (\"tokenHash\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"organizationInvitation_tokenHash_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationInvitation_tokenHash_key",
+          "public",
+          "\"public\".\"organizationInvitation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.organizationInvitation.organizationInvitation_acceptedByUserId_idx_5a9dcbb3",
+    "label": "Create index \"organizationInvitation_acceptedByUserId_idx_5a9dcbb3\" on \"organizationInvitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "organizationInvitation_acceptedByUserId_idx_5a9dcbb3",
+        "table": "organizationInvitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"organizationInvitation_acceptedByUserId_idx_5a9dcbb3\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationInvitation_acceptedByUserId_idx_5a9dcbb3\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"organizationInvitation_acceptedByUserId_idx_5a9dcbb3\"",
+        "sql": "CREATE INDEX \"organizationInvitation_acceptedByUserId_idx_5a9dcbb3\" ON \"public\".\"organizationInvitation\" (\"acceptedByUserId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"organizationInvitation_acceptedByUserId_idx_5a9dcbb3\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationInvitation_acceptedByUserId_idx_5a9dcbb3\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.organizationInvitation.organizationInvitation_invitedByUserId_idx_ad3f61d3",
+    "label": "Create index \"organizationInvitation_invitedByUserId_idx_ad3f61d3\" on \"organizationInvitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "organizationInvitation_invitedByUserId_idx_ad3f61d3",
+        "table": "organizationInvitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"organizationInvitation_invitedByUserId_idx_ad3f61d3\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationInvitation_invitedByUserId_idx_ad3f61d3\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"organizationInvitation_invitedByUserId_idx_ad3f61d3\"",
+        "sql": "CREATE INDEX \"organizationInvitation_invitedByUserId_idx_ad3f61d3\" ON \"public\".\"organizationInvitation\" (\"invitedByUserId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"organizationInvitation_invitedByUserId_idx_ad3f61d3\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationInvitation_invitedByUserId_idx_ad3f61d3\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.organizationInvitation.organizationInvitation_organizationId_email_status_idx_8f900090",
+    "label": "Create index \"organizationInvitation_organizationId_email_status_idx_8f900090\" on \"organizationInvitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "organizationInvitation_organizationId_email_status_idx_8f900090",
+        "table": "organizationInvitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"organizationInvitation_organizationId_email_status_idx_8f900090\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationInvitation_organizationId_email_status_idx_8f900090\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"organizationInvitation_organizationId_email_status_idx_8f900090\"",
+        "sql": "CREATE INDEX \"organizationInvitation_organizationId_email_status_idx_8f900090\" ON \"public\".\"organizationInvitation\" (\"organizationId\", \"email\", \"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"organizationInvitation_organizationId_email_status_idx_8f900090\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationInvitation_organizationId_email_status_idx_8f900090\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.organizationInvitation.organizationInvitation_organizationId_idx_2e17ef41",
+    "label": "Create index \"organizationInvitation_organizationId_idx_2e17ef41\" on \"organizationInvitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "organizationInvitation_organizationId_idx_2e17ef41",
+        "table": "organizationInvitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"organizationInvitation_organizationId_idx_2e17ef41\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationInvitation_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"organizationInvitation_organizationId_idx_2e17ef41\"",
+        "sql": "CREATE INDEX \"organizationInvitation_organizationId_idx_2e17ef41\" ON \"public\".\"organizationInvitation\" (\"organizationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"organizationInvitation_organizationId_idx_2e17ef41\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationInvitation_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.organizationInvitation.organizationInvitation_organizationId_status_idx_21af5e82",
+    "label": "Create index \"organizationInvitation_organizationId_status_idx_21af5e82\" on \"organizationInvitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "organizationInvitation_organizationId_status_idx_21af5e82",
+        "table": "organizationInvitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"organizationInvitation_organizationId_status_idx_21af5e82\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationInvitation_organizationId_status_idx_21af5e82\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"organizationInvitation_organizationId_status_idx_21af5e82\"",
+        "sql": "CREATE INDEX \"organizationInvitation_organizationId_status_idx_21af5e82\" ON \"public\".\"organizationInvitation\" (\"organizationId\", \"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"organizationInvitation_organizationId_status_idx_21af5e82\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationInvitation_organizationId_status_idx_21af5e82\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.organizationInvitation.organizationInvitation_roleId_idx_ffccc9a4",
+    "label": "Create index \"organizationInvitation_roleId_idx_ffccc9a4\" on \"organizationInvitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "organizationInvitation_roleId_idx_ffccc9a4",
+        "table": "organizationInvitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"organizationInvitation_roleId_idx_ffccc9a4\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationInvitation_roleId_idx_ffccc9a4\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"organizationInvitation_roleId_idx_ffccc9a4\"",
+        "sql": "CREATE INDEX \"organizationInvitation_roleId_idx_ffccc9a4\" ON \"public\".\"organizationInvitation\" (\"roleId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"organizationInvitation_roleId_idx_ffccc9a4\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationInvitation_roleId_idx_ffccc9a4\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.organizationInvitation.organizationInvitation_organizationId_fkey",
+    "label": "Add foreign key \"organizationInvitation_organizationId_fkey\" on \"organizationInvitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "organizationInvitation_organizationId_fkey",
+        "table": "organizationInvitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"organizationInvitation_organizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationInvitation_organizationId_fkey",
+          "public",
+          "\"public\".\"organizationInvitation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"organizationInvitation_organizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"organizationInvitation\"\nADD CONSTRAINT \"organizationInvitation_organizationId_fkey\"\nFOREIGN KEY (\"organizationId\")\nREFERENCES \"public\".\"organization\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"organizationInvitation_organizationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationInvitation_organizationId_fkey",
+          "public",
+          "\"public\".\"organizationInvitation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.organizationInvitation.organizationInvitation_roleId_fkey",
+    "label": "Add foreign key \"organizationInvitation_roleId_fkey\" on \"organizationInvitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "organizationInvitation_roleId_fkey",
+        "table": "organizationInvitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"organizationInvitation_roleId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationInvitation_roleId_fkey",
+          "public",
+          "\"public\".\"organizationInvitation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"organizationInvitation_roleId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"organizationInvitation\"\nADD CONSTRAINT \"organizationInvitation_roleId_fkey\"\nFOREIGN KEY (\"roleId\")\nREFERENCES \"public\".\"role\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"organizationInvitation_roleId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationInvitation_roleId_fkey",
+          "public",
+          "\"public\".\"organizationInvitation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.organizationInvitation.organizationInvitation_invitedByUserId_fkey",
+    "label": "Add foreign key \"organizationInvitation_invitedByUserId_fkey\" on \"organizationInvitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "organizationInvitation_invitedByUserId_fkey",
+        "table": "organizationInvitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"organizationInvitation_invitedByUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationInvitation_invitedByUserId_fkey",
+          "public",
+          "\"public\".\"organizationInvitation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"organizationInvitation_invitedByUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"organizationInvitation\"\nADD CONSTRAINT \"organizationInvitation_invitedByUserId_fkey\"\nFOREIGN KEY (\"invitedByUserId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"organizationInvitation_invitedByUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationInvitation_invitedByUserId_fkey",
+          "public",
+          "\"public\".\"organizationInvitation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.organizationInvitation.organizationInvitation_acceptedByUserId_fkey",
+    "label": "Add foreign key \"organizationInvitation_acceptedByUserId_fkey\" on \"organizationInvitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "organizationInvitation_acceptedByUserId_fkey",
+        "table": "organizationInvitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"organizationInvitation_acceptedByUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationInvitation_acceptedByUserId_fkey",
+          "public",
+          "\"public\".\"organizationInvitation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"organizationInvitation_acceptedByUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"organizationInvitation\"\nADD CONSTRAINT \"organizationInvitation_acceptedByUserId_fkey\"\nFOREIGN KEY (\"acceptedByUserId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"organizationInvitation_acceptedByUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationInvitation_acceptedByUserId_fkey",
+          "public",
+          "\"public\".\"organizationInvitation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.organizationInvitation",
+    "label": "Enable row-level security on \"organizationInvitation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "organizationInvitation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"organizationInvitation\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "organizationInvitation"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"organizationInvitation\"",
+        "sql": "ALTER TABLE \"public\".\"organizationInvitation\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"organizationInvitation\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "organizationInvitation"
+        ]
+      }
+    ]
+  }
+]

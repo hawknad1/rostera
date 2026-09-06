@@ -130,4 +130,9 @@ export type UpdateStaffInput = z.output<typeof updateStaffInputSchema>
 export type StaffIdInput = z.output<typeof staffIdInputSchema>
 export type AssignDepartmentHeadInput = z.output<typeof assignDepartmentHeadInputSchema>
 export type DepartmentHeadInput = z.output<typeof departmentHeadInputSchema>
+export const unlinkStaffFromUserInputSchema = z.object({
+  staffId: z.string().trim().min(1, "Staff member is required."),
+})
+
 export type LinkStaffToUserInput = z.output<typeof linkStaffToUserInputSchema>
+export type UnlinkStaffFromUserInput = z.output<typeof unlinkStaffFromUserInputSchema>

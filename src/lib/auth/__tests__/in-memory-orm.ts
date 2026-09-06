@@ -36,6 +36,7 @@ const MODEL_NAMES = [
   "AttendanceRecord",
   "AttendanceEvent",
   "AttendanceException",
+  "OrganizationInvitation",
 ] as const
 
 type ModelName = (typeof MODEL_NAMES)[number]
@@ -122,6 +123,15 @@ function assertUnique(tables: Record<ModelName, Row[]>, model: ModelName, row: R
     )
   ) {
     throw uniqueViolation("role", "name")
+  }
+
+  if (
+    model === "OrganizationInvitation" &&
+    tables.OrganizationInvitation.some(
+      (existing) => existing !== row && existing.tokenHash === row.tokenHash,
+    )
+  ) {
+    throw uniqueViolation("organizationInvitation", "tokenHash")
   }
 
   if (
@@ -469,6 +479,8 @@ function modelTable(model: ModelName) {
       return "attendanceEvent"
     case "AttendanceException":
       return "attendanceException"
+    case "OrganizationInvitation":
+      return "organizationInvitation"
     default:
       return model.charAt(0).toLowerCase() + model.slice(1)
   }
@@ -485,6 +497,20 @@ function withCreateDefaults(model: ModelName, data: Row): Row {
     row.country ??= "Ghana"
     row.timezone ??= "Africa/Accra"
     row.status ??= "ACTIVE"
+    row.organizationType ??= "HOSPITAL"
+  }
+
+  if (model === "Role") {
+    row.isSystem ??= false
+    row.isActive ??= true
+  }
+
+  if (model === "OrganizationInvitation") {
+    row.status ??= "PENDING"
+    row.acceptedAt ??= null
+    row.acceptedByUserId ??= null
+    row.createdAt ??= new Date().toISOString()
+    row.updatedAt ??= row.createdAt
   }
 
   if (model === "OrganizationMember") {
@@ -622,6 +648,21 @@ function hydrate(
 
     if (includes.includes("role")) {
       result.role = tables.Role.find((role) => role.id === row.roleId) ?? null
+    }
+
+    if (includes.includes("user")) {
+      result.user = tables.User.find((user) => user.id === row.userId) ?? null
+    }
+  }
+
+  if (model === "OrganizationInvitation") {
+    if (includes.includes("role")) {
+      result.role = tables.Role.find((role) => role.id === row.roleId) ?? null
+    }
+
+    if (includes.includes("organization")) {
+      result.organization =
+        tables.Organization.find((organization) => organization.id === row.organizationId) ?? null
     }
   }
 
@@ -863,6 +904,14 @@ function createPublicOrm(
       {},
       [],
     ),
+    OrganizationInvitation: createCollection(
+      tables,
+      queries,
+      failCreates,
+      "OrganizationInvitation",
+      {},
+      [],
+    ),
   }
 }
 
@@ -894,6 +943,7 @@ function emptyTables(): Record<ModelName, Row[]> {
     AttendanceRecord: [],
     AttendanceEvent: [],
     AttendanceException: [],
+    OrganizationInvitation: [],
   }
 }
 
@@ -931,6 +981,7 @@ export function createInMemoryPrisma() {
       AttendanceRecord: tables.AttendanceRecord.map((row) => ({ ...row })),
       AttendanceEvent: tables.AttendanceEvent.map((row) => ({ ...row })),
       AttendanceException: tables.AttendanceException.map((row) => ({ ...row })),
+      OrganizationInvitation: tables.OrganizationInvitation.map((row) => ({ ...row })),
     }
   }
 

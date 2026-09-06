@@ -4,6 +4,20 @@ enum OrganizationStatus {
   ARCHIVED
 }
 
+enum OrganizationType {
+  HOSPITAL
+  CLINIC
+  HEALTH_SYSTEM
+  OTHER
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+  EXPIRED
+}
+
 enum MembershipStatus {
   INVITED
   ACTIVE
@@ -74,6 +88,7 @@ enum NotificationType {
   ATTENDANCE_CORRECTED
   ATTENDANCE_APPROVED
   ATTENDANCE_REJECTED
+  ORGANIZATION_INVITED
 }
 
 enum NotificationEntityType {
@@ -81,6 +96,7 @@ enum NotificationEntityType {
   SHIFT_SWAP
   ROSTER
   ATTENDANCE
+  ORGANIZATION_INVITATION
 }
 
 enum NotificationOutboxStatus {
@@ -168,6 +184,18 @@ enum AuditAction {
   ATTENDANCE_VOIDED
   ATTENDANCE_EXCEPTION_RESOLVED
   ATTENDANCE_POLICY_UPDATED
+  ORGANIZATION_CREATED
+  ORGANIZATION_UPDATED
+  ORGANIZATION_SUSPENDED
+  ORGANIZATION_REACTIVATED
+  INVITATION_RESENT
+  INVITATION_REVOKED
+  INVITATION_ACCEPTED
+  ROLE_CREATED
+  ROLE_UPDATED
+  ROLE_DEACTIVATED
+  STAFF_ACCOUNT_LINKED
+  STAFF_ACCOUNT_UNLINKED
 }
 
 enum AuditEntityType {
@@ -185,6 +213,9 @@ enum AuditEntityType {
   MEMBERSHIP
   ATTENDANCE
   ATTENDANCE_POLICY
+  ORGANIZATION
+  INVITATION
+  ROLE
 }
 
 model Organization {
@@ -200,6 +231,7 @@ model Organization {
   country   String   @default("Ghana")
   timezone  String   @default("Africa/Accra")
   status    OrganizationStatus @default(ACTIVE)
+  organizationType OrganizationType @default(HOSPITAL)
 
   createdAt DateTime @default(now())
   updatedAt temporal.updatedAt()
@@ -209,6 +241,7 @@ model Organization {
   professions          Profession[]
   staff                StaffProfile[]
   roles                Role[]
+  invitations          OrganizationInvitation[]
   shiftTypes           ShiftType[]
   staffingRequirements StaffingRequirement[]
   rosters              Roster[]
@@ -236,6 +269,7 @@ model User {
 
   email          String?
   phone          String?
+  displayName    String?
 
   createdAt      DateTime @default(now())
   updatedAt      temporal.updatedAt()
@@ -254,6 +288,8 @@ model User {
   approvedAttendance       AttendanceRecord[] @relation("AttendanceApprovedBy")
   attendanceEvents         AttendanceEvent[] @relation("AttendanceEventActor")
   resolvedExceptions       AttendanceException[] @relation("AttendanceExceptionResolvedBy")
+  sentInvitations          OrganizationInvitation[] @relation("InvitationInvitedBy")
+  acceptedInvitations      OrganizationInvitation[] @relation("InvitationAcceptedBy")
 
   @@rls
 }
@@ -287,6 +323,8 @@ model Role {
   organizationId String
   name           String
   description    String?
+  isSystem       Boolean  @default(false)
+  isActive       Boolean  @default(true)
 
   createdAt      DateTime @default(now())
   updatedAt      temporal.updatedAt()
@@ -294,9 +332,36 @@ model Role {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   members        OrganizationMember[]
   permissions    RolePermission[]
+  invitations    OrganizationInvitation[]
 
   @@unique([organizationId, name])
   @@index([organizationId])
+  @@rls
+}
+
+model OrganizationInvitation {
+  id               String   @id @default(uuid())
+
+  organizationId   String
+  email            String
+  roleId           String
+  tokenHash        String   @unique
+  status           InvitationStatus @default(PENDING)
+  expiresAt        DateTime
+  invitedByUserId  String
+  acceptedAt       DateTime?
+  acceptedByUserId String?
+
+  createdAt        DateTime @default(now())
+  updatedAt        temporal.updatedAt()
+
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role             Role         @relation(fields: [roleId], references: [id])
+  invitedBy        User         @relation("InvitationInvitedBy", fields: [invitedByUserId], references: [id])
+  acceptedBy       User?        @relation("InvitationAcceptedBy", fields: [acceptedByUserId], references: [id])
+
+  @@index([organizationId, status])
+  @@index([organizationId, email, status])
   @@rls
 }
 

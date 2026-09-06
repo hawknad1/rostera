@@ -17,5 +17,7 @@ export function staffNotificationHref(
       return "/me/roster"
     case "ATTENDANCE":
       return "/me/attendance"
+    case "ORGANIZATION_INVITATION":
+      return "/me/notifications"
   }
 }
