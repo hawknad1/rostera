@@ -17,6 +17,20 @@ import {
   summarizeCoverage,
   type CoverageCell,
 } from "@/modules/rosters/services/coverage"
+import {
+  diffAssignmentSnapshots,
+  type AssignmentComparisonView,
+  type RosterVersionComparison,
+} from "@/modules/rosters/services/compare"
+import {
+  currentPublishedVersion,
+  parentVersion,
+  rosterSeriesId,
+  rosterVersionNumber,
+  selectOperationalRosters,
+  sortRosterVersions,
+  unpublishedAmendment,
+} from "@/modules/rosters/services/versions"
 import { db } from "@/prisma/db"
 
 type PublicOrm = typeof db.orm
@@ -77,6 +91,22 @@ async function assertOwnedDepartment(orm: PublicOrm, organizationId: string, dep
   return department
 }
 
+function timeWindowLabel(startTime: string, endTime: string, isOvernight: boolean) {
+  return `${startTime}–${endTime}${isOvernight ? " (following day)" : ""}`
+}
+
+function staffDisplayName(member: {
+  firstName: string
+  middleName?: string | null
+  lastName: string
+} | undefined) {
+  if (!member) {
+    return "Unknown staff"
+  }
+
+  return [member.firstName, member.middleName, member.lastName].filter(Boolean).join(" ")
+}
+
 async function loadProfessionMap(organizationId: string) {
   const [global, organization] = await Promise.all([
     db.orm.public.Profession.where({ organizationId: null }).all(),
@@ -132,7 +162,7 @@ export async function listRosters() {
     assignmentsByRoster.set(assignment.rosterId, current)
   }
 
-  return [...rosters]
+  return selectOperationalRosters(rosters)
     .sort((left, right) => {
       const start = right.startDate.localeCompare(left.startDate)
       if (start !== 0) {
@@ -152,9 +182,12 @@ export async function listRosters() {
         requirements: rosterRequirements,
         assignments: rosterAssignments,
       })
+      const versionNumber = rosterVersionNumber(roster)
 
       return {
         ...roster,
+        versionNumber,
+        isAmendment: versionNumber > 1,
         departmentName: departmentsById.get(roster.departmentId)?.name ?? "Unknown department",
         dateRangeLabel: formatDateRange(roster.startDate, roster.endDate),
         assignmentCount: rosterAssignments.length,
@@ -172,20 +205,26 @@ export async function getRoster(rosterId: string) {
     throw rosterError("ROSTER_NOT_FOUND")
   }
 
-  const [department, assignments, shiftTypes, requirements, staff, professions] = await Promise.all([
-    findOwnedDepartment(db.orm, organizationId, roster.departmentId),
-    db.orm.public.ShiftAssignment.where({
-      organizationId,
-      rosterId: roster.id,
-    }).all(),
-    db.orm.public.ShiftType.where({ organizationId }).all(),
-    db.orm.public.StaffingRequirement.where({
-      organizationId,
-      departmentId: roster.departmentId,
-    }).all(),
-    db.orm.public.StaffProfile.where({ organizationId }).all(),
-    loadProfessionMap(organizationId),
-  ])
+  const [department, assignments, shiftTypes, requirements, staff, professions, seriesVersions, createdBy] =
+    await Promise.all([
+      findOwnedDepartment(db.orm, organizationId, roster.departmentId),
+      db.orm.public.ShiftAssignment.where({
+        organizationId,
+        rosterId: roster.id,
+      }).all(),
+      db.orm.public.ShiftType.where({ organizationId }).all(),
+      db.orm.public.StaffingRequirement.where({
+        organizationId,
+        departmentId: roster.departmentId,
+      }).all(),
+      db.orm.public.StaffProfile.where({ organizationId }).all(),
+      loadProfessionMap(organizationId),
+      db.orm.public.Roster.where({
+        organizationId,
+        seriesId: rosterSeriesId(roster),
+      }).all(),
+      db.orm.public.User.where({ id: roster.createdByUserId }).first(),
+    ])
 
   const staffById = new Map(staff.map((member) => [member.id, member]))
   const shiftTypesById = new Map(shiftTypes.map((shiftType) => [shiftType.id, shiftType]))
@@ -203,15 +242,15 @@ export async function getRoster(rosterId: string) {
 
     return {
       ...assignment,
-      staffName: member
-        ? [member.firstName, member.middleName, member.lastName].filter(Boolean).join(" ")
-        : "Unknown staff",
+      staffName: staffDisplayName(member),
       staffNumber: member?.staffNumber ?? "",
       professionName: profession?.name ?? "Unknown profession",
       shiftTypeName: shiftType?.name ?? "Unknown shift",
-      timeLabel: `${assignment.shiftStartTime}–${assignment.shiftEndTime}${
-        assignment.isOvernight ? " (following day)" : ""
-      }`,
+      timeLabel: timeWindowLabel(
+        assignment.shiftStartTime,
+        assignment.shiftEndTime,
+        assignment.isOvernight,
+      ),
     }
   })
 
@@ -253,23 +292,92 @@ export async function getRoster(rosterId: string) {
         startTime: shiftType.startTime,
         endTime: shiftType.endTime,
         isOvernight: shiftType.isOvernight,
-        timeLabel: `${shiftType.startTime}–${shiftType.endTime}${
-          shiftType.isOvernight ? " (following day)" : ""
-        }`,
+        timeLabel: timeWindowLabel(shiftType.startTime, shiftType.endTime, shiftType.isOvernight),
         assignments: shiftAssignments,
         coverage: shiftCoverage,
       }
     }),
   }))
 
+  const currentPublished = currentPublishedVersion(seriesVersions)
+  const activeAmendment = unpublishedAmendment(seriesVersions)
+  const parent = parentVersion(roster, seriesVersions)
+  const versionNumber = rosterVersionNumber(roster)
+  let comparison: RosterVersionComparison | null = null
+
+  if (versionNumber > 1 && parent) {
+    const previousAssignments = await db.orm.public.ShiftAssignment.where({
+      organizationId,
+      rosterId: String(parent.id),
+    }).all()
+    const diff = diffAssignmentSnapshots(previousAssignments, assignments)
+
+    const toView = (assignment: (typeof assignments)[number] | (typeof previousAssignments)[number]): AssignmentComparisonView => {
+      const member = staffById.get(String(assignment.staffId))
+      const shiftType = shiftTypesById.get(String(assignment.shiftTypeId))
+      return {
+        id: String(assignment.id),
+        staffId: String(assignment.staffId),
+        staffName: staffDisplayName(member),
+        shiftTypeId: String(assignment.shiftTypeId),
+        shiftTypeName: shiftType?.name ?? "Unknown shift",
+        date: String(assignment.date),
+        timeLabel: timeWindowLabel(
+          String(assignment.shiftStartTime),
+          String(assignment.shiftEndTime),
+          Boolean(assignment.isOvernight),
+        ),
+      }
+    }
+
+    comparison = {
+      previousRosterId: String(parent.id),
+      previousVersion: rosterVersionNumber(parent),
+      currentRosterId: String(roster.id),
+      currentVersion: versionNumber,
+      added: diff.added.map((assignment) => toView(assignment as (typeof assignments)[number])),
+      removed: diff.removed.map((assignment) => toView(assignment as (typeof previousAssignments)[number])),
+      changed: diff.changed.map((pair) => ({
+        previous: toView(pair.previous as (typeof previousAssignments)[number]),
+        current: toView(pair.current as (typeof assignments)[number]),
+        changedFields: pair.changedFields,
+      })),
+      unchangedCount: diff.unchangedCount,
+    }
+  }
+
   return {
     ...roster,
+    versionNumber,
+    seriesId: rosterSeriesId(roster),
+    parentRosterId: roster.parentRosterId ? String(roster.parentRosterId) : null,
+    parentVersionNumber: parent ? rosterVersionNumber(parent) : null,
+    amendmentReason: roster.amendmentReason ? String(roster.amendmentReason) : null,
+    isAmendment: versionNumber > 1,
+    isCurrentPublished: Boolean(currentPublished && String(currentPublished.id) === String(roster.id)),
+    hasActiveAmendment: Boolean(activeAmendment),
+    activeAmendmentId: activeAmendment ? String(activeAmendment.id) : null,
+    createdByLabel: createdBy?.email ? String(createdBy.email) : "Unknown user",
     departmentName: department?.name ?? "Unknown department",
     dateRangeLabel: formatDateRange(roster.startDate, roster.endDate),
     assignmentCount: assignments.length,
     coverageLabel: summarizeCoverage(coverage, assignments.length),
     coverage,
     days,
+    versions: sortRosterVersions(seriesVersions).map((version) => ({
+      id: String(version.id),
+      versionNumber: rosterVersionNumber(version),
+      status: version.status,
+      amendmentReason: version.amendmentReason ? String(version.amendmentReason) : null,
+      createdAt: version.createdAt,
+      updatedAt: version.updatedAt,
+      isCurrent: String(version.id) === String(roster.id),
+      isCurrentPublished: Boolean(
+        currentPublished && String(currentPublished.id) === String(version.id),
+      ),
+      isUnpublished: version.status === "DRAFT" || version.status === "IN_REVIEW",
+    })),
+    comparison,
   }
 }
 
@@ -286,6 +394,8 @@ export async function createRoster(input: CreateRosterInput) {
         startDate: input.startDate,
         endDate: input.endDate,
         status: "DRAFT",
+        seriesId: crypto.randomUUID(),
+        versionNumber: 1,
         createdByUserId: membership.userId,
       })
 
@@ -301,6 +411,7 @@ export async function createRoster(input: CreateRosterInput) {
             endDate: created.endDate,
             departmentId: created.departmentId,
             status: created.status,
+            versionNumber: rosterVersionNumber(created),
           },
         },
       })
@@ -384,3 +495,13 @@ export async function updateRoster(input: UpdateRosterInput) {
 }
 
 export type CoverageCellView = CoverageCell
+
+export async function compareRosterWithPrevious(rosterId: string) {
+  const roster = await getRoster(rosterId)
+
+  if (!roster.comparison) {
+    throw rosterError("AMENDMENT_NOT_COMPARABLE")
+  }
+
+  return roster.comparison
+}

@@ -10,6 +10,7 @@ import type { TxClient } from "@/modules/audit/types/orm"
 const ONE_SHOT_ACTIONS = new Set([
   "ROSTER_CREATED",
   "ROSTER_PUBLISHED",
+  "ROSTER_AMENDMENT_CREATED",
   "ROSTER_DELETED",
   "ASSIGNMENT_CREATED",
   "ASSIGNMENT_DELETED",

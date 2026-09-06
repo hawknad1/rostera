@@ -1,8 +1,10 @@
 "use client"
 
 import { useActionState, useState } from "react"
+import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
+import { createRosterAmendmentAction } from "@/modules/rosters/actions/create-roster-amendment"
 import { deleteRosterAction } from "@/modules/rosters/actions/delete-roster"
 import type { RosterLifecycleActionState } from "@/modules/rosters/actions/lifecycle-state"
 import { publishRosterAction } from "@/modules/rosters/actions/publish-roster"
@@ -10,6 +12,7 @@ import { returnRosterToDraftAction } from "@/modules/rosters/actions/return-rost
 import { submitRosterForReviewAction } from "@/modules/rosters/actions/submit-roster-for-review"
 import { validateRosterAction } from "@/modules/rosters/actions/validate-roster"
 import type { RosterStatus } from "@/modules/rosters/labels"
+import { inputClassName, labelClassName } from "@/modules/rosters/ui/form-styles"
 
 function ActionError({ state }: { state: RosterLifecycleActionState }) {
   if (!state || state.ok !== false) {
@@ -138,21 +141,77 @@ function DeleteDraftButton({ rosterId }: { rosterId: string }) {
   )
 }
 
+function CreateAmendmentForm({ rosterId }: { rosterId: string }) {
+  const [state, action, pending] = useActionState<RosterLifecycleActionState, FormData>(
+    createRosterAmendmentAction,
+    null,
+  )
+
+  return (
+    <form action={action} className="flex max-w-xl flex-col gap-3">
+      <input name="rosterId" type="hidden" value={rosterId} />
+      <div>
+        <label className={labelClassName} htmlFor="amendment-reason">
+          Amendment reason
+        </label>
+        <textarea
+          className={`${inputClassName} min-h-20 py-2`}
+          id="amendment-reason"
+          maxLength={280}
+          name="reason"
+          placeholder="Why does this published roster need a new version?"
+          required
+        />
+      </div>
+      <ActionError state={state} />
+      <div>
+        <Button disabled={pending} type="submit">
+          {pending ? "Creating amendment..." : "Create amendment"}
+        </Button>
+      </div>
+    </form>
+  )
+}
+
 export function RosterLifecycleActions({
   rosterId,
   status,
   canEdit,
   canReview,
   canPublish,
+  canAmend,
+  isCurrentPublished,
+  activeAmendmentId,
 }: {
   rosterId: string
   status: RosterStatus
   canEdit: boolean
   canReview: boolean
   canPublish: boolean
+  canAmend?: boolean
+  isCurrentPublished?: boolean
+  activeAmendmentId?: string | null
 }) {
   if (status === "PUBLISHED" || status === "AMENDED") {
-    return null
+    if (!canAmend || !isCurrentPublished) {
+      return null
+    }
+
+    if (activeAmendmentId) {
+      return (
+        <p className="text-sm text-muted-foreground">
+          A draft amendment already exists.{" "}
+          <Link
+            className="font-medium text-primary underline-offset-4 hover:underline"
+            href={`/rosters/${activeAmendmentId}`}
+          >
+            Open draft amendment
+          </Link>
+        </p>
+      )
+    }
+
+    return <CreateAmendmentForm rosterId={rosterId} />
   }
 
   return (

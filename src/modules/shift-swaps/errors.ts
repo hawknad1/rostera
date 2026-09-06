@@ -49,7 +49,8 @@ export const swapErrorMessages: Record<SwapErrorCode, string> = {
   SWAP_REQUIRES_DRAFT_ROSTER: "This swap can only be completed while the roster is a draft.",
   SWAP_ASSIGNMENT_ALREADY_IN_SWAP: "One of these assignments is already in a pending swap.",
   SWAP_STATE_CHANGED: "This swap can no longer be completed because the roster or assignments changed.",
-  SWAP_REQUIRES_AMENDMENT: "Published roster assignments cannot be swapped until a roster amendment exists.",
+  SWAP_REQUIRES_AMENDMENT:
+    "Published roster assignments cannot be swapped. Create a roster amendment, then complete the swap on the new draft version.",
   SWAP_STAFF_INACTIVE: "A staff member in this swap is not active.",
   SWAP_NOT_ELIGIBLE: "The nominated staff member is not eligible for this swap.",
   SWAP_SCHEDULING_CONFLICT: "This swap would violate scheduling rules.",

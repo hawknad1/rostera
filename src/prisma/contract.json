@@ -109,6 +109,10 @@
                 "value": "ROSTER_PUBLISHED"
               },
               {
+                "name": "ROSTER_AMENDMENT_CREATED",
+                "value": "ROSTER_AMENDMENT_CREATED"
+              },
+              {
                 "name": "ROSTER_DELETED",
                 "value": "ROSTER_DELETED"
               },
@@ -521,6 +525,10 @@
               {
                 "name": "ROSTER_RETURNED_TO_DRAFT",
                 "value": "ROSTER_RETURNED_TO_DRAFT"
+              },
+              {
+                "name": "ROSTER_AMENDMENT_CREATED",
+                "value": "ROSTER_AMENDMENT_CREATED"
               }
             ]
           },
@@ -2561,6 +2569,13 @@
           },
           "Roster": {
             "fields": {
+              "amendmentReason": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -2610,6 +2625,20 @@
                   "kind": "scalar"
                 }
               },
+              "parentRosterId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "seriesId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "startDate": {
                 "nullable": false,
                 "type": {
@@ -2636,6 +2665,13 @@
                   "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
+              },
+              "versionNumber": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
               }
             },
             "relations": {
@@ -2651,6 +2687,21 @@
                 },
                 "to": {
                   "model": "ShiftAssignment",
+                  "namespace": "public"
+                }
+              },
+              "childVersions": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "parentRosterId"
+                  ]
+                },
+                "to": {
+                  "model": "Roster",
                   "namespace": "public"
                 }
               },
@@ -2699,6 +2750,21 @@
                   "namespace": "public"
                 }
               },
+              "parentRoster": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "parentRosterId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Roster",
+                  "namespace": "public"
+                }
+              },
               "shiftSwaps": {
                 "cardinality": "1:N",
                 "on": {
@@ -2717,6 +2783,9 @@
             },
             "storage": {
               "fields": {
+                "amendmentReason": {
+                  "column": "amendmentReason"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
@@ -2738,6 +2807,12 @@
                 "organizationId": {
                   "column": "organizationId"
                 },
+                "parentRosterId": {
+                  "column": "parentRosterId"
+                },
+                "seriesId": {
+                  "column": "seriesId"
+                },
                 "startDate": {
                   "column": "startDate"
                 },
@@ -2746,6 +2821,9 @@
                 },
                 "updatedAt": {
                   "column": "updatedAt"
+                },
+                "versionNumber": {
+                  "column": "versionNumber"
                 }
               },
               "namespaceId": "public",
@@ -2754,6 +2832,13 @@
           },
           "ShiftAssignment": {
             "fields": {
+              "copiedFromAssignmentId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -2984,6 +3069,9 @@
             },
             "storage": {
               "fields": {
+                "copiedFromAssignmentId": {
+                  "column": "copiedFromAssignmentId"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
@@ -4296,8 +4384,8 @@
             "auditEvent": {
               "checks": [
                 {
-                  "expression": "\"action\" IN ('ROSTER_CREATED', 'ROSTER_UPDATED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_PUBLISHED', 'ROSTER_DELETED', 'ASSIGNMENT_CREATED', 'ASSIGNMENT_DELETED', 'LEAVE_CREATED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'STAFF_CREATED', 'STAFF_UPDATED', 'STAFF_DEACTIVATED', 'DEPARTMENT_CREATED', 'DEPARTMENT_UPDATED', 'DEPARTMENT_DELETED', 'DEPARTMENT_HEAD_ASSIGNED', 'DEPARTMENT_HEAD_REMOVED', 'PROFESSION_CREATED', 'PROFESSION_UPDATED', 'PROFESSION_DEACTIVATED', 'SHIFT_TYPE_CREATED', 'SHIFT_TYPE_UPDATED', 'SHIFT_TYPE_DEACTIVATED', 'STAFFING_REQUIREMENT_CREATED', 'STAFFING_REQUIREMENT_UPDATED', 'STAFFING_REQUIREMENT_DELETED', 'SCHEDULING_POLICY_UPDATED', 'USER_INVITED', 'USER_UPDATED', 'USER_DEACTIVATED', 'MEMBERSHIP_ROLE_CHANGED', 'MEMBERSHIP_ACTIVATED', 'MEMBERSHIP_DEACTIVATED')",
-                  "name": "auditEvent_action_check_156c0448",
+                  "expression": "\"action\" IN ('ROSTER_CREATED', 'ROSTER_UPDATED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_PUBLISHED', 'ROSTER_AMENDMENT_CREATED', 'ROSTER_DELETED', 'ASSIGNMENT_CREATED', 'ASSIGNMENT_DELETED', 'LEAVE_CREATED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'STAFF_CREATED', 'STAFF_UPDATED', 'STAFF_DEACTIVATED', 'DEPARTMENT_CREATED', 'DEPARTMENT_UPDATED', 'DEPARTMENT_DELETED', 'DEPARTMENT_HEAD_ASSIGNED', 'DEPARTMENT_HEAD_REMOVED', 'PROFESSION_CREATED', 'PROFESSION_UPDATED', 'PROFESSION_DEACTIVATED', 'SHIFT_TYPE_CREATED', 'SHIFT_TYPE_UPDATED', 'SHIFT_TYPE_DEACTIVATED', 'STAFFING_REQUIREMENT_CREATED', 'STAFFING_REQUIREMENT_UPDATED', 'STAFFING_REQUIREMENT_DELETED', 'SCHEDULING_POLICY_UPDATED', 'USER_INVITED', 'USER_UPDATED', 'USER_DEACTIVATED', 'MEMBERSHIP_ROLE_CHANGED', 'MEMBERSHIP_ACTIVATED', 'MEMBERSHIP_DEACTIVATED')",
+                  "name": "auditEvent_action_check_8d257f60",
                   "prefix": "auditEvent_action_check"
                 },
                 {
@@ -4897,8 +4985,8 @@
                   "prefix": "notification_entityType_check"
                 },
                 {
-                  "expression": "\"type\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT')",
-                  "name": "notification_type_check_c9ddaf51",
+                  "expression": "\"type\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED')",
+                  "name": "notification_type_check_cdb06ba8",
                   "prefix": "notification_type_check"
                 }
               ],
@@ -5072,8 +5160,8 @@
             "notificationOutbox": {
               "checks": [
                 {
-                  "expression": "\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT')",
-                  "name": "notificationOutbox_eventType_check_e92a4b3e",
+                  "expression": "\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED')",
+                  "name": "notificationOutbox_eventType_check_485b977b",
                   "prefix": "notificationOutbox_eventType_check"
                 },
                 {
@@ -5855,9 +5943,19 @@
                   "expression": "\"status\" IN ('DRAFT', 'IN_REVIEW', 'PUBLISHED', 'AMENDED')",
                   "name": "roster_status_check_19635beb",
                   "prefix": "roster_status_check"
+                },
+                {
+                  "expression": "\"versionNumber\" >= 1",
+                  "name": "roster_version_number_c9127633",
+                  "prefix": "roster_version_number"
                 }
               ],
               "columns": {
+                "amendmentReason": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "default": {
@@ -5897,6 +5995,16 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "parentRosterId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "seriesId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
                 "startDate": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -5920,6 +6028,15 @@
                 "updatedAt": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "versionNumber": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 1
+                  },
+                  "nativeType": "int4",
                   "nullable": false
                 }
               },
@@ -5972,6 +6089,22 @@
                     "namespaceId": "public",
                     "tableName": "user"
                   }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "parentRosterId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "roster"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "roster"
+                  }
                 }
               ],
               "indexes": [
@@ -6011,11 +6144,28 @@
                 {
                   "columns": [
                     "organizationId",
+                    "seriesId"
+                  ],
+                  "name": "roster_organizationId_seriesId_idx_7543e97d",
+                  "prefix": "roster_organizationId_seriesId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
                     "startDate",
                     "endDate"
                   ],
                   "name": "roster_organizationId_startDate_endDate_idx_b7b01d99",
                   "prefix": "roster_organizationId_startDate_endDate_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "parentRosterId"
+                  ],
+                  "name": "roster_parentRosterId_idx_849936b5",
+                  "prefix": "roster_parentRosterId_idx",
                   "unique": false
                 }
               ],
@@ -6024,7 +6174,16 @@
                   "id"
                 ]
               },
-              "uniques": []
+              "uniques": [
+                {
+                  "columns": [
+                    "organizationId",
+                    "seriesId",
+                    "versionNumber"
+                  ],
+                  "name": "roster_series_version_key"
+                }
+              ]
             },
             "shiftAssignment": {
               "checks": [
@@ -6035,6 +6194,11 @@
                 }
               ],
               "columns": {
+                "copiedFromAssignmentId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "default": {
@@ -6216,6 +6380,14 @@
                 }
               ],
               "indexes": [
+                {
+                  "columns": [
+                    "copiedFromAssignmentId"
+                  ],
+                  "name": "shiftAssignment_copiedFromAssignmentId_idx_bbc1c558",
+                  "prefix": "shiftAssignment_copiedFromAssignmentId_idx",
+                  "unique": false
+                },
                 {
                   "columns": [
                     "departmentId"
@@ -7217,6 +7389,7 @@
                 "ROSTER_SUBMITTED_FOR_REVIEW",
                 "ROSTER_RETURNED_TO_DRAFT",
                 "ROSTER_PUBLISHED",
+                "ROSTER_AMENDMENT_CREATED",
                 "ROSTER_DELETED",
                 "ASSIGNMENT_CREATED",
                 "ASSIGNMENT_DELETED",
@@ -7357,7 +7530,8 @@
                 "SHIFT_SWAP_CANCELLED",
                 "ROSTER_SUBMITTED_FOR_REVIEW",
                 "ROSTER_PUBLISHED",
-                "ROSTER_RETURNED_TO_DRAFT"
+                "ROSTER_RETURNED_TO_DRAFT",
+                "ROSTER_AMENDMENT_CREATED"
               ]
             },
             "OrganizationStatus": {
@@ -7393,10 +7567,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "fef1e66b6a7d3c74e3c219dcb1b7e0a70df733b87d2a1e21432d78f077f7bb64"
+    "storageHash": "fcba91f26e69889279d2d7944c315129c8195829dc6cce65f16b2b54e49e6b89"
   },
   "execution": {
-    "executionHash": "d21bcd6e57bbeb8d26ee2d6293f2aff93a2ddedfea402e011450656a063083d3",
+    "executionHash": "fd899e9d67e7acabb996549b7dbcfd99294f533c15796f601bb1e62f531187e0",
     "mutations": {
       "defaults": [
         {
@@ -7662,6 +7836,17 @@
           },
           "ref": {
             "column": "id",
+            "namespace": "public",
+            "table": "roster"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "seriesId",
             "namespace": "public",
             "table": "roster"
           }

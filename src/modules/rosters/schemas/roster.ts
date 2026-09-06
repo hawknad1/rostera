@@ -98,6 +98,24 @@ export const rosterIdInputSchema = z.object({
   id: z.string().trim().min(1, "Roster is required."),
 })
 
+export const AMENDMENT_REASON_MAX_LENGTH = 280
+
+export const createRosterAmendmentInputSchema = z.object({
+  rosterId: z.preprocess(
+    emptyToUndefined,
+    z.string("Roster is required.").trim().min(1, "Roster is required."),
+  ),
+  reason: z.preprocess(
+    emptyToUndefined,
+    z
+      .string("Amendment reason is required.")
+      .trim()
+      .min(1, "Amendment reason is required.")
+      .max(AMENDMENT_REASON_MAX_LENGTH, "Amendment reason is too long."),
+  ),
+})
+
 export type CreateRosterInput = z.output<typeof createRosterInputSchema>
 export type UpdateRosterInput = z.output<typeof updateRosterInputSchema>
 export type RosterIdInput = z.output<typeof rosterIdInputSchema>
+export type CreateRosterAmendmentInput = z.output<typeof createRosterAmendmentInputSchema>

@@ -78,7 +78,7 @@ Completion is **DRAFT only**.
 | PUBLISHED | Yes | No (`SWAP_REQUIRES_AMENDMENT`) |
 | AMENDED | Yes | No (`SWAP_REQUIRES_DRAFT_ROSTER`) |
 
-Published assignments are never mutated. Amendments/versioning are not implemented.
+Published assignments are never mutated. Completing a swap against a published roster still returns `SWAP_REQUIRES_AMENDMENT`. Authorized roster managers create a draft amendment from that published version; the swap is not auto-created.
 
 ## Validation flow
 

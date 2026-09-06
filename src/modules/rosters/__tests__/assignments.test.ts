@@ -672,7 +672,10 @@ describe("assignment services", () => {
         startDateTime: Temporal.Instant.from("2026-09-03T14:00:00Z"),
         endDateTime: Temporal.Instant.from("2026-09-03T22:00:00Z"),
       }),
-    ).rejects.toMatchObject({ sqlState: "23P01" })
+    ).resolves.toMatchObject({
+      rosterId: otherRoster.id,
+      staffId: "staff-ama",
+    })
   })
 
   it("allows a September 30 overnight assignment that ends on October 1", async () => {
