@@ -1,6 +1,10 @@
 import { enqueueNotificationEvent } from "@/modules/notifications/services/outbox"
 import { processEmittedNotification } from "@/modules/notifications/services/processor"
-import type { DomainNotificationEvent } from "@/modules/notifications/types/notification"
+import { processNotificationDeliveries } from "@/modules/notifications/services/worker"
+import {
+  NOTIFICATION_WORKER_BATCH_SIZE,
+  type DomainNotificationEvent,
+} from "@/modules/notifications/types/notification"
 import type { TxClient } from "@/modules/notifications/types/orm"
 
 export async function enqueueDomainNotification(
@@ -16,4 +20,9 @@ export async function processDomainNotification(event: {
   eventId: string
 }) {
   await processEmittedNotification(event)
+  try {
+    await processNotificationDeliveries({ limit: NOTIFICATION_WORKER_BATCH_SIZE })
+  } catch {
+    // External delivery must not fail the committed domain operation.
+  }
 }

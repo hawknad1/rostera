@@ -2,8 +2,11 @@ import { Temporal } from "temporal-polyfill"
 
 import { inAppChannel } from "@/modules/notifications/adapters/in-app"
 import { notificationIntentSchema } from "@/modules/notifications/schemas/notification"
+import { ensureChannelDeliveries } from "@/modules/notifications/services/deliveries"
+import { isAvailable, isLeaseExpired } from "@/modules/notifications/services/time"
 import {
   NOTIFICATION_MAX_ATTEMPTS,
+  NOTIFICATION_PROCESSING_LEASE_SECONDS,
   notificationTypes,
   type NotificationType,
   type OutboxPayload,
@@ -68,8 +71,32 @@ export async function processOutboxEvent(
     return { status: "COMPLETED" as const }
   }
 
-  if (existing.status !== "PENDING") {
-    return { status: String(existing.status) }
+  if (existing.status === "FAILED") {
+    return { status: "FAILED" as const }
+  }
+
+  if (existing.status === "PROCESSING") {
+    if (!isLeaseExpired(existing.processingStartedAt, NOTIFICATION_PROCESSING_LEASE_SECONDS)) {
+      return { status: "PROCESSING" as const }
+    }
+
+    const reclaimed = await orm.public.NotificationOutbox.where({
+      id: existing.id,
+      organizationId: input.organizationId,
+      status: "PROCESSING",
+    }).update({
+      status: "PENDING",
+      processingStartedAt: null,
+      availableAt: Temporal.Now.instant(),
+    })
+
+    if (!reclaimed) {
+      return { status: "SKIPPED" as const }
+    }
+  }
+
+  if (existing.status === "PENDING" && !isAvailable(existing.availableAt)) {
+    return { status: "PENDING" as const }
   }
 
   const claimed = await orm.public.NotificationOutbox.where({
@@ -78,6 +105,7 @@ export async function processOutboxEvent(
     status: "PENDING",
   }).update({
     status: "PROCESSING",
+    processingStartedAt: Temporal.Now.instant(),
   })
 
   if (!claimed) {
@@ -96,6 +124,17 @@ export async function processOutboxEvent(
 
     for (const intent of payload.intents) {
       await channel.deliver(intent)
+      const notification = await orm.public.Notification.where({
+        organizationId: intent.organizationId,
+        recipientUserId: intent.recipientUserId,
+        type: intent.type,
+        eventId: intent.eventId,
+      }).first()
+      await ensureChannelDeliveries(orm, {
+        outboxId: String(claimed.id),
+        intent,
+        notificationId: notification ? String(notification.id) : null,
+      })
     }
 
     await orm.public.NotificationOutbox.where({
@@ -104,6 +143,7 @@ export async function processOutboxEvent(
     }).update({
       status: "COMPLETED",
       processedAt: Temporal.Now.instant(),
+      processingStartedAt: null,
       attempts: Number(claimed.attempts ?? 0) + 1,
       lastError: null,
     })
@@ -120,6 +160,7 @@ export async function processOutboxEvent(
       status: failed ? "FAILED" : "PENDING",
       attempts,
       lastError: GENERIC_DELIVERY_ERROR,
+      processingStartedAt: null,
       availableAt: Temporal.Now.instant().add({ seconds: backoffSeconds(attempts) }),
     })
 

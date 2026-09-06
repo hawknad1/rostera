@@ -1,229 +1,247 @@
 # Notification infrastructure
 
-Phase 3J adds a tenant-scoped, channel-agnostic notification foundation. Domain services emit a durable outbox intent after the business write succeeds in the same transaction. In-app delivery is the only implemented channel.
+Phase 3J added a tenant-scoped outbox and in-app inbox. Phase 3N extends that foundation with durable channel delivery. Domain services still never call providers.
 
 ```
-Domain operation
-      ↓
-same transaction: persist business state + NotificationOutbox PENDING
-      ↓
-commit
-      ↓
-in-process processor (awaited, failures swallowed)
-      ↓
-InAppNotificationChannel
-      ↓
-Notification row (User inbox)
+                 ┌────────────────────┐
+                 │   Business Action  │
+                 │ Leave / Roster /   │
+                 │ Swap / etc.        │
+                 └─────────┬──────────┘
+                           │
+                    SAME TRANSACTION
+                           │
+                 ┌─────────▼──────────┐
+                 │ NotificationOutbox │
+                 └─────────┬──────────┘
+                           │
+                        COMMIT
+                           │
+                 ┌─────────▼──────────┐
+                 │ Notification Worker│
+                 └─────────┬──────────┘
+                           │
+                ┌──────────▼───────────┐
+                │ Channel Resolution   │
+                │ Preferences + Policy │
+                └──────────┬───────────┘
+             ┌─────────────┼──────────────┐
+        ┌────▼────┐   ┌────▼────┐   ┌────▼──────┐
+        │  Email  │   │   SMS   │   │ WhatsApp  │
+        │ Provider│   │ Provider│   │  Provider │
+        └────┬────┘   └────┬────┘   └────┬──────┘
+             └─────────────┼──────────────┘
+                           │
+                  NotificationDelivery
 ```
 
-Notifications are outputs. Creating or reading them does not emit further domain events.
+Critical invariants:
+
+```
+Provider failure ≠ business transaction failure
+Duplicate processing ≠ duplicate communication
+In-app delivery does not depend on email/SMS/WhatsApp
+```
 
 ## Module layout
 
 ```
 src/modules/notifications/
-├── types/            typed intents, events, enums
-├── schemas/          Zod for trusted intents and action ids
-├── errors.ts
-├── copy.ts           user-facing title/body
-├── deep-links.ts     entityType + entityId → route
-├── adapters/         channel interface + in-app implementation
-├── services/         recipients, outbox, processor, inbox queries, emit helper
-├── actions/          read/unread/open (no create API)
+├── types/            event types, channels, delivery statuses
+├── schemas/          trusted intents and preference input
+├── channels/         event matrix and channel resolver
+├── templates/        server-side channel copy
+├── providers/        channel interfaces and adapters
+├── services/         outbox, processor, worker, preferences, history, webhooks
+├── actions/          inbox and preference mutations (no send API)
 ├── ui/
-├── tests/
 └── ARCHITECTURE.md
 ```
 
-Staff self-service at `/me` uses `staffNotificationHref` so leave, swap, and roster notifications open the staff PWA, not admin pages. Admin `/notifications` continues to use `notificationHref`.
+## Notification event
 
-## Data model
+Authoritative types remain the Phase 3J enum. External delivery does not invent new event types.
 
-### Notification
+Event identity is still the domain row id. Leave approval and leave request share `eventId` and differ by `eventType`.
 
-In-app inbox row. Delivered to `User`, never to `StaffProfile`.
+## Outbox
+
+`NotificationOutbox` is the durable business-event source. It is written in the same transaction as the domain mutation.
+
+After commit, `processDomainNotification` processes the outbox and then attempts a bounded delivery drain. Errors are swallowed so a provider outage cannot roll back leave, roster, or swap state.
+
+`processingStartedAt` is a lease. `PROCESSING` rows older than 120 seconds are reclaimed to `PENDING`.
+
+## In-app notification
+
+`Notification` remains the user inbox row. The in-app channel still uses unique `(organizationId, recipientUserId, type, eventId)`.
+
+In-app delivery runs during outbox processing, before external sends. If SMS or email is down, the inbox row is still created.
+
+## Delivery records
+
+`NotificationDelivery` tracks channel attempts. It is not overloaded onto `Notification`.
 
 | Field | Purpose |
 | --- | --- |
 | `organizationId` | tenant scope |
-| `recipientUserId` | authenticated Rostera user |
-| `type` | `NotificationType` enum |
-| `title` / `body` | display copy |
-| `entityType` / `entityId` | authoritative deep-link target |
-| `eventId` | stable domain event identity |
-| `readAt` | `null` = unread |
+| `notificationOutboxId` | originating outbox event |
+| `recipientUserId` | Rostera user |
+| `eventType` + `eventId` + `channel` | idempotency identity |
+| `provider` | `IN_APP`, `RESEND`, `TWILIO_SMS`, `TWILIO_WHATSAPP` |
+| `status` | lifecycle, see below |
+| `destination` | actual destination; UI and logs mask it |
+| `attemptCount` / `availableAt` / `processingStartedAt` | retry and lease |
+| `providerMessageId` | provider-accepted id, used by webhooks |
+| `lastError` | sanitized admin reason, never raw API bodies |
 
-Hard delete is not provided. Notifications are operational history.
+Missing destinations are **not eligible**. No delivery row is created, so the worker does not retry an absent phone or email.
 
-### NotificationOutbox
-
-Durable notification intent, committed with the domain mutation.
-
-| Field | Purpose |
-| --- | --- |
-| `eventType` + `eventId` | one outbox row per logical event |
-| `payload` | JSON of resolved `NotificationIntent[]` |
-| `status` | `PENDING` → `PROCESSING` → `COMPLETED` / `FAILED` |
-| `attempts` / `availableAt` / `lastError` | bounded retry metadata |
-
-`lastError` is a generic delivery message. SQL, Prisma, and provider details are not stored.
-
-## Notification types
+## Delivery state machine
 
 ```
-LEAVE_REQUESTED
-LEAVE_APPROVED
-LEAVE_REJECTED
-LEAVE_CANCELLED
-SHIFT_SWAP_REQUESTED
-SHIFT_SWAP_COMPLETED
-SHIFT_SWAP_REJECTED
-SHIFT_SWAP_CANCELLED
-ROSTER_SUBMITTED_FOR_REVIEW
-ROSTER_PUBLISHED
-ROSTER_RETURNED_TO_DRAFT
-ROSTER_AMENDMENT_CREATED
+PENDING
+  → PROCESSING          worker claimed the row
+      → SENT            provider accepted the message
+          → DELIVERED   verified receipt webhook, where supported
+      → FAILED          terminal failure after bounded retries or a permanent error
+      → CANCELLED       not sendable (missing provider, invalid channel)
+PROCESSING (lease expired)
+  → PENDING             reclaim
 ```
 
-Arbitrary client strings are rejected.
+`SENT` means the provider accepted the request. `DELIVERED` is used only after a verified status callback. In-app rows are marked `DELIVERED` because persistence in the inbox is delivery.
 
-## Event IDs
+Do not mark SMS/email `DELIVERED` because an HTTP 200 was returned.
 
-Event identity is the domain row id. Retries reuse the same id.
+## Channel resolver
 
-| Event | `eventId` |
-| --- | --- |
-| Leave requested / approved / rejected / cancelled | `leaveRequest.id` |
-| Shift swap requested / completed / rejected / cancelled | `shiftSwapRequest.id` |
-| Roster submitted / published / returned to draft / amendment created | `roster.id` |
+`resolveNotificationChannels` is the only place that decides whether a delivery row should exist. Leave, roster, and swap services do not select channels.
 
-Leave approval and leave request are different `type` values with the same `eventId`. That is intentional.
+Policy lives in `channels/registry.ts`:
+
+| Event | Priority | Default channels |
+| --- | --- | --- |
+| `ROSTER_PUBLISHED` | operational | IN_APP, EMAIL, SMS, WHATSAPP |
+| `LEAVE_APPROVED` | operational | IN_APP, EMAIL, SMS |
+| `LEAVE_REJECTED` | operational | IN_APP, EMAIL |
+| `SHIFT_SWAP_COMPLETED` | operational | IN_APP, EMAIL, SMS |
+| Other current events | optional | IN_APP, EMAIL |
+
+IN_APP cannot be disabled. Operational EMAIL cannot be disabled. SMS and WhatsApp follow preferences even for operational events. This is a product policy, not a legal claim.
+
+A channel is eligible only when:
+
+1. it is allowed for the event
+2. the provider is configured
+3. the recipient has a valid destination
+4. the preference/default enables it, or the channel is locked on
+
+There is no automatic fallback from email to SMS.
+
+## Providers
+
+```
+worker → NotificationChannelProvider.send() → configured adapter
+```
+
+Domain services must not import Resend or Twilio.
+
+| Channel | Adapter | Environment |
+| --- | --- | --- |
+| EMAIL | `ResendEmailProvider` | `RESEND_API_KEY`, `RESEND_FROM_EMAIL` |
+| SMS | `TwilioSmsProvider` | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_SMS_FROM` |
+| WHATSAPP | `TwilioWhatsAppProvider` | same Twilio account plus `TWILIO_WHATSAPP_FROM` |
+
+Optional: `TWILIO_STATUS_CALLBACK_URL`, `TWILIO_WHATSAPP_CONTENT_SID`.
+
+Vitest does not use production providers unless a test injects mocks. Production reads environment variables on the server only.
+
+Retryable errors: timeout, HTTP 429, HTTP 5xx. Permanent errors: invalid destination, authentication/configuration, malformed template/request. Max 5 attempts with exponential backoff capped at 600 seconds.
+
+## Templates
+
+Trusted server-side event payloads are rendered per channel. Email HTML is generated and escaped on the server. Clients cannot submit HTML or provider template ids.
+
+WhatsApp production messaging often requires an approved provider template. If `TWILIO_WHATSAPP_CONTENT_SID` is set, that Content SID is sent. Otherwise the adapter sends a body, which is suitable for sandbox/dev and must not be assumed valid for all production WhatsApp traffic.
+
+## Preferences
+
+`NotificationPreference` stores explicit overrides. No row means the registry default.
+
+Staff edit their own preferences at `/me/notifications/preferences`. They cannot edit another user. IN_APP and operational EMAIL are locked.
+
+Preference changes are not audited as user-facing audit events. Delivery retries are not audited. Delivery history is the operational record.
+
+## Worker
+
+`drainNotificationWork()`:
+
+1. reclaim stuck outbox and delivery leases
+2. process due `NotificationOutbox` rows (in-app + ensure deliveries)
+3. claim and send due external `NotificationDelivery` rows
+
+Batch size is 25. One failed send does not abort the batch.
+
+Invocation:
+
+- After a domain commit, `processDomainNotification` attempts a bounded drain.
+- Production should also call `POST /api/internal/notifications/drain` with `Authorization: Bearer $NOTIFICATION_WORKER_SECRET` from Vercel cron or an equivalent scheduler.
+
+The drain route is not a public send API. If the secret is unset, every request is rejected.
+
+This is a modular worker, not a microservice and not `void processDelivery()`.
+
+## Webhooks
+
+`POST /api/webhooks/twilio/status` validates `X-Twilio-Signature` against `TWILIO_AUTH_TOKEN` and `TWILIO_STATUS_CALLBACK_URL`. Unauthenticated callbacks are rejected. `DELIVERED` is applied only after a valid signature.
+
+Webhook idempotency uses `NotificationDeliveryReceipt` unique `(organizationId, provider, providerEventId)`.
+
+Resend delivery webhooks are not implemented in this phase. Email therefore stays `SENT` unless a later adapter maps Resend receipts.
 
 ## Idempotency
 
-Database uniqueness, not an application `if (!exists) create()` check.
+Database uniqueness, not `if (!exists)`:
 
-- Outbox: unique `(organizationId, eventType, eventId)` as `notificationOutbox_event_key`
-- Notification: unique `(organizationId, recipientUserId, type, eventId)` as `notification_idempotency_key`
+- Outbox: `(organizationId, eventType, eventId)`
+- Inbox: `(organizationId, recipientUserId, type, eventId)`
+- Delivery: `(organizationId, eventType, eventId, recipientUserId, channel)`
+- Receipt: `(organizationId, provider, providerEventId)`
 
-A retry of approval cannot create a second `LEAVE_APPROVED` row for the same recipient. Concurrent processors that both insert hit `23505` and treat it as already delivered.
+Concurrent workers claim with `PENDING → PROCESSING`. The second update returns no row.
 
-Prisma 8 cannot express a partial unique index here. These composites are full unique constraints and are sufficient for the event identity above.
+## Contact information
 
-## Transaction boundaries
+Canonical sources: `User.email` / `User.phone`, falling back to the linked `StaffProfile` in the same organization. Phone numbers must already be E.164; the utility does not prefix a Ghana country code.
 
-Preferred and implemented:
+## Admin and staff UI
 
-```
-db.transaction
-  persist business state
-  resolve recipients against that committed-to-be state
-  insert NotificationOutbox PENDING (same transaction)
-commit
-await processOutboxEvent(...)   // after commit; errors swallowed
-```
+- Staff inbox: `/me/notifications` and `/notifications`
+- Staff preferences: `/me/notifications/preferences`
+- Admin delivery history: `/notifications/deliveries` (`notifications.view`)
+- Settings shows configured/not configured only; no secrets
 
-If the business transaction rolls back, the outbox row rolls back with it. A notification cannot exist for an uncommitted leave approval.
-
-If in-app delivery fails after commit, the domain operation has already succeeded. The outbox remains `PENDING` (or `FAILED` after five attempts) for a future worker.
-
-This processor is **in-process and awaited** so persistence does not depend on the browser remaining open. It is **not** a durable background worker. A crash after commit and before/during processing leaves a `PENDING` or `PROCESSING` outbox row. Do not treat `void processNotification()` as a queue; this code awaits processing and still relies on the outbox for recovery.
-
-## Processing and retry
-
-1. Load outbox by `(organizationId, eventType, eventId)`
-2. Conditional update `PENDING` → `PROCESSING`
-3. Deliver each intent through `InAppNotificationChannel`
-4. `COMPLETED`, or on failure increment `attempts`
-
-Retry: max **5** attempts. Failed attempts return to `PENDING` with `availableAt` delayed by `30 * attempts` seconds, except the fifth which is `FAILED`.
-
-This phase has no cron/worker. Immediate processing runs once after the domain action. Later, a worker should select `status = PENDING AND availableAt <= now()`. `PROCESSING` rows left by a crash are a known limitation (no reclaim TTL yet).
-
-Delivery is **not** guaranteed if the process dies after commit and no worker runs.
-
-## Channels
-
-```ts
-interface NotificationChannel {
-  deliver(notification: NotificationIntent): Promise<DeliveryResult>
-}
-```
-
-Implemented: `InAppNotificationChannel`.
-
-Prepared type aliases only (no providers): `EmailNotificationChannel`, `SmsNotificationChannel`, `WhatsAppNotificationChannel`.
-
-Do not add Resend, Twilio, WhatsApp, FCM, or APNs in this phase.
-
-## Recipient policy (MVP, smallest safe audience)
-
-Recipients are resolved server-side. The actor is never notified of their own action. Unlinked staff (`StaffProfile.userId` null) and users without an `ACTIVE` membership produce no in-app row. SUPER_ADMIN is not notified merely because they hold all permissions.
-
-| Event | Recipients |
-| --- | --- |
-| `LEAVE_REQUESTED` | Department head of the staff member's department, if linked; plus active members whose **role name** is `HR` |
-| `LEAVE_APPROVED` / `LEAVE_REJECTED` / `LEAVE_CANCELLED` | Linked user of the affected staff member |
-| `SHIFT_SWAP_REQUESTED` | Linked user of the nominated target staff |
-| `SHIFT_SWAP_COMPLETED` | Linked users of requester and target staff |
-| `SHIFT_SWAP_REJECTED` | Linked user of the requester |
-| `SHIFT_SWAP_CANCELLED` | Linked user of the target staff |
-| `ROSTER_SUBMITTED_FOR_REVIEW` | Department head of the roster's department, if linked; plus active members whose **role name** is `ROSTER_MANAGER` |
-| `ROSTER_AMENDMENT_CREATED` | Same audience as submit-for-review |
-| `ROSTER_PUBLISHED` | Distinct assigned staff on that roster with linked users |
-| `ROSTER_RETURNED_TO_DRAFT` | `roster.createdByUserId` if still an active member |
-
-If nobody matches, the outbox is still written with an empty intent list and marked completed. Recipients are never taken from the browser.
-
-## Read / unread
-
-`readAt = null` at creation. Mark one read, mark one unread, mark all read. Every mutation uses `{ id, organizationId, recipientUserId }` from the active membership. A user cannot change another user's rows.
-
-## Deep links
-
-`entityType` + `entityId` are authoritative:
-
-- `LEAVE_REQUEST` → `/leave/[id]`
-- `SHIFT_SWAP` → `/shift-swaps/[id]`
-- `ROSTER` → `/rosters/[id]`
-
-The destination page still enforces authorization. A notification is not an access grant.
+Destinations are masked in the admin table and in operational logs.
 
 ## Tenant isolation
 
-Inbox queries always include `organizationId` and `recipientUserId` from `getCurrentMembership()`. The record is organization-scoped so a future multi-org user does not collapse inboxes by `userId` alone. The current active membership selects which org is shown. Client-supplied `organizationId` is ignored.
+Every delivery query includes `organizationId` from the active membership. Staff without `notifications.view` cannot load delivery history. Inbox queries still include `organizationId` and `recipientUserId`.
 
-## Indexes
+## Secrets and logging
 
-| Index | Why |
-| --- | --- |
-| `notification_idempotency_key` | prevent duplicate in-app rows |
-| `notification_inbox_created_idx` `(organizationId, recipientUserId, createdAt)` | newest-first inbox |
-| `notification_inbox_read_idx` `(organizationId, recipientUserId, readAt)` | unread lookups |
-| `notificationOutbox_event_key` | one outbox row per event |
-| `notification_organizationId_idx_*` / `notification_recipientUserId_idx_*` | Prisma relation indexes for FKs |
-| `notificationOutbox_organizationId_idx_*` | Prisma relation index for the org FK |
+Never log or return Twilio tokens, Resend keys, authorization headers, full phone numbers, or full email bodies. Logs may include `eventType`, `channel`, `provider`, `deliveryId`, `attempt`, `status`, `providerMessageId`, and a masked destination.
 
-RLS is enabled on both tables (`@@rls`). Application authorization still scopes every query; RLS does not replace it.
+## Future queue migration
 
-## Pagination
-
-Page size 25. Prisma 8 equality `where` cannot push `createdAt < cursor` or SQL `LIMIT`. The service loads the recipient+organization rows, sorts by `createdAt` descending, and slices in memory. That is bounded per user, not a full-table scan, but it is not a database cursor. Documented for a later inequality/cursor query if the contract allows it.
-
-Unread count is server-rendered from the same scoped load. No WebSockets, no SWR, no aggressive polling.
-
-## UI
-
-Dashboard header bell (desktop and the same staff header) shows unread count and recent items. `/notifications` lists the current user's notifications newest first, with unread state, timestamp, and open/mark-read actions.
+`drainNotificationWork` is the stable entry. A later Vercel cron, queue consumer, or dedicated worker can call it without changing leave/roster/swap services. Do not introduce Redis, Kafka, or RabbitMQ for this phase.
 
 ## Known limitations
 
-- In-process processing is not a job platform. Unprocessed outbox rows wait for a future worker.
-- `PROCESSING` crash recovery is not implemented.
-- Inbox pagination is in-memory after a recipient-scoped load.
-- Email, SMS, WhatsApp, push, preferences, digests, and scheduling are out of scope.
-- Recipient policy uses default role **names** (`HR`, `ROSTER_MANAGER`) plus department head, not a permission fan-out, to avoid notifying every SUPER_ADMIN.
-
-## Phase 3K
-
-Notifications stay an eventual outbox. Audit events are a separate transactional accountability record and must not be written through this processor. See [`audit/ARCHITECTURE.md`](../audit/ARCHITECTURE.md).
+- Prisma 8 equality `where` still loads by status and filters `availableAt` in memory.
+- Resend delivery receipts are not implemented.
+- WhatsApp production templates may require a Content SID.
+- No automatic channel fallback.
+- No provider credential vault; configuration is environment-based.
+- No native push, marketing, or bulk campaigns.
+- Browser QA against live Twilio/Resend was not part of implementation unless credentials and a running UI session are available.

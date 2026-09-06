@@ -20,8 +20,20 @@
       "model": "Notification",
       "namespace": "public"
     },
+    "notificationDelivery": {
+      "model": "NotificationDelivery",
+      "namespace": "public"
+    },
+    "notificationDeliveryReceipt": {
+      "model": "NotificationDeliveryReceipt",
+      "namespace": "public"
+    },
     "notificationOutbox": {
       "model": "NotificationOutbox",
+      "namespace": "public"
+    },
+    "notificationPreference": {
+      "model": "NotificationPreference",
       "namespace": "public"
     },
     "organization": {
@@ -438,6 +450,77 @@
               {
                 "name": "REMOVED",
                 "value": "REMOVED"
+              }
+            ]
+          },
+          "NotificationChannel": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "IN_APP",
+                "value": "IN_APP"
+              },
+              {
+                "name": "EMAIL",
+                "value": "EMAIL"
+              },
+              {
+                "name": "SMS",
+                "value": "SMS"
+              },
+              {
+                "name": "WHATSAPP",
+                "value": "WHATSAPP"
+              }
+            ]
+          },
+          "NotificationDeliveryProvider": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "IN_APP",
+                "value": "IN_APP"
+              },
+              {
+                "name": "RESEND",
+                "value": "RESEND"
+              },
+              {
+                "name": "TWILIO_SMS",
+                "value": "TWILIO_SMS"
+              },
+              {
+                "name": "TWILIO_WHATSAPP",
+                "value": "TWILIO_WHATSAPP"
+              }
+            ]
+          },
+          "NotificationDeliveryStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "PENDING",
+                "value": "PENDING"
+              },
+              {
+                "name": "PROCESSING",
+                "value": "PROCESSING"
+              },
+              {
+                "name": "SENT",
+                "value": "SENT"
+              },
+              {
+                "name": "DELIVERED",
+                "value": "DELIVERED"
+              },
+              {
+                "name": "FAILED",
+                "value": "FAILED"
+              },
+              {
+                "name": "CANCELLED",
+                "value": "CANCELLED"
               }
             ]
           },
@@ -1308,6 +1391,21 @@
               }
             },
             "relations": {
+              "deliveries": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "notificationId"
+                  ]
+                },
+                "to": {
+                  "model": "NotificationDelivery",
+                  "namespace": "public"
+                }
+              },
               "organization": {
                 "cardinality": "N:1",
                 "on": {
@@ -1380,6 +1478,455 @@
               },
               "namespaceId": "public",
               "table": "notification"
+            }
+          },
+          "NotificationDelivery": {
+            "fields": {
+              "attemptCount": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "availableAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "channel": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "NotificationChannel",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "deliveredAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "destination": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "eventId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "eventType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "NotificationType",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "failedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "lastError": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "notificationId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "notificationOutboxId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "processingStartedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "provider": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "NotificationDeliveryProvider",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "providerMessageId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "recipientUserId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sentAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "NotificationDeliveryStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "templateKey": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "notification": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "notificationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Notification",
+                  "namespace": "public"
+                }
+              },
+              "organization": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              },
+              "outbox": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "notificationOutboxId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "NotificationOutbox",
+                  "namespace": "public"
+                }
+              },
+              "receipts": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "deliveryId"
+                  ]
+                },
+                "to": {
+                  "model": "NotificationDeliveryReceipt",
+                  "namespace": "public"
+                }
+              },
+              "recipient": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "recipientUserId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "attemptCount": {
+                  "column": "attemptCount"
+                },
+                "availableAt": {
+                  "column": "availableAt"
+                },
+                "channel": {
+                  "column": "channel"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "deliveredAt": {
+                  "column": "deliveredAt"
+                },
+                "destination": {
+                  "column": "destination"
+                },
+                "eventId": {
+                  "column": "eventId"
+                },
+                "eventType": {
+                  "column": "eventType"
+                },
+                "failedAt": {
+                  "column": "failedAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "lastError": {
+                  "column": "lastError"
+                },
+                "notificationId": {
+                  "column": "notificationId"
+                },
+                "notificationOutboxId": {
+                  "column": "notificationOutboxId"
+                },
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "processingStartedAt": {
+                  "column": "processingStartedAt"
+                },
+                "provider": {
+                  "column": "provider"
+                },
+                "providerMessageId": {
+                  "column": "providerMessageId"
+                },
+                "recipientUserId": {
+                  "column": "recipientUserId"
+                },
+                "sentAt": {
+                  "column": "sentAt"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "templateKey": {
+                  "column": "templateKey"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "notificationDelivery"
+            }
+          },
+          "NotificationDeliveryReceipt": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "deliveryId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "provider": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "NotificationDeliveryProvider",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "providerEventId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "delivery": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "deliveryId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "NotificationDelivery",
+                  "namespace": "public"
+                }
+              },
+              "organization": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "deliveryId": {
+                  "column": "deliveryId"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "provider": {
+                  "column": "provider"
+                },
+                "providerEventId": {
+                  "column": "providerEventId"
+                },
+                "status": {
+                  "column": "status"
+                }
+              },
+              "namespaceId": "public",
+              "table": "notificationDeliveryReceipt"
             }
           },
           "NotificationOutbox": {
@@ -1460,6 +2007,13 @@
                   "kind": "scalar"
                 }
               },
+              "processingStartedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
               "status": {
                 "nullable": false,
                 "type": {
@@ -1482,6 +2036,21 @@
               }
             },
             "relations": {
+              "deliveries": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "notificationOutboxId"
+                  ]
+                },
+                "to": {
+                  "model": "NotificationDelivery",
+                  "namespace": "public"
+                }
+              },
               "organization": {
                 "cardinality": "N:1",
                 "on": {
@@ -1530,6 +2099,9 @@
                 "processedAt": {
                   "column": "processedAt"
                 },
+                "processingStartedAt": {
+                  "column": "processingStartedAt"
+                },
                 "status": {
                   "column": "status"
                 },
@@ -1539,6 +2111,140 @@
               },
               "namespaceId": "public",
               "table": "notificationOutbox"
+            }
+          },
+          "NotificationPreference": {
+            "fields": {
+              "channel": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "NotificationChannel",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "enabled": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "eventType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "NotificationType",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "organization": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              },
+              "user": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "channel": {
+                  "column": "channel"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "enabled": {
+                  "column": "enabled"
+                },
+                "eventType": {
+                  "column": "eventType"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "notificationPreference"
             }
           },
           "Organization": {
@@ -1709,6 +2415,36 @@
                   "namespace": "public"
                 }
               },
+              "notificationDeliveries": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "NotificationDelivery",
+                  "namespace": "public"
+                }
+              },
+              "notificationDeliveryReceipts": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "NotificationDeliveryReceipt",
+                  "namespace": "public"
+                }
+              },
               "notificationOutbox": {
                 "cardinality": "1:N",
                 "on": {
@@ -1721,6 +2457,21 @@
                 },
                 "to": {
                   "model": "NotificationOutbox",
+                  "namespace": "public"
+                }
+              },
+              "notificationPreferences": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "NotificationPreference",
                   "namespace": "public"
                 }
               },
@@ -4159,6 +4910,36 @@
                   "namespace": "public"
                 }
               },
+              "notificationDeliveries": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "recipientUserId"
+                  ]
+                },
+                "to": {
+                  "model": "NotificationDelivery",
+                  "namespace": "public"
+                }
+              },
+              "notificationPreferences": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "userId"
+                  ]
+                },
+                "to": {
+                  "model": "NotificationPreference",
+                  "namespace": "public"
+                }
+              },
               "notifications": {
                 "cardinality": "1:N",
                 "on": {
@@ -4304,10 +5085,25 @@
               "namespaceId": "public",
               "tableName": "notification"
             },
+            "notificationDelivery": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "notificationDelivery"
+            },
+            "notificationDeliveryReceipt": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "notificationDeliveryReceipt"
+            },
             "notificationOutbox": {
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "notificationOutbox"
+            },
+            "notificationPreference": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "notificationPreference"
             },
             "organization": {
               "kind": "rls",
@@ -5157,6 +5953,445 @@
                 }
               ]
             },
+            "notificationDelivery": {
+              "checks": [
+                {
+                  "expression": "\"channel\" IN ('IN_APP', 'EMAIL', 'SMS', 'WHATSAPP')",
+                  "name": "notificationDelivery_channel_check_90967890",
+                  "prefix": "notificationDelivery_channel_check"
+                },
+                {
+                  "expression": "\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED')",
+                  "name": "notificationDelivery_eventType_check_485b977b",
+                  "prefix": "notificationDelivery_eventType_check"
+                },
+                {
+                  "expression": "\"provider\" IN ('IN_APP', 'RESEND', 'TWILIO_SMS', 'TWILIO_WHATSAPP')",
+                  "name": "notificationDelivery_provider_check_fe2ede52",
+                  "prefix": "notificationDelivery_provider_check"
+                },
+                {
+                  "expression": "\"status\" IN ('PENDING', 'PROCESSING', 'SENT', 'DELIVERED', 'FAILED', 'CANCELLED')",
+                  "name": "notificationDelivery_status_check_1e8e023a",
+                  "prefix": "notificationDelivery_status_check"
+                }
+              ],
+              "columns": {
+                "attemptCount": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "availableAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "channel": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "NotificationChannel",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "deliveredAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "destination": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "eventId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "eventType": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "NotificationType",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "failedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "lastError": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "notificationId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "notificationOutboxId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "processingStartedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "provider": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "NotificationDeliveryProvider",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "providerMessageId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "recipientUserId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "sentAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "PENDING"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "NotificationDeliveryStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "templateKey": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "notificationDelivery"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organization"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "notificationOutboxId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "notificationDelivery"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "notificationOutbox"
+                  }
+                },
+                {
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "notificationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "notificationDelivery"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "notification"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "recipientUserId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "notificationDelivery"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "notificationId"
+                  ],
+                  "name": "notificationDelivery_notificationId_idx_adfe2654",
+                  "prefix": "notificationDelivery_notificationId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "notificationOutboxId"
+                  ],
+                  "name": "notificationDelivery_notificationOutboxId_idx_ffd4ed7b",
+                  "prefix": "notificationDelivery_notificationOutboxId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId"
+                  ],
+                  "name": "notificationDelivery_organizationId_idx_2e17ef41",
+                  "prefix": "notificationDelivery_organizationId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "status",
+                    "availableAt"
+                  ],
+                  "name": "notificationDelivery_pickup_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "providerMessageId"
+                  ],
+                  "name": "notificationDelivery_provider_message_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "recipientUserId"
+                  ],
+                  "name": "notificationDelivery_recipientUserId_idx_fd367dfa",
+                  "prefix": "notificationDelivery_recipientUserId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "organizationId",
+                    "eventType",
+                    "eventId",
+                    "recipientUserId",
+                    "channel"
+                  ],
+                  "name": "notificationDelivery_idempotency_key"
+                }
+              ]
+            },
+            "notificationDeliveryReceipt": {
+              "checks": [
+                {
+                  "expression": "\"provider\" IN ('IN_APP', 'RESEND', 'TWILIO_SMS', 'TWILIO_WHATSAPP')",
+                  "name": "notificationDeliveryReceipt_provider_check_fe2ede52",
+                  "prefix": "notificationDeliveryReceipt_provider_check"
+                }
+              ],
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "deliveryId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "provider": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "NotificationDeliveryProvider",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "providerEventId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "notificationDeliveryReceipt"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organization"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "deliveryId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "notificationDeliveryReceipt"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "notificationDelivery"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "deliveryId"
+                  ],
+                  "name": "notificationDeliveryReceipt_deliveryId_idx_ebc950f6",
+                  "prefix": "notificationDeliveryReceipt_deliveryId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId"
+                  ],
+                  "name": "notificationDeliveryReceipt_organizationId_idx_2e17ef41",
+                  "prefix": "notificationDeliveryReceipt_organizationId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "organizationId",
+                    "provider",
+                    "providerEventId"
+                  ],
+                  "name": "notificationDeliveryReceipt_event_key"
+                }
+              ]
+            },
             "notificationOutbox": {
               "checks": [
                 {
@@ -5239,6 +6474,11 @@
                   "nativeType": "timestamptz",
                   "nullable": true
                 },
+                "processingStartedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
                 "status": {
                   "codecId": "pg/text@1",
                   "default": {
@@ -5311,6 +6551,156 @@
                     "eventId"
                   ],
                   "name": "notificationOutbox_event_key"
+                }
+              ]
+            },
+            "notificationPreference": {
+              "checks": [
+                {
+                  "expression": "\"channel\" IN ('IN_APP', 'EMAIL', 'SMS', 'WHATSAPP')",
+                  "name": "notificationPreference_channel_check_90967890",
+                  "prefix": "notificationPreference_channel_check"
+                },
+                {
+                  "expression": "\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED')",
+                  "name": "notificationPreference_eventType_check_485b977b",
+                  "prefix": "notificationPreference_eventType_check"
+                }
+              ],
+              "columns": {
+                "channel": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "NotificationChannel",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "enabled": {
+                  "codecId": "pg/bool@1",
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "eventType": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "NotificationType",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "userId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "notificationPreference"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organization"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "notificationPreference"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "organizationId"
+                  ],
+                  "name": "notificationPreference_organizationId_idx_2e17ef41",
+                  "prefix": "notificationPreference_organizationId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "notificationPreference_userId_idx_a489d58a",
+                  "prefix": "notificationPreference_userId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "userId"
+                  ],
+                  "name": "notificationPreference_user_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "organizationId",
+                    "userId",
+                    "eventType",
+                    "channel"
+                  ],
+                  "name": "notificationPreference_key"
                 }
               ]
             },
@@ -7500,6 +8890,35 @@
                 "REMOVED"
               ]
             },
+            "NotificationChannel": {
+              "kind": "valueSet",
+              "values": [
+                "IN_APP",
+                "EMAIL",
+                "SMS",
+                "WHATSAPP"
+              ]
+            },
+            "NotificationDeliveryProvider": {
+              "kind": "valueSet",
+              "values": [
+                "IN_APP",
+                "RESEND",
+                "TWILIO_SMS",
+                "TWILIO_WHATSAPP"
+              ]
+            },
+            "NotificationDeliveryStatus": {
+              "kind": "valueSet",
+              "values": [
+                "PENDING",
+                "PROCESSING",
+                "SENT",
+                "DELIVERED",
+                "FAILED",
+                "CANCELLED"
+              ]
+            },
             "NotificationEntityType": {
               "kind": "valueSet",
               "values": [
@@ -7567,10 +8986,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "fcba91f26e69889279d2d7944c315129c8195829dc6cce65f16b2b54e49e6b89"
+    "storageHash": "f3b78639b417ee02669f1685229730267c4f5d0f51cd4e3f04991803211c9767"
   },
   "execution": {
-    "executionHash": "fd899e9d67e7acabb996549b7dbcfd99294f533c15796f601bb1e62f531187e0",
+    "executionHash": "2f84c4fa8d8dfc9708070b48cfdcada479f63f503f3709e9d08269f07159849a",
     "mutations": {
       "defaults": [
         {
@@ -7670,6 +9089,43 @@
           "ref": {
             "column": "id",
             "namespace": "public",
+            "table": "notificationDelivery"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "notificationDelivery"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "notificationDeliveryReceipt"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
             "table": "notificationOutbox"
           }
         },
@@ -7686,6 +9142,32 @@
             "column": "updatedAt",
             "namespace": "public",
             "table": "notificationOutbox"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "notificationPreference"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "notificationPreference"
           }
         },
         {

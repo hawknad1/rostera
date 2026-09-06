@@ -1,4 +1,5 @@
 import { Temporal } from "temporal-polyfill"
+import Link from "next/link"
 
 import { listNotifications } from "@/modules/notifications/services/notifications"
 import { formatNotificationTimestamp } from "@/modules/notifications/ui/format"
@@ -58,6 +59,12 @@ export default async function StaffNotificationsPage({
               ? "You have 1 unread notification."
               : `You have ${result.unreadCount} unread notifications.`}
         </p>
+        <Link
+          className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+          href="/me/notifications/preferences"
+        >
+          Notification preferences
+        </Link>
       </header>
 
       {result.items.length === 0 ? (
