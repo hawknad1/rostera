@@ -11,6 +11,7 @@ import { getUnreadNotificationCount } from "@/modules/notifications/services/not
 import { ensureDefaultRoleGrants } from "@/modules/organizations/ensure-permissions"
 import { ensureDefaultSchedulingPolicy } from "@/modules/organizations/services/ensure-scheduling-policy"
 import { OrganizationSwitcher } from "@/modules/organizations/ui/organization-switcher"
+import { SignOutButton } from "@/modules/organizations/ui/sign-out-button"
 import { resolveStaffIdentity } from "@/modules/staff-app/services/identity"
 import { OfflineBanner } from "@/modules/staff-app/ui/offline-banner"
 import { StaffNav } from "@/modules/staff-app/ui/staff-nav"
@@ -89,6 +90,7 @@ export default async function StaffAppLayout({ children }: { children: ReactNode
             </p>
             <OrganizationSwitcher membership={membership} organizations={organizations} />
           </div>
+          <SignOutButton />
         </div>
         <OfflineBanner organizationId={organizationId} timeZone={timeZone} userId={userId} />
       </header>

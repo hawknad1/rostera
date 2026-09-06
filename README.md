@@ -1,6 +1,11 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Production security, environment variables, worker drain, and recovery expectations are documented in [`docs/PRODUCTION.md`](docs/PRODUCTION.md). Copy `.env.example` to `.env.local` for local development.
+Production security, environment variables, worker drain, and recovery expectations are documented in [`docs/PRODUCTION.md`](docs/PRODUCTION.md). Release status is in [`docs/RELEASE_READINESS.md`](docs/RELEASE_READINESS.md). Copy `.env.example` to `.env.local` for local development.
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
 
 ## Getting Started
 

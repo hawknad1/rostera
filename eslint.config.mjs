@@ -15,6 +15,8 @@ const eslintConfig = defineConfig([
     // Generated Prisma contract types
     "src/prisma/contract.d.ts",
     "migrations/**/contract.d.ts",
+    "playwright-report/**",
+    "test-results/**",
   ]),
 ]);
 
