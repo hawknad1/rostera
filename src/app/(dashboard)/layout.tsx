@@ -15,6 +15,7 @@ import { NotificationBell } from "@/modules/notifications/ui/notification-bell"
 import { ensureDefaultRoleGrants } from "@/modules/organizations/ensure-permissions"
 import { ensureDefaultSchedulingPolicy } from "@/modules/organizations/services/ensure-scheduling-policy"
 import { OrganizationSwitcher } from "@/modules/organizations/ui/organization-switcher"
+import { SignOutButton } from "@/modules/organizations/ui/sign-out-button"
 import { db } from "@/prisma/db"
 
 export default async function DashboardLayout({
@@ -232,6 +233,7 @@ export default async function DashboardLayout({
               </Link>
             ) : null}
             <NotificationBell timeZone={String(membership.organization.timezone)} />
+            <SignOutButton />
           </nav>
         </div>
       </header>

@@ -139,5 +139,5 @@ Automated tests cover tenant isolation, invitations, last-admin sequential cases
 - Leave overlap and pending-swap uniqueness are serialized with row locks, not gist/partial-unique constraints (Prisma 8 cannot express those constraints in the contract).
 - Last-admin concurrency is serialized with an organization row lock; not proven in the in-memory test ORM.
 - Sentry and PostHog are not integrated.
-- Playwright is not configured; no E2E suite.
+- Playwright is configured (`npx playwright test`, Chromium). Authenticated and PWA identity-switch tests skip unless `E2E_*` credentials are set.
 - `npm audit` reports high issues in Prisma CLI / Composer / Hono / lodash **transitive** packages. The suggested fix installs Prisma 7, which is forbidden in this phase. These packages are not on the Next.js request path. Revisit after a Prisma 8 stable CLI that does not pull vulnerable Hono.

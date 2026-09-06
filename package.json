@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "postinstall": "prisma skills sync || exit 0",
+    "test:e2e": "playwright test",
+    "postinstall": "prisma skills sync",
     "contract:emit": "prisma contract emit",
     "db:seed": "tsx src/prisma/seed.ts"
   },
@@ -35,6 +36,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@prisma/cli-engine": "^0.2.3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
