@@ -9,6 +9,10 @@ import {
   requireSwapAccess,
   type TxClient,
 } from "@/modules/shift-swaps/services/access"
+import {
+  enqueueDomainNotification,
+  processDomainNotification,
+} from "@/modules/notifications/services/emit"
 import { db } from "@/prisma/db"
 
 export async function cancelSwap(swapId: string) {
@@ -16,7 +20,7 @@ export async function cancelSwap(swapId: string) {
   const organizationId = membership.organizationId
 
   try {
-    return await db.transaction(async (tx: TxClient) => {
+    const updated = await db.transaction(async (tx: TxClient) => {
       const existing = await findOwnedSwap(tx.orm, organizationId, swapId)
 
       if (!existing) {
@@ -32,7 +36,7 @@ export async function cancelSwap(swapId: string) {
       const status = asSwapStatus(existing.status)
       assertSwapTransition(status, "CANCELLED")
 
-      const updated = await tx.orm.public.ShiftSwapRequest.where({
+      const cancelled = await tx.orm.public.ShiftSwapRequest.where({
         id: existing.id,
         organizationId,
         status: "PENDING",
@@ -40,12 +44,30 @@ export async function cancelSwap(swapId: string) {
         status: "CANCELLED",
       })
 
-      if (!updated) {
+      if (!cancelled) {
         throw swapError("SWAP_NOT_PENDING")
       }
 
-      return updated
+      await enqueueDomainNotification(tx, {
+        type: "SHIFT_SWAP_CANCELLED",
+        organizationId,
+        eventId: String(cancelled.id),
+        actorUserId: membership.userId,
+        requesterStaffId: String(existing.requesterStaffId),
+        targetStaffId: String(existing.targetStaffId),
+        requesterName: "A colleague",
+      })
+
+      return cancelled
     })
+
+    await processDomainNotification({
+      organizationId,
+      type: "SHIFT_SWAP_CANCELLED",
+      eventId: String(updated.id),
+    })
+
+    return updated
   } catch (error) {
     rethrowSwapError(error)
   }

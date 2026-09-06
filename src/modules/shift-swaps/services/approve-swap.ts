@@ -3,6 +3,10 @@ import { Temporal } from "temporal-polyfill"
 import { isExclusionConstraintViolation } from "@/lib/db/exclusion-constraint"
 import { isUniqueConstraintViolation } from "@/lib/db/unique-constraint"
 import { permissions } from "@/lib/permissions/permissions"
+import {
+  enqueueDomainNotification,
+  processDomainNotification,
+} from "@/modules/notifications/services/emit"
 import { swapError } from "@/modules/shift-swaps/errors"
 import { assertSwapTransition } from "@/modules/shift-swaps/domain/status-transition"
 import {
@@ -34,7 +38,7 @@ export async function approveSwap(swapId: string) {
   const timeZone = String(membership.organization.timezone)
 
   try {
-    return await db.transaction(async (tx: TxClient) => {
+    const completed = await db.transaction(async (tx: TxClient) => {
       const existing = await findOwnedSwap(tx.orm, organizationId, swapId)
 
       if (!existing) {
@@ -160,8 +164,25 @@ export async function approveSwap(swapId: string) {
         timestamp: Temporal.Now.instant(),
       })
 
+      await enqueueDomainNotification(tx, {
+        type: "SHIFT_SWAP_COMPLETED",
+        organizationId,
+        eventId: String(completed.id),
+        actorUserId: membership.userId,
+        requesterStaffId: String(requester.id),
+        targetStaffId: String(targetStaff.id),
+      })
+
       return completed
     })
+
+    await processDomainNotification({
+      organizationId,
+      type: "SHIFT_SWAP_COMPLETED",
+      eventId: String(completed.id),
+    })
+
+    return completed
   } catch (error) {
     if (isExclusionConstraintViolation(error) || isUniqueConstraintViolation(error)) {
       throw swapError("SWAP_SCHEDULING_CONFLICT")

@@ -142,11 +142,14 @@ GiST `shiftAssignment_staff_time_excl` is unchanged.
 
 [`shiftSwapAuditPoint`](services/audit.ts) is called for `SHIFT_SWAP_COMPLETED` with organization, swap, assignment, previous staff, actor, and timestamp. It does not persist.
 
+## Notifications
+
+Create, complete, reject, and cancel enqueue `SHIFT_SWAP_*` outbox events in the same transaction as the swap write. `SHIFT_SWAP_COMPLETED` is only enqueued after the assignment exchange commits. See [`notifications/ARCHITECTURE.md`](../notifications/ARCHITECTURE.md).
+
 ## Known limitations / follow-up
 
 - No roster amendments, so published swaps cannot complete.
 - No cross-roster, partial, or multi-shift swaps.
-- No notifications.
 - No DB-level unique for “assignment in at most one PENDING swap”.
 - Immediate unique/exclusion checks make identical-slot swaps fail at mutation even when the simulated end state is valid.
 - Policy is loaded live, not snapshotted onto the swap row.

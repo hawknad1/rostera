@@ -1,0 +1,602 @@
+[
+  {
+    "id": "table.notification",
+    "label": "Create table \"notification\"",
+    "summary": "Creates table \"notification\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"notification\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"notification\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"notification\"",
+        "sql": "CREATE TABLE \"public\".\"notification\" (\n  \"body\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"entityId\" text,\n  \"entityType\" text,\n  \"eventId\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"organizationId\" text NOT NULL,\n  \"readAt\" timestamptz,\n  \"recipientUserId\" text NOT NULL,\n  \"title\" text NOT NULL,\n  \"type\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"notification_entityType_check_23970d2f\" CHECK (\"entityType\" IN ('LEAVE_REQUEST', 'SHIFT_SWAP', 'ROSTER')),\n  CONSTRAINT \"notification_type_check_c9ddaf51\" CHECK (\"type\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"notification\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"notification\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.notificationOutbox",
+    "label": "Create table \"notificationOutbox\"",
+    "summary": "Creates table \"notificationOutbox\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "notificationOutbox"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"notificationOutbox\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"notificationOutbox\"",
+        "sql": "CREATE TABLE \"public\".\"notificationOutbox\" (\n  \"attempts\" int4 DEFAULT 0 NOT NULL,\n  \"availableAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"eventId\" text NOT NULL,\n  \"eventType\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"lastError\" text,\n  \"organizationId\" text NOT NULL,\n  \"payload\" text NOT NULL,\n  \"processedAt\" timestamptz,\n  \"status\" text DEFAULT 'PENDING' NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"notificationOutbox_eventType_check_e92a4b3e\" CHECK (\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT')),\n  CONSTRAINT \"notificationOutbox_status_check_48358bb5\" CHECK (\"status\" IN ('PENDING', 'PROCESSING', 'COMPLETED', 'FAILED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"notificationOutbox\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.notification.notification_idempotency_key",
+    "label": "Add unique constraint on \"notification\" (organizationId, recipientUserId, type, eventId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "notification_idempotency_key",
+        "table": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notification_idempotency_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_idempotency_key",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"notification_idempotency_key\"",
+        "sql": "ALTER TABLE \"public\".\"notification\" ADD CONSTRAINT \"notification_idempotency_key\" UNIQUE (\"organizationId\", \"recipientUserId\", \"type\", \"eventId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notification_idempotency_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_idempotency_key",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.notificationOutbox.notificationOutbox_event_key",
+    "label": "Add unique constraint on \"notificationOutbox\" (organizationId, eventType, eventId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "notificationOutbox_event_key",
+        "table": "notificationOutbox"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notificationOutbox_event_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationOutbox_event_key",
+          "public",
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"notificationOutbox_event_key\"",
+        "sql": "ALTER TABLE \"public\".\"notificationOutbox\" ADD CONSTRAINT \"notificationOutbox_event_key\" UNIQUE (\"organizationId\", \"eventType\", \"eventId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notificationOutbox_event_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationOutbox_event_key",
+          "public",
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.notification.notification_inbox_created_idx",
+    "label": "Create index \"notification_inbox_created_idx\" on \"notification\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "notification_inbox_created_idx",
+        "table": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"notification_inbox_created_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"notification_inbox_created_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"notification_inbox_created_idx\"",
+        "sql": "CREATE INDEX \"notification_inbox_created_idx\" ON \"public\".\"notification\" (\"organizationId\", \"recipientUserId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"notification_inbox_created_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"notification_inbox_created_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.notification.notification_inbox_read_idx",
+    "label": "Create index \"notification_inbox_read_idx\" on \"notification\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "notification_inbox_read_idx",
+        "table": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"notification_inbox_read_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"notification_inbox_read_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"notification_inbox_read_idx\"",
+        "sql": "CREATE INDEX \"notification_inbox_read_idx\" ON \"public\".\"notification\" (\"organizationId\", \"recipientUserId\", \"readAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"notification_inbox_read_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"notification_inbox_read_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.notification.notification_organizationId_idx_2e17ef41",
+    "label": "Create index \"notification_organizationId_idx_2e17ef41\" on \"notification\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "notification_organizationId_idx_2e17ef41",
+        "table": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"notification_organizationId_idx_2e17ef41\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"notification_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"notification_organizationId_idx_2e17ef41\"",
+        "sql": "CREATE INDEX \"notification_organizationId_idx_2e17ef41\" ON \"public\".\"notification\" (\"organizationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"notification_organizationId_idx_2e17ef41\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"notification_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.notification.notification_recipientUserId_idx_fd367dfa",
+    "label": "Create index \"notification_recipientUserId_idx_fd367dfa\" on \"notification\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "notification_recipientUserId_idx_fd367dfa",
+        "table": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"notification_recipientUserId_idx_fd367dfa\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"notification_recipientUserId_idx_fd367dfa\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"notification_recipientUserId_idx_fd367dfa\"",
+        "sql": "CREATE INDEX \"notification_recipientUserId_idx_fd367dfa\" ON \"public\".\"notification\" (\"recipientUserId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"notification_recipientUserId_idx_fd367dfa\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"notification_recipientUserId_idx_fd367dfa\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.notificationOutbox.notificationOutbox_organizationId_idx_2e17ef41",
+    "label": "Create index \"notificationOutbox_organizationId_idx_2e17ef41\" on \"notificationOutbox\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "notificationOutbox_organizationId_idx_2e17ef41",
+        "table": "notificationOutbox"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"notificationOutbox_organizationId_idx_2e17ef41\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"notificationOutbox_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"notificationOutbox_organizationId_idx_2e17ef41\"",
+        "sql": "CREATE INDEX \"notificationOutbox_organizationId_idx_2e17ef41\" ON \"public\".\"notificationOutbox\" (\"organizationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"notificationOutbox_organizationId_idx_2e17ef41\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"notificationOutbox_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.notificationOutbox.notificationOutbox_pickup_idx",
+    "label": "Create index \"notificationOutbox_pickup_idx\" on \"notificationOutbox\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "notificationOutbox_pickup_idx",
+        "table": "notificationOutbox"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"notificationOutbox_pickup_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"notificationOutbox_pickup_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"notificationOutbox_pickup_idx\"",
+        "sql": "CREATE INDEX \"notificationOutbox_pickup_idx\" ON \"public\".\"notificationOutbox\" (\"organizationId\", \"status\", \"availableAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"notificationOutbox_pickup_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"notificationOutbox_pickup_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.notification.notification_organizationId_fkey",
+    "label": "Add foreign key \"notification_organizationId_fkey\" on \"notification\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "notification_organizationId_fkey",
+        "table": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"notification_organizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_organizationId_fkey",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"notification_organizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"notification\"\nADD CONSTRAINT \"notification_organizationId_fkey\"\nFOREIGN KEY (\"organizationId\")\nREFERENCES \"public\".\"organization\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"notification_organizationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_organizationId_fkey",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.notification.notification_recipientUserId_fkey",
+    "label": "Add foreign key \"notification_recipientUserId_fkey\" on \"notification\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "notification_recipientUserId_fkey",
+        "table": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"notification_recipientUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_recipientUserId_fkey",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"notification_recipientUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"notification\"\nADD CONSTRAINT \"notification_recipientUserId_fkey\"\nFOREIGN KEY (\"recipientUserId\")\nREFERENCES \"public\".\"user\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"notification_recipientUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_recipientUserId_fkey",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.notificationOutbox.notificationOutbox_organizationId_fkey",
+    "label": "Add foreign key \"notificationOutbox_organizationId_fkey\" on \"notificationOutbox\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "notificationOutbox_organizationId_fkey",
+        "table": "notificationOutbox"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"notificationOutbox_organizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationOutbox_organizationId_fkey",
+          "public",
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"notificationOutbox_organizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"notificationOutbox\"\nADD CONSTRAINT \"notificationOutbox_organizationId_fkey\"\nFOREIGN KEY (\"organizationId\")\nREFERENCES \"public\".\"organization\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"notificationOutbox_organizationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationOutbox_organizationId_fkey",
+          "public",
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.notification",
+    "label": "Enable row-level security on \"notification\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"notification\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "notification"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"notification\"",
+        "sql": "ALTER TABLE \"public\".\"notification\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"notification\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "notification"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.notificationOutbox",
+    "label": "Enable row-level security on \"notificationOutbox\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "notificationOutbox"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"notificationOutbox\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "notificationOutbox"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"notificationOutbox\"",
+        "sql": "ALTER TABLE \"public\".\"notificationOutbox\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"notificationOutbox\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "notificationOutbox"
+        ]
+      }
+    ]
+  }
+]

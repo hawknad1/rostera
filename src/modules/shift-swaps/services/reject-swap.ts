@@ -11,6 +11,10 @@ import {
   requireSwapAccess,
   type TxClient,
 } from "@/modules/shift-swaps/services/access"
+import {
+  enqueueDomainNotification,
+  processDomainNotification,
+} from "@/modules/notifications/services/emit"
 import { db } from "@/prisma/db"
 
 export async function rejectSwap(input: RejectSwapInput) {
@@ -18,7 +22,7 @@ export async function rejectSwap(input: RejectSwapInput) {
   const organizationId = membership.organizationId
 
   try {
-    return await db.transaction(async (tx: TxClient) => {
+    const updated = await db.transaction(async (tx: TxClient) => {
       const existing = await findOwnedSwap(tx.orm, organizationId, input.id)
 
       if (!existing) {
@@ -28,7 +32,7 @@ export async function rejectSwap(input: RejectSwapInput) {
       const status = asSwapStatus(existing.status)
       assertSwapTransition(status, "REJECTED")
 
-      const updated = await tx.orm.public.ShiftSwapRequest.where({
+      const rejected = await tx.orm.public.ShiftSwapRequest.where({
         id: existing.id,
         organizationId,
         status: "PENDING",
@@ -39,12 +43,30 @@ export async function rejectSwap(input: RejectSwapInput) {
         ...(input.reviewNotes ? { reviewNotes: input.reviewNotes } : {}),
       })
 
-      if (!updated) {
+      if (!rejected) {
         throw swapError("SWAP_NOT_PENDING")
       }
 
-      return updated
+      await enqueueDomainNotification(tx, {
+        type: "SHIFT_SWAP_REJECTED",
+        organizationId,
+        eventId: String(rejected.id),
+        actorUserId: membership.userId,
+        requesterStaffId: String(existing.requesterStaffId),
+        targetStaffId: String(existing.targetStaffId),
+        requesterName: "A colleague",
+      })
+
+      return rejected
     })
+
+    await processDomainNotification({
+      organizationId,
+      type: "SHIFT_SWAP_REJECTED",
+      eventId: String(updated.id),
+    })
+
+    return updated
   } catch (error) {
     rethrowSwapError(error)
   }

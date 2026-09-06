@@ -26,6 +26,8 @@ const MODEL_NAMES = [
   "ShiftAssignment",
   "LeaveRequest",
   "ShiftSwapRequest",
+  "Notification",
+  "NotificationOutbox",
 ] as const
 
 type ModelName = (typeof MODEL_NAMES)[number]
@@ -236,6 +238,35 @@ function assertUnique(tables: Record<ModelName, Row[]>, model: ModelName, row: R
   ) {
     throw uniqueViolation("organizationSchedulingPolicy", "organizationId")
   }
+
+  if (model === "Notification") {
+    if (
+      tables.Notification.some(
+        (existing) =>
+          existing !== row &&
+          existing.organizationId === row.organizationId &&
+          existing.recipientUserId === row.recipientUserId &&
+          existing.type === row.type &&
+          existing.eventId === row.eventId,
+      )
+    ) {
+      throw uniqueViolation("notification", "idempotency")
+    }
+  }
+
+  if (model === "NotificationOutbox") {
+    if (
+      tables.NotificationOutbox.some(
+        (existing) =>
+          existing !== row &&
+          existing.organizationId === row.organizationId &&
+          existing.eventType === row.eventType &&
+          existing.eventId === row.eventId,
+      )
+    ) {
+      throw uniqueViolation("notificationOutbox", "event")
+    }
+  }
 }
 
 function assertNoActiveLeaveOverlap(tables: Record<ModelName, Row[]>, model: ModelName, row: Row) {
@@ -303,6 +334,8 @@ function modelTable(model: ModelName) {
       return "staffingRequirement"
     case "ShiftAssignment":
       return "shiftAssignment"
+    case "NotificationOutbox":
+      return "notificationOutbox"
     default:
       return model.charAt(0).toLowerCase() + model.slice(1)
   }
@@ -348,6 +381,22 @@ function withCreateDefaults(model: ModelName, data: Row): Row {
 
   if (model === "ShiftSwapRequest") {
     row.status ??= "PENDING"
+  }
+
+  if (model === "Notification") {
+    row.readAt ??= null
+    row.createdAt ??= new Date().toISOString()
+    row.updatedAt ??= row.createdAt
+  }
+
+  if (model === "NotificationOutbox") {
+    row.status ??= "PENDING"
+    row.attempts ??= 0
+    row.availableAt ??= new Date().toISOString()
+    row.processedAt ??= null
+    row.lastError ??= null
+    row.createdAt ??= new Date().toISOString()
+    row.updatedAt ??= row.createdAt
   }
 
   return row
@@ -558,6 +607,15 @@ function createPublicOrm(
     ShiftAssignment: createCollection(tables, queries, failCreates, "ShiftAssignment", {}, []),
     LeaveRequest: createCollection(tables, queries, failCreates, "LeaveRequest", {}, []),
     ShiftSwapRequest: createCollection(tables, queries, failCreates, "ShiftSwapRequest", {}, []),
+    Notification: createCollection(tables, queries, failCreates, "Notification", {}, []),
+    NotificationOutbox: createCollection(
+      tables,
+      queries,
+      failCreates,
+      "NotificationOutbox",
+      {},
+      [],
+    ),
   }
 }
 
@@ -579,6 +637,8 @@ function emptyTables(): Record<ModelName, Row[]> {
     ShiftAssignment: [],
     LeaveRequest: [],
     ShiftSwapRequest: [],
+    Notification: [],
+    NotificationOutbox: [],
   }
 }
 
@@ -606,6 +666,8 @@ export function createInMemoryPrisma() {
       ShiftAssignment: tables.ShiftAssignment.map((row) => ({ ...row })),
       LeaveRequest: tables.LeaveRequest.map((row) => ({ ...row })),
       ShiftSwapRequest: tables.ShiftSwapRequest.map((row) => ({ ...row })),
+      Notification: tables.Notification.map((row) => ({ ...row })),
+      NotificationOutbox: tables.NotificationOutbox.map((row) => ({ ...row })),
     }
   }
 

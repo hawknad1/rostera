@@ -58,6 +58,33 @@ enum ShiftSwapStatus {
   COMPLETED
 }
 
+enum NotificationType {
+  LEAVE_REQUESTED
+  LEAVE_APPROVED
+  LEAVE_REJECTED
+  LEAVE_CANCELLED
+  SHIFT_SWAP_REQUESTED
+  SHIFT_SWAP_COMPLETED
+  SHIFT_SWAP_REJECTED
+  SHIFT_SWAP_CANCELLED
+  ROSTER_SUBMITTED_FOR_REVIEW
+  ROSTER_PUBLISHED
+  ROSTER_RETURNED_TO_DRAFT
+}
+
+enum NotificationEntityType {
+  LEAVE_REQUEST
+  SHIFT_SWAP
+  ROSTER
+}
+
+enum NotificationOutboxStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
 model Organization {
   id        String   @id @default(uuid())
   name      String
@@ -87,6 +114,8 @@ model Organization {
   schedulingPolicy     OrganizationSchedulingPolicy?
   leaveRequests        LeaveRequest[]
   shiftSwapRequests    ShiftSwapRequest[]
+  notifications        Notification[]
+  notificationOutbox   NotificationOutbox[]
 
   @@rls
 }
@@ -108,6 +137,7 @@ model User {
   reviewedLeaveRequests  LeaveRequest[] @relation("LeaveReviewedBy")
   requestedShiftSwaps    ShiftSwapRequest[] @relation("ShiftSwapRequestedBy")
   reviewedShiftSwaps     ShiftSwapRequest[] @relation("ShiftSwapReviewedBy")
+  notifications          Notification[]
 
   @@rls
 }
@@ -449,5 +479,49 @@ model ShiftSwapRequest {
   @@index([targetAssignmentId])
   @@index([requesterStaffId])
   @@index([targetStaffId])
+  @@rls
+}
+
+model Notification {
+  id              String                   @id @default(uuid())
+  organizationId  String
+  recipientUserId String
+  type            NotificationType
+  title           String
+  body            String
+  entityType      NotificationEntityType?
+  entityId        String?
+  eventId         String
+  readAt          DateTime?
+  createdAt       DateTime                 @default(now())
+  updatedAt       temporal.updatedAt()
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  recipient    User         @relation(fields: [recipientUserId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, recipientUserId, type, eventId], map: "notification_idempotency_key")
+  @@index([organizationId, recipientUserId, createdAt], map: "notification_inbox_created_idx")
+  @@index([organizationId, recipientUserId, readAt], map: "notification_inbox_read_idx")
+  @@rls
+}
+
+model NotificationOutbox {
+  id             String                     @id @default(uuid())
+  organizationId String
+  eventType      NotificationType
+  eventId        String
+  payload        String
+  status         NotificationOutboxStatus   @default(PENDING)
+  attempts       Int                        @default(0)
+  availableAt    DateTime                   @default(now())
+  processedAt    DateTime?
+  lastError      String?
+  createdAt      DateTime                   @default(now())
+  updatedAt      temporal.updatedAt()
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, eventType, eventId], map: "notificationOutbox_event_key")
+  @@index([organizationId, status, availableAt], map: "notificationOutbox_pickup_idx")
   @@rls
 }
