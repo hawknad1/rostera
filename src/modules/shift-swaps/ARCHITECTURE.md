@@ -132,7 +132,7 @@ Inside the approval transaction, updates are conditional:
 
 A miss is `SWAP_STATE_CHANGED`.
 
-Pending uniqueness is enforced in the service by loading `PENDING` swaps that mention either assignment. Prisma 8 equality `where` cannot express a partial unique index covering “assignment is source or target while PENDING”. Concurrent creates can therefore race. Documented; do not claim database-level exclusion for active swaps.
+Pending uniqueness is enforced in the service by loading `PENDING` swaps that mention either assignment, after locking both assignment rows in id order. Prisma 8 equality `where` cannot express a partial unique index covering “assignment is source or target while PENDING”. The assignment row locks serialize concurrent creates in PostgreSQL. Do not claim a database exclusion constraint for active swaps.
 
 Sequential staff updates can hit `shiftAssignment_combo_key` or `shiftAssignment_staff_time_excl` for two assignments that share roster, date, and shift type (or overlapping windows) because PostgreSQL unique/exclusion checks are immediate. That intermediate state is mapped to `SWAP_SCHEDULING_CONFLICT` and rolled back. Typical different-day swaps do not hit it.
 

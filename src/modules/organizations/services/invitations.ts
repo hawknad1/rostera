@@ -27,6 +27,8 @@ import { db } from "@/prisma/db"
 
 const INVITATION_TTL_HOURS = 24 * 7
 const RESEND_COOLDOWN_MINUTES = 10
+const INVITATION_CREATE_WINDOW_MINUTES = 15
+const INVITATION_CREATE_MAX = 20
 export const INVITATION_PAGE_SIZE = 25
 
 function asInstant(value: unknown) {
@@ -40,6 +42,14 @@ function isExpired(expiresAt: unknown, now = Temporal.Now.instant()) {
 function isRateLimited(updatedAt: unknown, now = Temporal.Now.instant()) {
   const elapsed = now.since(asInstant(updatedAt)).total({ unit: "minutes" })
   return elapsed < RESEND_COOLDOWN_MINUTES
+}
+
+function isRecent(value: unknown, now: Temporal.Instant, minutes: number) {
+  try {
+    return now.since(asInstant(value)).total({ unit: "minutes" }) < minutes
+  } catch {
+    return true
+  }
 }
 
 function isEmailVerified(authUser: { email_confirmed_at?: string | null; confirmed_at?: string | null }) {
@@ -135,6 +145,23 @@ export async function createInvitation(input: InviteUserInput) {
 
   if (!organization || organization.status !== "ACTIVE") {
     throw organizationAdminError("ORGANIZATION_SUSPENDED")
+  }
+
+  const now = Temporal.Now.instant()
+  const recentInvites = (
+    await db.orm.public.OrganizationInvitation.where({
+      organizationId,
+      invitedByUserId: membership.userId,
+    }).all()
+  ).filter(
+    (row) =>
+      row.organizationId === organizationId &&
+      row.invitedByUserId === membership.userId &&
+      isRecent(row.createdAt ?? row.updatedAt, now, INVITATION_CREATE_WINDOW_MINUTES),
+  )
+
+  if (recentInvites.length >= INVITATION_CREATE_MAX) {
+    throw organizationAdminError("INVITATION_RATE_LIMITED")
   }
 
   const { token, tokenHash } = createInvitationToken()

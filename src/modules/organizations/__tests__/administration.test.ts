@@ -417,4 +417,48 @@ describe("organization administration", () => {
     })
     expect(memory.tables.AuditEvent.some((row) => row.action === "ORGANIZATION_UPDATED")).toBe(true)
   })
+
+  it("does not let STAFF invite users or edit organization settings", async () => {
+    memory.insert("Role", {
+      id: "role-a-staff",
+      organizationId: ORG_A,
+      name: "STAFF",
+      isSystem: true,
+      isActive: true,
+    })
+    memory.insert("User", { id: "user-staff", authProviderId: "supabase-auth-staff", email: "staff@test.local" })
+    memory.insert("OrganizationMember", {
+      id: "mem-staff",
+      organizationId: ORG_A,
+      userId: "user-staff",
+      roleId: "role-a-staff",
+      status: "ACTIVE",
+    })
+    authenticate("supabase-auth-staff", "staff@test.local")
+
+    await expect(createInvitation({ email: "escalate@test.local", roleId: ROLE_A })).rejects.toMatchObject({
+      code: "FORBIDDEN",
+    })
+    await expect(
+      updateOrganizationSettings({
+        name: "Hijacked",
+        organizationType: "HOSPITAL",
+        country: "Ghana",
+        timezone: "Africa/Accra",
+      }),
+    ).rejects.toMatchObject({ code: "FORBIDDEN" })
+    await expect(changeMembershipRole({ membershipId: "mem-a", roleId: ROLE_A_HR })).rejects.toMatchObject({
+      code: "FORBIDDEN",
+    })
+  })
+
+  it("rate-limits invitation creation from the same administrator", async () => {
+    for (let index = 0; index < 20; index += 1) {
+      await createInvitation({ email: `bulk-${index}@test.local`, roleId: ROLE_A_HR })
+    }
+
+    await expect(createInvitation({ email: "bulk-21@test.local", roleId: ROLE_A_HR })).rejects.toMatchObject({
+      code: "INVITATION_RATE_LIMITED",
+    })
+  })
 })

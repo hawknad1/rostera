@@ -1,5 +1,7 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+Production security, environment variables, worker drain, and recovery expectations are documented in [`docs/PRODUCTION.md`](docs/PRODUCTION.md). Copy `.env.example` to `.env.local` for local development.
+
 ## Getting Started
 
 First, run the development server:

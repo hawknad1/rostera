@@ -1,3 +1,4 @@
+import { lockOrganizationRow } from "@/lib/db/row-lock"
 import { permissions } from "@/lib/permissions/permissions"
 import type { PublicOrm } from "@/modules/audit/types/orm"
 
@@ -69,6 +70,12 @@ export async function assertNotLastAdmin(
   organizationId: string,
   options: { exceptMembershipId?: string; inactiveRoleId?: string } = {},
 ) {
+  const locked = await lockOrganizationRow(orm, organizationId)
+
+  if (!locked) {
+    return false
+  }
+
   const remaining = await countActiveAdmins(orm, organizationId, options)
 
   if (remaining < 1) {

@@ -1,5 +1,6 @@
 import { hasPermission } from "@/lib/auth/has-permission"
 import { getCurrentMembership } from "@/lib/auth/get-current-membership"
+import { isUniqueConstraintViolation } from "@/lib/db/unique-constraint"
 import type { Permission } from "@/lib/permissions/permissions"
 import { permissions } from "@/lib/permissions/permissions"
 import { isSwapError, swapError } from "@/modules/shift-swaps/errors"
@@ -117,6 +118,10 @@ export async function assertAssignmentsNotInActiveSwap(
 export function rethrowSwapError(error: unknown): never {
   if (isSwapError(error)) {
     throw error
+  }
+
+  if (isUniqueConstraintViolation(error)) {
+    throw swapError("SWAP_ASSIGNMENT_ALREADY_IN_SWAP")
   }
 
   throw swapError("FAILED")

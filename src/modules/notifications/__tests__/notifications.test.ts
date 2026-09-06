@@ -247,6 +247,25 @@ describe("notification authorization and read state", () => {
     expect(memory.tables.Notification[0]?.readAt).toBeNull()
   })
 
+  it("does not let a user mark another organization's notification read", async () => {
+    memory.insert("Notification", {
+      id: "n-org-b",
+      organizationId: ORG_B,
+      recipientUserId: USER_STAFF,
+      type: "LEAVE_APPROVED",
+      title: "Leave approved",
+      body: "Other hospital",
+      eventId: "leave-b",
+      readAt: null,
+    })
+
+    authenticate(AUTH_STAFF)
+    await expect(markNotificationRead("n-org-b")).rejects.toMatchObject({
+      code: "NOTIFICATION_NOT_FOUND",
+    })
+    expect(memory.tables.Notification[0]?.readAt).toBeNull()
+  })
+
   it("marks one notification read and unread for the current user", async () => {
     memory.insert("Notification", {
       id: "n-staff",

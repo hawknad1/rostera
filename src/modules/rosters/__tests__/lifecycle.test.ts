@@ -330,6 +330,18 @@ describe("roster lifecycle", () => {
       name: "RosterError",
       code: "ROSTER_NOT_FOUND",
     })
+    await expect(submitRosterForReview(hospitalB.id)).rejects.toMatchObject({
+      name: "RosterError",
+      code: "ROSTER_NOT_FOUND",
+    })
+    await expect(returnRosterToDraft(hospitalB.id)).rejects.toMatchObject({
+      name: "RosterError",
+      code: "ROSTER_NOT_FOUND",
+    })
+    await expect(deleteRoster(hospitalB.id)).rejects.toMatchObject({
+      name: "RosterError",
+      code: "ROSTER_NOT_FOUND",
+    })
   })
 
   it("requires roster.review to submit and roster.publish to publish", async () => {

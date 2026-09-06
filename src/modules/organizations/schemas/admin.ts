@@ -95,7 +95,7 @@ export const createCustomRoleInputSchema = z.object({
     z.string("Role name is required.").trim().min(1, "Role name is required.").max(80),
   ),
   description: optionalText,
-  permissionKeys: z.array(z.string().trim().min(1)).default([]),
+  permissionKeys: z.array(z.string().trim().min(1)).max(100).default([]),
 })
 
 export type CreateCustomRoleInput = z.output<typeof createCustomRoleInputSchema>
@@ -107,7 +107,7 @@ export const updateCustomRoleInputSchema = z.object({
     z.string("Role name is required.").trim().min(1, "Role name is required.").max(80),
   ),
   description: optionalText,
-  permissionKeys: z.array(z.string().trim().min(1)).default([]),
+  permissionKeys: z.array(z.string().trim().min(1)).max(100).default([]),
 })
 
 export type UpdateCustomRoleInput = z.output<typeof updateCustomRoleInputSchema>

@@ -1,7 +1,22 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
+import {
+  isAuthRoute,
+  isSessionExemptPath,
+  shouldBypassSessionRefresh,
+} from "@/lib/auth/request-access"
+import { safeInternalPath } from "@/lib/http/safe-path"
+
 export async function updateSession(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+
+  if (shouldBypassSessionRefresh(pathname)) {
+    return NextResponse.next({
+      request,
+    })
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -41,26 +56,18 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims()
   const claims = data?.claims
 
-  const pathname = request.nextUrl.pathname
-
-  const isAuthRoute =
-    pathname.startsWith("/login") || pathname.startsWith("/auth")
-
-  const isPublicRoute =
-    pathname === "/" ||
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/favicon")
-
-  if (!claims && !isAuthRoute && !isPublicRoute) {
+  if (!claims && !isAuthRoute(pathname) && !isSessionExemptPath(pathname)) {
     const url = request.nextUrl.clone()
+    const next = safeInternalPath(`${pathname}${request.nextUrl.search}`) ?? "/"
 
     url.pathname = "/login"
-    url.searchParams.set("redirectTo", pathname)
+    url.search = ""
+    url.searchParams.set("next", next)
 
     return NextResponse.redirect(url)
   }
 
-  if (claims && isAuthRoute) {
+  if (claims && isAuthRoute(pathname)) {
     const url = request.nextUrl.clone()
 
     url.pathname = "/dashboard"
