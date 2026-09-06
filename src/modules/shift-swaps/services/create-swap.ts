@@ -20,6 +20,11 @@ import {
   throwIfSwapBlocked,
 } from "@/modules/shift-swaps/services/validation"
 import { permissions } from "@/lib/permissions/permissions"
+import {
+  enqueueDomainNotification,
+  processDomainNotification,
+} from "@/modules/notifications/services/emit"
+import { formatStaffName } from "@/modules/staff/labels"
 import { db } from "@/prisma/db"
 
 export async function createSwap(input: CreateSwapInput) {
@@ -28,7 +33,7 @@ export async function createSwap(input: CreateSwapInput) {
   const timeZone = String(membership.organization.timezone)
 
   try {
-    return await db.transaction(async (tx: TxClient) => {
+    const created = await db.transaction(async (tx: TxClient) => {
       const requester = await findLinkedStaff(tx.orm, organizationId, membership.userId)
 
       if (!requester) {
@@ -97,7 +102,7 @@ export async function createSwap(input: CreateSwapInput) {
       })
       throwIfSwapBlocked(simulation)
 
-      return tx.orm.public.ShiftSwapRequest.create({
+      const created = await tx.orm.public.ShiftSwapRequest.create({
         organizationId,
         rosterId: source.rosterId,
         departmentId: source.departmentId,
@@ -109,7 +114,31 @@ export async function createSwap(input: CreateSwapInput) {
         requestedByUserId: membership.userId,
         ...(input.reason ? { reason: input.reason } : {}),
       })
+
+      await enqueueDomainNotification(tx, {
+        type: "SHIFT_SWAP_REQUESTED",
+        organizationId,
+        eventId: String(created.id),
+        actorUserId: membership.userId,
+        requesterStaffId: String(requester.id),
+        targetStaffId: String(targetStaff.id),
+        requesterName: formatStaffName({
+          firstName: String(requester.firstName),
+          middleName: requester.middleName == null ? null : String(requester.middleName),
+          lastName: String(requester.lastName),
+        }),
+      })
+
+      return created
     })
+
+    await processDomainNotification({
+      organizationId,
+      type: "SHIFT_SWAP_REQUESTED",
+      eventId: String(created.id),
+    })
+
+    return created
   } catch (error) {
     rethrowSwapError(error)
   }

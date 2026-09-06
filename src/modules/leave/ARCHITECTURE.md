@@ -113,6 +113,10 @@ Approving leave does **not** delete or edit assignments.
 
 [`leaveAuditPoint`](services/audit.ts) is called for `LEAVE_REQUESTED`, `LEAVE_APPROVED`, `LEAVE_REJECTED`, and `LEAVE_CANCELLED`. It does not persist. Payload: `organizationId`, `leaveId`, `staffId`, `actorUserId`, `previousStatus`, `newStatus`, `occurredAt`.
 
+## Notifications
+
+After the leave row is persisted in the same transaction, leave services enqueue a `NotificationOutbox` event (`LEAVE_REQUESTED` / `LEAVE_APPROVED` / `LEAVE_REJECTED` / `LEAVE_CANCELLED`). In-app delivery runs after commit and cannot roll back a successful leave mutation. Recipients and copy are documented in [`notifications/ARCHITECTURE.md`](../notifications/ARCHITECTURE.md).
+
 ## Tenant isolation
 
 Every query uses `{ id, organizationId }` (or equivalent). Cross-tenant ids return `LEAVE_NOT_FOUND`.

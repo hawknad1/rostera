@@ -17,6 +17,11 @@ import { isLeaveError, leaveError } from "@/modules/leave/errors"
 import { leaveAuditPoint } from "@/modules/leave/services/audit"
 import type { CreateLeaveInput } from "@/modules/leave/schemas/leave"
 import { leaveTypes, type LeaveType } from "@/modules/leave/schemas/leave"
+import { leaveTypePhrase } from "@/modules/notifications/copy"
+import {
+  enqueueDomainNotification,
+  processDomainNotification,
+} from "@/modules/notifications/services/emit"
 import { formatStaffName } from "@/modules/staff/labels"
 import type { LeaveStatus } from "@/modules/scheduling/types/leave"
 import { db } from "@/prisma/db"
@@ -407,7 +412,7 @@ export async function createLeave(input: CreateLeaveInput) {
   }
 
   try {
-    return await db.transaction(async (tx: TxClient) => {
+    const created = await db.transaction(async (tx: TxClient) => {
       const staff = await tx.orm.public.StaffProfile.where({
         id: staffId,
         organizationId,
@@ -424,7 +429,7 @@ export async function createLeave(input: CreateLeaveInput) {
       const active = await loadActiveLeaveForStaff(tx.orm, organizationId, staff.id)
       assertNoActiveOverlap(active, startDate, endDate)
 
-      const created = await tx.orm.public.LeaveRequest.create({
+      const createdLeave = await tx.orm.public.LeaveRequest.create({
         organizationId,
         staffId: staff.id,
         leaveType: input.leaveType,
@@ -438,7 +443,7 @@ export async function createLeave(input: CreateLeaveInput) {
       leaveAuditPoint({
         type: "LEAVE_REQUESTED",
         organizationId,
-        leaveId: String(created.id),
+        leaveId: String(createdLeave.id),
         staffId: staff.id,
         actorUserId: membership.userId,
         previousStatus: null,
@@ -446,8 +451,32 @@ export async function createLeave(input: CreateLeaveInput) {
         occurredAt: Temporal.Now.instant(),
       })
 
-      return created
+      await enqueueDomainNotification(tx, {
+        type: "LEAVE_REQUESTED",
+        organizationId,
+        eventId: String(createdLeave.id),
+        actorUserId: membership.userId,
+        staffId: staff.id,
+        staffName: formatStaffName({
+          firstName: String(staff.firstName),
+          middleName: staff.middleName == null ? null : String(staff.middleName),
+          lastName: String(staff.lastName),
+        }),
+        leaveTypeLabel: leaveTypePhrase(input.leaveType),
+        startDate,
+        endDate,
+      })
+
+      return createdLeave
     })
+
+    await processDomainNotification({
+      organizationId,
+      type: "LEAVE_REQUESTED",
+      eventId: String(created.id),
+    })
+
+    return created
   } catch (error) {
     if (isLeaveError(error)) {
       throw error
@@ -466,7 +495,7 @@ export async function approveLeave(leaveId: string) {
   const organizationId = membership.organizationId
 
   try {
-    return await db.transaction(async (tx: TxClient) => {
+    const updated = await db.transaction(async (tx: TxClient) => {
       const existing = await findOwnedLeave(tx.orm, organizationId, leaveId)
 
       if (!existing) {
@@ -490,7 +519,7 @@ export async function approveLeave(leaveId: string) {
         throw leaveError("STAFF_NOT_ACTIVE")
       }
 
-      const updated = await tx.orm.public.LeaveRequest.where({
+      const approved = await tx.orm.public.LeaveRequest.where({
         id: existing.id,
         organizationId,
         status: "PENDING",
@@ -500,14 +529,14 @@ export async function approveLeave(leaveId: string) {
         reviewedAt: Temporal.Now.instant(),
       })
 
-      if (!updated) {
+      if (!approved) {
         throw leaveError("LEAVE_NOT_PENDING")
       }
 
       leaveAuditPoint({
         type: "LEAVE_APPROVED",
         organizationId,
-        leaveId: String(updated.id),
+        leaveId: String(approved.id),
         staffId: existing.staffId,
         actorUserId: membership.userId,
         previousStatus: "PENDING",
@@ -515,8 +544,32 @@ export async function approveLeave(leaveId: string) {
         occurredAt: Temporal.Now.instant(),
       })
 
-      return updated
+      await enqueueDomainNotification(tx, {
+        type: "LEAVE_APPROVED",
+        organizationId,
+        eventId: String(approved.id),
+        actorUserId: membership.userId,
+        staffId: String(existing.staffId),
+        staffName: formatStaffName({
+          firstName: String(staff.firstName),
+          middleName: staff.middleName == null ? null : String(staff.middleName),
+          lastName: String(staff.lastName),
+        }),
+        leaveTypeLabel: leaveTypePhrase(asLeaveType(String(existing.leaveType))),
+        startDate: String(existing.startDate),
+        endDate: String(existing.endDate),
+      })
+
+      return approved
     })
+
+    await processDomainNotification({
+      organizationId,
+      type: "LEAVE_APPROVED",
+      eventId: String(updated.id),
+    })
+
+    return updated
   } catch (error) {
     if (isLeaveError(error)) {
       throw error
@@ -531,7 +584,7 @@ export async function rejectLeave(leaveId: string) {
   const organizationId = membership.organizationId
 
   try {
-    return await db.transaction(async (tx: TxClient) => {
+    const updated = await db.transaction(async (tx: TxClient) => {
       const existing = await findOwnedLeave(tx.orm, organizationId, leaveId)
 
       if (!existing) {
@@ -542,7 +595,12 @@ export async function rejectLeave(leaveId: string) {
         throw leaveError("LEAVE_NOT_PENDING")
       }
 
-      const updated = await tx.orm.public.LeaveRequest.where({
+      const staff = await tx.orm.public.StaffProfile.where({
+        id: existing.staffId,
+        organizationId,
+      }).first()
+
+      const rejected = await tx.orm.public.LeaveRequest.where({
         id: existing.id,
         organizationId,
         status: "PENDING",
@@ -552,14 +610,14 @@ export async function rejectLeave(leaveId: string) {
         reviewedAt: Temporal.Now.instant(),
       })
 
-      if (!updated) {
+      if (!rejected) {
         throw leaveError("LEAVE_NOT_PENDING")
       }
 
       leaveAuditPoint({
         type: "LEAVE_REJECTED",
         organizationId,
-        leaveId: String(updated.id),
+        leaveId: String(rejected.id),
         staffId: existing.staffId,
         actorUserId: membership.userId,
         previousStatus: "PENDING",
@@ -567,8 +625,34 @@ export async function rejectLeave(leaveId: string) {
         occurredAt: Temporal.Now.instant(),
       })
 
-      return updated
+      await enqueueDomainNotification(tx, {
+        type: "LEAVE_REJECTED",
+        organizationId,
+        eventId: String(rejected.id),
+        actorUserId: membership.userId,
+        staffId: String(existing.staffId),
+        staffName: staff
+          ? formatStaffName({
+              firstName: String(staff.firstName),
+              middleName: staff.middleName == null ? null : String(staff.middleName),
+              lastName: String(staff.lastName),
+            })
+          : "Unknown staff",
+        leaveTypeLabel: leaveTypePhrase(asLeaveType(String(existing.leaveType))),
+        startDate: String(existing.startDate),
+        endDate: String(existing.endDate),
+      })
+
+      return rejected
     })
+
+    await processDomainNotification({
+      organizationId,
+      type: "LEAVE_REJECTED",
+      eventId: String(updated.id),
+    })
+
+    return updated
   } catch (error) {
     if (isLeaveError(error)) {
       throw error
@@ -587,7 +671,7 @@ export async function cancelLeave(leaveId: string) {
   ])
 
   try {
-    return await db.transaction(async (tx: TxClient) => {
+    const cancelled = await db.transaction(async (tx: TxClient) => {
       const existing = await findOwnedLeave(tx.orm, organizationId, leaveId)
 
       if (!existing) {
@@ -648,8 +732,39 @@ export async function cancelLeave(leaveId: string) {
         occurredAt: Temporal.Now.instant(),
       })
 
+      const staff = await tx.orm.public.StaffProfile.where({
+        id: existing.staffId,
+        organizationId,
+      }).first()
+
+      await enqueueDomainNotification(tx, {
+        type: "LEAVE_CANCELLED",
+        organizationId,
+        eventId: String(updated.id),
+        actorUserId: membership.userId,
+        staffId: String(existing.staffId),
+        staffName: staff
+          ? formatStaffName({
+              firstName: String(staff.firstName),
+              middleName: staff.middleName == null ? null : String(staff.middleName),
+              lastName: String(staff.lastName),
+            })
+          : "Unknown staff",
+        leaveTypeLabel: leaveTypePhrase(asLeaveType(String(existing.leaveType))),
+        startDate: String(existing.startDate),
+        endDate: String(existing.endDate),
+      })
+
       return updated
     })
+
+    await processDomainNotification({
+      organizationId,
+      type: "LEAVE_CANCELLED",
+      eventId: String(cancelled.id),
+    })
+
+    return cancelled
   } catch (error) {
     if (isLeaveError(error)) {
       throw error

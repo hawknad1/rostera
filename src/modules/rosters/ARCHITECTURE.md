@@ -80,3 +80,7 @@ Versioning, cloning, and amending a published roster are deferred. This phase on
 ## Audit
 
 [`rosterStatusChangeAuditPoint`](services/audit.ts) is called after a successful status change with `rosterId`, `organizationId`, `actorUserId`, `previousStatus`, `newStatus`, and `occurredAt`. It does not persist. A future audit module should record that payload.
+
+## Notifications
+
+`DRAFT → IN_REVIEW` enqueues `ROSTER_SUBMITTED_FOR_REVIEW`. `IN_REVIEW → PUBLISHED` enqueues `ROSTER_PUBLISHED`. `IN_REVIEW → DRAFT` enqueues `ROSTER_RETURNED_TO_DRAFT`. Events are written in the same transaction as the status update and processed after commit. See [`notifications/ARCHITECTURE.md`](../notifications/ARCHITECTURE.md).

@@ -11,6 +11,10 @@ import {
   assertRosterTransition,
   isRosterStatus,
 } from "@/modules/rosters/validation/status-transition"
+import {
+  enqueueDomainNotification,
+  processDomainNotification,
+} from "@/modules/notifications/services/emit"
 import { db } from "@/prisma/db"
 
 type PublicOrm = typeof db.orm
@@ -75,7 +79,7 @@ export async function submitRosterForReview(rosterId: string) {
   const timeZone = String(membership.organization.timezone)
 
   try {
-    return await db.transaction(async (tx: TxClient) => {
+    const submitted = await db.transaction(async (tx: TxClient) => {
       const roster = await findOwnedRoster(tx.orm, organizationId, rosterId)
 
       if (!roster) {
@@ -116,8 +120,27 @@ export async function submitRosterForReview(rosterId: string) {
         occurredAt: Temporal.Now.instant(),
       })
 
+      await enqueueDomainNotification(tx, {
+        type: "ROSTER_SUBMITTED_FOR_REVIEW",
+        organizationId,
+        eventId: String(updated.id),
+        actorUserId: membership.userId,
+        rosterId: String(updated.id),
+        departmentId: String(updated.departmentId),
+        createdByUserId: String(updated.createdByUserId),
+        rosterName: String(updated.name),
+      })
+
       return updated
     })
+
+    await processDomainNotification({
+      organizationId,
+      type: "ROSTER_SUBMITTED_FOR_REVIEW",
+      eventId: String(submitted.id),
+    })
+
+    return submitted
   } catch (error) {
     if (error instanceof RosterError) {
       throw error
@@ -132,7 +155,7 @@ export async function returnRosterToDraft(rosterId: string) {
   const organizationId = membership.organizationId
 
   try {
-    return await db.transaction(async (tx: TxClient) => {
+    const returned = await db.transaction(async (tx: TxClient) => {
       const roster = await findOwnedRoster(tx.orm, organizationId, rosterId)
 
       if (!roster) {
@@ -163,8 +186,27 @@ export async function returnRosterToDraft(rosterId: string) {
         occurredAt: Temporal.Now.instant(),
       })
 
+      await enqueueDomainNotification(tx, {
+        type: "ROSTER_RETURNED_TO_DRAFT",
+        organizationId,
+        eventId: String(updated.id),
+        actorUserId: membership.userId,
+        rosterId: String(updated.id),
+        departmentId: String(updated.departmentId),
+        createdByUserId: String(updated.createdByUserId),
+        rosterName: String(updated.name),
+      })
+
       return updated
     })
+
+    await processDomainNotification({
+      organizationId,
+      type: "ROSTER_RETURNED_TO_DRAFT",
+      eventId: String(returned.id),
+    })
+
+    return returned
   } catch (error) {
     if (error instanceof RosterError) {
       throw error
@@ -180,7 +222,7 @@ export async function publishRoster(rosterId: string) {
   const timeZone = String(membership.organization.timezone)
 
   try {
-    return await db.transaction(async (tx: TxClient) => {
+    const published = await db.transaction(async (tx: TxClient) => {
       const roster = await findOwnedRoster(tx.orm, organizationId, rosterId)
 
       if (!roster) {
@@ -221,8 +263,26 @@ export async function publishRoster(rosterId: string) {
         occurredAt: Temporal.Now.instant(),
       })
 
+      await enqueueDomainNotification(tx, {
+        type: "ROSTER_PUBLISHED",
+        organizationId,
+        eventId: String(updated.id),
+        actorUserId: membership.userId,
+        rosterId: String(updated.id),
+        startDate: String(updated.startDate),
+        endDate: String(updated.endDate),
+      })
+
       return updated
     })
+
+    await processDomainNotification({
+      organizationId,
+      type: "ROSTER_PUBLISHED",
+      eventId: String(published.id),
+    })
+
+    return published
   } catch (error) {
     if (error instanceof RosterError) {
       throw error
