@@ -48,6 +48,7 @@ export default async function DashboardLayout({
     canViewAudit,
     canViewDeliveries,
     canViewAttendance,
+    canViewReports,
   ] = await Promise.all([
     Promise.all([
       hasPermission(membership, permissions.rosterCreate),
@@ -83,6 +84,7 @@ export default async function DashboardLayout({
     hasPermission(membership, permissions.auditView),
     hasPermission(membership, permissions.notificationsView),
     hasPermission(membership, permissions.attendanceView),
+    hasPermission(membership, permissions.reportsView),
   ])
 
   return (
@@ -183,6 +185,14 @@ export default async function DashboardLayout({
                 href="/attendance"
               >
                 Attendance
+              </Link>
+            ) : null}
+            {canViewReports ? (
+              <Link
+                className="text-foreground underline-offset-4 hover:underline"
+                href="/reports"
+              >
+                Reports
               </Link>
             ) : null}
             {canViewAudit ? (
