@@ -10,6 +10,7 @@ import { rosterStatusLabels, type RosterStatus } from "@/modules/rosters/labels"
 import { listAssignmentFormOptions } from "@/modules/rosters/services/assignments"
 import { getRoster } from "@/modules/rosters/services/rosters"
 import { validateRoster } from "@/modules/rosters/services/validation"
+import { getSwapCapabilities } from "@/modules/shift-swaps/services/swaps"
 import { AddAssignmentForm } from "@/modules/rosters/ui/add-assignment-form"
 import { EditRosterForm } from "@/modules/rosters/ui/edit-roster-form"
 import { RosterLifecycleActions } from "@/modules/rosters/ui/roster-lifecycle-actions"
@@ -37,6 +38,8 @@ export default async function RosterDetailPage({
     hasPermission(membership, permissions.rosterReview),
     hasPermission(membership, permissions.rosterPublish),
   ])
+  const canRequestSwap = await hasPermission(membership, permissions.shiftSwapRequest)
+  const swapCapabilities = canRequestSwap ? await getSwapCapabilities() : null
   const isDraft = roster.status === "DRAFT"
   const isPublished = roster.status === "PUBLISHED"
   const assignmentOptions =
@@ -116,8 +119,10 @@ export default async function RosterDetailPage({
         <RosterSchedule
           assignmentCount={roster.assignmentCount}
           canEdit={canEdit}
+          canRequestSwap={Boolean(swapCapabilities?.canRequest && swapCapabilities.ownStaffId)}
           days={roster.days}
           isDraft={isDraft}
+          ownStaffId={swapCapabilities?.ownStaffId}
         />
       </section>
 

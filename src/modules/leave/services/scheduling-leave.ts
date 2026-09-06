@@ -92,3 +92,30 @@ export async function loadApprovedLeaveForRoster(
     )
     .map(toSchedulingLeavePeriod)
 }
+
+export async function loadApprovedLeaveForStaffIds(
+  orm: PublicOrm,
+  input: {
+    organizationId: string
+    staffIds: readonly string[]
+  },
+): Promise<SchedulingLeavePeriod[]> {
+  if (input.staffIds.length === 0) {
+    return []
+  }
+
+  const staffIds = new Set(input.staffIds)
+  const rows = await orm.public.LeaveRequest.where({
+    organizationId: input.organizationId,
+    status: "APPROVED",
+  }).all()
+
+  return rows
+    .filter(
+      (row) =>
+        row.organizationId === input.organizationId &&
+        row.status === "APPROVED" &&
+        staffIds.has(row.staffId),
+    )
+    .map(toSchedulingLeavePeriod)
+}

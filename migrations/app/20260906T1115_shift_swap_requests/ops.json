@@ -1,0 +1,806 @@
+[
+  {
+    "id": "table.shiftSwapRequest",
+    "label": "Create table \"shiftSwapRequest\"",
+    "summary": "Creates table \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"shiftSwapRequest\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"shiftSwapRequest\"",
+        "sql": "CREATE TABLE \"public\".\"shiftSwapRequest\" (\n  \"completedAt\" timestamptz,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"departmentId\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"organizationId\" text NOT NULL,\n  \"reason\" text,\n  \"requestedByUserId\" text NOT NULL,\n  \"requesterStaffId\" text NOT NULL,\n  \"reviewNotes\" text,\n  \"reviewedAt\" timestamptz,\n  \"reviewedByUserId\" text,\n  \"rosterId\" text NOT NULL,\n  \"sourceAssignmentId\" text NOT NULL,\n  \"status\" text DEFAULT 'PENDING' NOT NULL,\n  \"targetAssignmentId\" text NOT NULL,\n  \"targetStaffId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"shiftSwapRequest_status_check_a7da2396\" CHECK (\"status\" IN ('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED', 'COMPLETED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"shiftSwapRequest\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftSwapRequest.shiftSwapRequest_organizationId_departmentId_idx_425ca78f",
+    "label": "Create index \"shiftSwapRequest_organizationId_departmentId_idx_425ca78f\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftSwapRequest_organizationId_departmentId_idx_425ca78f",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftSwapRequest_organizationId_departmentId_idx_425ca78f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_organizationId_departmentId_idx_425ca78f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftSwapRequest_organizationId_departmentId_idx_425ca78f\"",
+        "sql": "CREATE INDEX \"shiftSwapRequest_organizationId_departmentId_idx_425ca78f\" ON \"public\".\"shiftSwapRequest\" (\"organizationId\", \"departmentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftSwapRequest_organizationId_departmentId_idx_425ca78f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_organizationId_departmentId_idx_425ca78f\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftSwapRequest.shiftSwapRequest_organizationId_idx_2e17ef41",
+    "label": "Create index \"shiftSwapRequest_organizationId_idx_2e17ef41\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftSwapRequest_organizationId_idx_2e17ef41",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftSwapRequest_organizationId_idx_2e17ef41\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftSwapRequest_organizationId_idx_2e17ef41\"",
+        "sql": "CREATE INDEX \"shiftSwapRequest_organizationId_idx_2e17ef41\" ON \"public\".\"shiftSwapRequest\" (\"organizationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftSwapRequest_organizationId_idx_2e17ef41\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftSwapRequest.shiftSwapRequest_organizationId_status_idx_21af5e82",
+    "label": "Create index \"shiftSwapRequest_organizationId_status_idx_21af5e82\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftSwapRequest_organizationId_status_idx_21af5e82",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftSwapRequest_organizationId_status_idx_21af5e82\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_organizationId_status_idx_21af5e82\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftSwapRequest_organizationId_status_idx_21af5e82\"",
+        "sql": "CREATE INDEX \"shiftSwapRequest_organizationId_status_idx_21af5e82\" ON \"public\".\"shiftSwapRequest\" (\"organizationId\", \"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftSwapRequest_organizationId_status_idx_21af5e82\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_organizationId_status_idx_21af5e82\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftSwapRequest.shiftSwapRequest_requestedByUserId_idx_85281b2d",
+    "label": "Create index \"shiftSwapRequest_requestedByUserId_idx_85281b2d\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftSwapRequest_requestedByUserId_idx_85281b2d",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftSwapRequest_requestedByUserId_idx_85281b2d\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_requestedByUserId_idx_85281b2d\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftSwapRequest_requestedByUserId_idx_85281b2d\"",
+        "sql": "CREATE INDEX \"shiftSwapRequest_requestedByUserId_idx_85281b2d\" ON \"public\".\"shiftSwapRequest\" (\"requestedByUserId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftSwapRequest_requestedByUserId_idx_85281b2d\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_requestedByUserId_idx_85281b2d\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftSwapRequest.shiftSwapRequest_requesterStaffId_idx_88362500",
+    "label": "Create index \"shiftSwapRequest_requesterStaffId_idx_88362500\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftSwapRequest_requesterStaffId_idx_88362500",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftSwapRequest_requesterStaffId_idx_88362500\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_requesterStaffId_idx_88362500\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftSwapRequest_requesterStaffId_idx_88362500\"",
+        "sql": "CREATE INDEX \"shiftSwapRequest_requesterStaffId_idx_88362500\" ON \"public\".\"shiftSwapRequest\" (\"requesterStaffId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftSwapRequest_requesterStaffId_idx_88362500\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_requesterStaffId_idx_88362500\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftSwapRequest.shiftSwapRequest_reviewedByUserId_idx_e62d4e38",
+    "label": "Create index \"shiftSwapRequest_reviewedByUserId_idx_e62d4e38\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftSwapRequest_reviewedByUserId_idx_e62d4e38",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftSwapRequest_reviewedByUserId_idx_e62d4e38\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_reviewedByUserId_idx_e62d4e38\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftSwapRequest_reviewedByUserId_idx_e62d4e38\"",
+        "sql": "CREATE INDEX \"shiftSwapRequest_reviewedByUserId_idx_e62d4e38\" ON \"public\".\"shiftSwapRequest\" (\"reviewedByUserId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftSwapRequest_reviewedByUserId_idx_e62d4e38\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_reviewedByUserId_idx_e62d4e38\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftSwapRequest.shiftSwapRequest_rosterId_idx_ca029c6b",
+    "label": "Create index \"shiftSwapRequest_rosterId_idx_ca029c6b\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftSwapRequest_rosterId_idx_ca029c6b",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftSwapRequest_rosterId_idx_ca029c6b\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_rosterId_idx_ca029c6b\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftSwapRequest_rosterId_idx_ca029c6b\"",
+        "sql": "CREATE INDEX \"shiftSwapRequest_rosterId_idx_ca029c6b\" ON \"public\".\"shiftSwapRequest\" (\"rosterId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftSwapRequest_rosterId_idx_ca029c6b\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_rosterId_idx_ca029c6b\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftSwapRequest.shiftSwapRequest_sourceAssignmentId_idx_08c15448",
+    "label": "Create index \"shiftSwapRequest_sourceAssignmentId_idx_08c15448\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftSwapRequest_sourceAssignmentId_idx_08c15448",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftSwapRequest_sourceAssignmentId_idx_08c15448\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_sourceAssignmentId_idx_08c15448\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftSwapRequest_sourceAssignmentId_idx_08c15448\"",
+        "sql": "CREATE INDEX \"shiftSwapRequest_sourceAssignmentId_idx_08c15448\" ON \"public\".\"shiftSwapRequest\" (\"sourceAssignmentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftSwapRequest_sourceAssignmentId_idx_08c15448\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_sourceAssignmentId_idx_08c15448\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftSwapRequest.shiftSwapRequest_targetAssignmentId_idx_72b8162f",
+    "label": "Create index \"shiftSwapRequest_targetAssignmentId_idx_72b8162f\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftSwapRequest_targetAssignmentId_idx_72b8162f",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftSwapRequest_targetAssignmentId_idx_72b8162f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_targetAssignmentId_idx_72b8162f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftSwapRequest_targetAssignmentId_idx_72b8162f\"",
+        "sql": "CREATE INDEX \"shiftSwapRequest_targetAssignmentId_idx_72b8162f\" ON \"public\".\"shiftSwapRequest\" (\"targetAssignmentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftSwapRequest_targetAssignmentId_idx_72b8162f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_targetAssignmentId_idx_72b8162f\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftSwapRequest.shiftSwapRequest_targetStaffId_idx_39aa2c56",
+    "label": "Create index \"shiftSwapRequest_targetStaffId_idx_39aa2c56\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftSwapRequest_targetStaffId_idx_39aa2c56",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftSwapRequest_targetStaffId_idx_39aa2c56\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_targetStaffId_idx_39aa2c56\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftSwapRequest_targetStaffId_idx_39aa2c56\"",
+        "sql": "CREATE INDEX \"shiftSwapRequest_targetStaffId_idx_39aa2c56\" ON \"public\".\"shiftSwapRequest\" (\"targetStaffId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftSwapRequest_targetStaffId_idx_39aa2c56\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftSwapRequest_targetStaffId_idx_39aa2c56\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.shiftSwapRequest.shiftSwapRequest_organizationId_fkey",
+    "label": "Add foreign key \"shiftSwapRequest_organizationId_fkey\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "shiftSwapRequest_organizationId_fkey",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"shiftSwapRequest_organizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftSwapRequest_organizationId_fkey",
+          "public",
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"shiftSwapRequest_organizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"shiftSwapRequest\"\nADD CONSTRAINT \"shiftSwapRequest_organizationId_fkey\"\nFOREIGN KEY (\"organizationId\")\nREFERENCES \"public\".\"organization\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"shiftSwapRequest_organizationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftSwapRequest_organizationId_fkey",
+          "public",
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.shiftSwapRequest.shiftSwapRequest_rosterId_fkey",
+    "label": "Add foreign key \"shiftSwapRequest_rosterId_fkey\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "shiftSwapRequest_rosterId_fkey",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"shiftSwapRequest_rosterId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftSwapRequest_rosterId_fkey",
+          "public",
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"shiftSwapRequest_rosterId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"shiftSwapRequest\"\nADD CONSTRAINT \"shiftSwapRequest_rosterId_fkey\"\nFOREIGN KEY (\"rosterId\")\nREFERENCES \"public\".\"roster\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"shiftSwapRequest_rosterId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftSwapRequest_rosterId_fkey",
+          "public",
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.shiftSwapRequest.shiftSwapRequest_sourceAssignmentId_fkey",
+    "label": "Add foreign key \"shiftSwapRequest_sourceAssignmentId_fkey\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "shiftSwapRequest_sourceAssignmentId_fkey",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"shiftSwapRequest_sourceAssignmentId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftSwapRequest_sourceAssignmentId_fkey",
+          "public",
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"shiftSwapRequest_sourceAssignmentId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"shiftSwapRequest\"\nADD CONSTRAINT \"shiftSwapRequest_sourceAssignmentId_fkey\"\nFOREIGN KEY (\"sourceAssignmentId\")\nREFERENCES \"public\".\"shiftAssignment\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"shiftSwapRequest_sourceAssignmentId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftSwapRequest_sourceAssignmentId_fkey",
+          "public",
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.shiftSwapRequest.shiftSwapRequest_targetAssignmentId_fkey",
+    "label": "Add foreign key \"shiftSwapRequest_targetAssignmentId_fkey\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "shiftSwapRequest_targetAssignmentId_fkey",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"shiftSwapRequest_targetAssignmentId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftSwapRequest_targetAssignmentId_fkey",
+          "public",
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"shiftSwapRequest_targetAssignmentId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"shiftSwapRequest\"\nADD CONSTRAINT \"shiftSwapRequest_targetAssignmentId_fkey\"\nFOREIGN KEY (\"targetAssignmentId\")\nREFERENCES \"public\".\"shiftAssignment\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"shiftSwapRequest_targetAssignmentId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftSwapRequest_targetAssignmentId_fkey",
+          "public",
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.shiftSwapRequest.shiftSwapRequest_requesterStaffId_fkey",
+    "label": "Add foreign key \"shiftSwapRequest_requesterStaffId_fkey\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "shiftSwapRequest_requesterStaffId_fkey",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"shiftSwapRequest_requesterStaffId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftSwapRequest_requesterStaffId_fkey",
+          "public",
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"shiftSwapRequest_requesterStaffId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"shiftSwapRequest\"\nADD CONSTRAINT \"shiftSwapRequest_requesterStaffId_fkey\"\nFOREIGN KEY (\"requesterStaffId\")\nREFERENCES \"public\".\"staffProfile\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"shiftSwapRequest_requesterStaffId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftSwapRequest_requesterStaffId_fkey",
+          "public",
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.shiftSwapRequest.shiftSwapRequest_targetStaffId_fkey",
+    "label": "Add foreign key \"shiftSwapRequest_targetStaffId_fkey\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "shiftSwapRequest_targetStaffId_fkey",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"shiftSwapRequest_targetStaffId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftSwapRequest_targetStaffId_fkey",
+          "public",
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"shiftSwapRequest_targetStaffId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"shiftSwapRequest\"\nADD CONSTRAINT \"shiftSwapRequest_targetStaffId_fkey\"\nFOREIGN KEY (\"targetStaffId\")\nREFERENCES \"public\".\"staffProfile\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"shiftSwapRequest_targetStaffId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftSwapRequest_targetStaffId_fkey",
+          "public",
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.shiftSwapRequest.shiftSwapRequest_requestedByUserId_fkey",
+    "label": "Add foreign key \"shiftSwapRequest_requestedByUserId_fkey\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "shiftSwapRequest_requestedByUserId_fkey",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"shiftSwapRequest_requestedByUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftSwapRequest_requestedByUserId_fkey",
+          "public",
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"shiftSwapRequest_requestedByUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"shiftSwapRequest\"\nADD CONSTRAINT \"shiftSwapRequest_requestedByUserId_fkey\"\nFOREIGN KEY (\"requestedByUserId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"shiftSwapRequest_requestedByUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftSwapRequest_requestedByUserId_fkey",
+          "public",
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.shiftSwapRequest.shiftSwapRequest_reviewedByUserId_fkey",
+    "label": "Add foreign key \"shiftSwapRequest_reviewedByUserId_fkey\" on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "shiftSwapRequest_reviewedByUserId_fkey",
+        "table": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"shiftSwapRequest_reviewedByUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftSwapRequest_reviewedByUserId_fkey",
+          "public",
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"shiftSwapRequest_reviewedByUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"shiftSwapRequest\"\nADD CONSTRAINT \"shiftSwapRequest_reviewedByUserId_fkey\"\nFOREIGN KEY (\"reviewedByUserId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"shiftSwapRequest_reviewedByUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftSwapRequest_reviewedByUserId_fkey",
+          "public",
+          "\"public\".\"shiftSwapRequest\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.shiftSwapRequest",
+    "label": "Enable row-level security on \"shiftSwapRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "shiftSwapRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"shiftSwapRequest\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "shiftSwapRequest"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"shiftSwapRequest\"",
+        "sql": "ALTER TABLE \"public\".\"shiftSwapRequest\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"shiftSwapRequest\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "shiftSwapRequest"
+        ]
+      }
+    ]
+  }
+]

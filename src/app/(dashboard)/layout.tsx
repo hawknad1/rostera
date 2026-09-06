@@ -68,6 +68,12 @@ export default async function DashboardLayout({
             </Link>
             <Link
               className="text-foreground underline-offset-4 hover:underline"
+              href="/shift-swaps"
+            >
+              Swaps
+            </Link>
+            <Link
+              className="text-foreground underline-offset-4 hover:underline"
               href="/departments"
             >
               Departments

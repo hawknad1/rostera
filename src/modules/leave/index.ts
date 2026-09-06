@@ -3,4 +3,5 @@ export { createLeave, approveLeave, rejectLeave, cancelLeave, listLeave, getLeav
 export {
   loadApprovedLeaveForAssignment,
   loadApprovedLeaveForRoster,
+  loadApprovedLeaveForStaffIds,
 } from "@/modules/leave/services/scheduling-leave"

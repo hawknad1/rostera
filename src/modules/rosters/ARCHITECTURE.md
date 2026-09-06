@@ -75,7 +75,7 @@ UI button visibility is not the security boundary.
 
 ## Amendments
 
-Versioning, cloning, and amending a published roster are deferred. This phase only establishes the immutable published boundary.
+Versioning, cloning, and amending a published roster are deferred. This phase only establishes the immutable published boundary. Phase 3I shift swaps may be requested against published assignments but cannot complete (`SWAP_REQUIRES_AMENDMENT`). See [`shift-swaps/ARCHITECTURE.md`](../shift-swaps/ARCHITECTURE.md).
 
 ## Audit
 

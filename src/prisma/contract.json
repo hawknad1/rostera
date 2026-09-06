@@ -48,6 +48,10 @@
       "model": "ShiftAssignment",
       "namespace": "public"
     },
+    "shiftSwapRequest": {
+      "model": "ShiftSwapRequest",
+      "namespace": "public"
+    },
     "shiftType": {
       "model": "ShiftType",
       "namespace": "public"
@@ -225,6 +229,31 @@
               {
                 "name": "AMENDED",
                 "value": "AMENDED"
+              }
+            ]
+          },
+          "ShiftSwapStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "PENDING",
+                "value": "PENDING"
+              },
+              {
+                "name": "APPROVED",
+                "value": "APPROVED"
+              },
+              {
+                "name": "REJECTED",
+                "value": "REJECTED"
+              },
+              {
+                "name": "CANCELLED",
+                "value": "CANCELLED"
+              },
+              {
+                "name": "COMPLETED",
+                "value": "COMPLETED"
               }
             ]
           }
@@ -841,6 +870,21 @@
                 },
                 "to": {
                   "model": "ShiftAssignment",
+                  "namespace": "public"
+                }
+              },
+              "shiftSwapRequests": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftSwapRequest",
                   "namespace": "public"
                 }
               },
@@ -1706,6 +1750,21 @@
                   "model": "Organization",
                   "namespace": "public"
                 }
+              },
+              "shiftSwaps": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "rosterId"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftSwapRequest",
+                  "namespace": "public"
+                }
               }
             },
             "storage": {
@@ -1929,6 +1988,21 @@
                   "namespace": "public"
                 }
               },
+              "sourceSwaps": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "sourceAssignmentId"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftSwapRequest",
+                  "namespace": "public"
+                }
+              },
               "staff": {
                 "cardinality": "N:1",
                 "on": {
@@ -1941,6 +2015,21 @@
                 },
                 "to": {
                   "model": "StaffProfile",
+                  "namespace": "public"
+                }
+              },
+              "targetSwaps": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "targetAssignmentId"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftSwapRequest",
                   "namespace": "public"
                 }
               }
@@ -1995,6 +2084,314 @@
               },
               "namespaceId": "public",
               "table": "shiftAssignment"
+            }
+          },
+          "ShiftSwapRequest": {
+            "fields": {
+              "completedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "departmentId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "reason": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "requestedByUserId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "requesterStaffId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "reviewNotes": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "reviewedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "reviewedByUserId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "rosterId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sourceAssignmentId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "ShiftSwapStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "targetAssignmentId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "targetStaffId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "organization": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              },
+              "requestedBy": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "requestedByUserId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              },
+              "requesterStaff": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "requesterStaffId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StaffProfile",
+                  "namespace": "public"
+                }
+              },
+              "reviewedBy": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "reviewedByUserId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              },
+              "roster": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "rosterId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Roster",
+                  "namespace": "public"
+                }
+              },
+              "sourceAssignment": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "sourceAssignmentId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftAssignment",
+                  "namespace": "public"
+                }
+              },
+              "targetAssignment": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "targetAssignmentId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftAssignment",
+                  "namespace": "public"
+                }
+              },
+              "targetStaff": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "targetStaffId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StaffProfile",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "completedAt": {
+                  "column": "completedAt"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "departmentId": {
+                  "column": "departmentId"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "reason": {
+                  "column": "reason"
+                },
+                "requestedByUserId": {
+                  "column": "requestedByUserId"
+                },
+                "requesterStaffId": {
+                  "column": "requesterStaffId"
+                },
+                "reviewNotes": {
+                  "column": "reviewNotes"
+                },
+                "reviewedAt": {
+                  "column": "reviewedAt"
+                },
+                "reviewedByUserId": {
+                  "column": "reviewedByUserId"
+                },
+                "rosterId": {
+                  "column": "rosterId"
+                },
+                "sourceAssignmentId": {
+                  "column": "sourceAssignmentId"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "targetAssignmentId": {
+                  "column": "targetAssignmentId"
+                },
+                "targetStaffId": {
+                  "column": "targetStaffId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "shiftSwapRequest"
             }
           },
           "ShiftType": {
@@ -2364,6 +2761,21 @@
                   "namespace": "public"
                 }
               },
+              "requestedSwaps": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "requesterStaffId"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftSwapRequest",
+                  "namespace": "public"
+                }
+              },
               "shiftAssignments": {
                 "cardinality": "1:N",
                 "on": {
@@ -2376,6 +2788,21 @@
                 },
                 "to": {
                   "model": "ShiftAssignment",
+                  "namespace": "public"
+                }
+              },
+              "targetedSwaps": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "targetStaffId"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftSwapRequest",
                   "namespace": "public"
                 }
               },
@@ -2696,6 +3123,21 @@
                   "namespace": "public"
                 }
               },
+              "requestedShiftSwaps": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "requestedByUserId"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftSwapRequest",
+                  "namespace": "public"
+                }
+              },
               "reviewedLeaveRequests": {
                 "cardinality": "1:N",
                 "on": {
@@ -2708,6 +3150,21 @@
                 },
                 "to": {
                   "model": "LeaveRequest",
+                  "namespace": "public"
+                }
+              },
+              "reviewedShiftSwaps": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "reviewedByUserId"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftSwapRequest",
                   "namespace": "public"
                 }
               },
@@ -2815,6 +3272,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "shiftAssignment"
+            },
+            "shiftSwapRequest": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "shiftSwapRequest"
             },
             "shiftType": {
               "kind": "rls",
@@ -4270,6 +4732,338 @@
                 }
               ]
             },
+            "shiftSwapRequest": {
+              "checks": [
+                {
+                  "expression": "\"status\" IN ('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED', 'COMPLETED')",
+                  "name": "shiftSwapRequest_status_check_a7da2396",
+                  "prefix": "shiftSwapRequest_status_check"
+                }
+              ],
+              "columns": {
+                "completedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "departmentId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "reason": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "requestedByUserId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "requesterStaffId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "reviewNotes": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "reviewedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "reviewedByUserId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "rosterId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "sourceAssignmentId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "PENDING"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "ShiftSwapStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "targetAssignmentId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "targetStaffId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftSwapRequest"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organization"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "rosterId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftSwapRequest"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "roster"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "sourceAssignmentId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftSwapRequest"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftAssignment"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "targetAssignmentId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftSwapRequest"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftAssignment"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "requesterStaffId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftSwapRequest"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "staffProfile"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "targetStaffId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftSwapRequest"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "staffProfile"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "requestedByUserId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftSwapRequest"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "reviewedByUserId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftSwapRequest"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "organizationId",
+                    "departmentId"
+                  ],
+                  "name": "shiftSwapRequest_organizationId_departmentId_idx_425ca78f",
+                  "prefix": "shiftSwapRequest_organizationId_departmentId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId"
+                  ],
+                  "name": "shiftSwapRequest_organizationId_idx_2e17ef41",
+                  "prefix": "shiftSwapRequest_organizationId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "status"
+                  ],
+                  "name": "shiftSwapRequest_organizationId_status_idx_21af5e82",
+                  "prefix": "shiftSwapRequest_organizationId_status_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "requestedByUserId"
+                  ],
+                  "name": "shiftSwapRequest_requestedByUserId_idx_85281b2d",
+                  "prefix": "shiftSwapRequest_requestedByUserId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "requesterStaffId"
+                  ],
+                  "name": "shiftSwapRequest_requesterStaffId_idx_88362500",
+                  "prefix": "shiftSwapRequest_requesterStaffId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "reviewedByUserId"
+                  ],
+                  "name": "shiftSwapRequest_reviewedByUserId_idx_e62d4e38",
+                  "prefix": "shiftSwapRequest_reviewedByUserId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "rosterId"
+                  ],
+                  "name": "shiftSwapRequest_rosterId_idx_ca029c6b",
+                  "prefix": "shiftSwapRequest_rosterId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "sourceAssignmentId"
+                  ],
+                  "name": "shiftSwapRequest_sourceAssignmentId_idx_08c15448",
+                  "prefix": "shiftSwapRequest_sourceAssignmentId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "targetAssignmentId"
+                  ],
+                  "name": "shiftSwapRequest_targetAssignmentId_idx_72b8162f",
+                  "prefix": "shiftSwapRequest_targetAssignmentId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "targetStaffId"
+                  ],
+                  "name": "shiftSwapRequest_targetStaffId_idx_39aa2c56",
+                  "prefix": "shiftSwapRequest_targetStaffId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "shiftType": {
               "columns": {
                 "createdAt": {
@@ -4903,6 +5697,16 @@
                 "PUBLISHED",
                 "AMENDED"
               ]
+            },
+            "ShiftSwapStatus": {
+              "kind": "valueSet",
+              "values": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED",
+                "CANCELLED",
+                "COMPLETED"
+              ]
             }
           }
         },
@@ -4910,10 +5714,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "a2fc0cbc5d315c9619f7b2655e73e93c553df0500593ede8fdb5d59388473055"
+    "storageHash": "08af83df13430ff5bc0f9938e00950a54c3c6038190fcceb2188210aac1e88a8"
   },
   "execution": {
-    "executionHash": "fcc57c94fcde802ece9bf4a38392cde358008cf6690d68e58a3c635a608fad6a",
+    "executionHash": "2cf267b285eac58d49fd953ab63529d7ba1b0b11aed4b12f1d91b74f7cd748ea",
     "mutations": {
       "defaults": [
         {
@@ -5159,6 +5963,32 @@
             "column": "updatedAt",
             "namespace": "public",
             "table": "shiftAssignment"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "shiftSwapRequest"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "shiftSwapRequest"
           }
         },
         {

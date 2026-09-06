@@ -117,9 +117,11 @@ Approving leave does **not** delete or edit assignments.
 
 Every query uses `{ id, organizationId }` (or equivalent). Cross-tenant ids return `LEAVE_NOT_FOUND`.
 
-## Before Phase 3I
+## Phase 3I
 
-Review these decisions before the next phase:
+Shift swaps load approved leave for both staff members via [`loadApprovedLeaveForStaffIds`](services/scheduling-leave.ts) and pass it into `SchedulingContext.leavePeriods`. See [`shift-swaps/ARCHITECTURE.md`](../shift-swaps/ARCHITECTURE.md).
+
+## Follow-up
 
 - Concurrent overlapping leave can race; a Postgres gist exclusion was not added because text date columns cannot use an IMMUTABLE `daterange` expression in this Prisma 8 contract.
 - Approving leave never removes existing assignments, including published ones. Operational repair belongs in a later amendment/versioning workflow.

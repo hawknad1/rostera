@@ -128,7 +128,7 @@ Conflict sort: CRITICAL → ERROR → WARNING → INFO, then date, staffId, rule
 - `validateAssignment(context, candidate)` copies context (does not mutate inputs), appends the candidate, and evaluates rules for that staff plus the candidate coverage cell.
 - `detectConflicts(context)` evaluates the full roster.
 
-Roster review and publishing (Phase 3F) call `detectConflicts` through [`validateRoster`](../rosters/services/validation.ts). They do not add a second rules layer. They load the current organization policy before building context.
+Roster review and publishing (Phase 3F) call `detectConflicts` through [`validateRoster`](../rosters/services/validation.ts). Shift swaps (Phase 3I) call `detectConflicts` through [`simulateSwapAssignments`](../shift-swaps/services/validation.ts) with an in-memory post-swap assignment list. They do not add a second rules layer. They load the current organization policy before building context.
 
 An understaffed roster is a valid database state. An overlap or approved-leave clash is not a valid assignment.
 
