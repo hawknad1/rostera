@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation"
 
+import { writeActiveOrganizationCookie } from "@/lib/auth/active-organization"
 import { getAuthUser } from "@/lib/auth/get-auth-user"
 import { OrganizationProvisioningError } from "@/modules/organizations/errors"
 import { provisionOrganizationInputSchema } from "@/modules/organizations/schemas/provision-organization"
@@ -34,7 +35,8 @@ export async function provisionOrganizationAction(
   }
 
   try {
-    await provisionOrganization(parsed.data)
+    const result = await provisionOrganization(parsed.data)
+    await writeActiveOrganizationCookie(result.organization.id)
   } catch (error) {
     if (error instanceof OrganizationProvisioningError) {
       if (error.code === "UNAUTHENTICATED") {

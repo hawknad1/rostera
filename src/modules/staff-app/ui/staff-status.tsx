@@ -6,6 +6,11 @@ export function UnlinkedStaffState() {
         Your account is not yet linked to a staff profile.
       </p>
       <p className="text-sm text-muted-foreground">Please contact your Rostera administrator.</p>
+      <p className="text-sm">
+        <a className="font-medium text-primary underline-offset-4 hover:underline" href="/me/account">
+          Account settings
+        </a>
+      </p>
     </section>
   )
 }

@@ -10,6 +10,7 @@ import {
   getStaff,
   linkStaffToUser,
   listStaff,
+  unlinkStaffFromUser,
   updateStaff,
 } from "@/modules/staff/services/staff"
 
@@ -512,6 +513,17 @@ describe("staff services", () => {
     const linked = await linkStaffToUser({ staffId: staff.id, userId: USER_A2_ID })
 
     expect(linked.userId).toBe(USER_A2_ID)
+  })
+
+  it("unlinks a staff profile without deleting the user or staff record", async () => {
+    const staff = await createStaff(validCreate)
+    await linkStaffToUser({ staffId: staff.id, userId: USER_A2_ID })
+
+    const unlinked = await unlinkStaffFromUser({ staffId: staff.id })
+
+    expect(unlinked.userId).toBeNull()
+    expect(memory.tables.StaffProfile).toHaveLength(1)
+    expect(memory.tables.User.find((row) => row.id === USER_A2_ID)).toBeDefined()
   })
 
   it("rejects cross-tenant user linkage", async () => {

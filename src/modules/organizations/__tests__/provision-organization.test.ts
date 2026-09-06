@@ -80,6 +80,7 @@ describe("organization provisioning", () => {
       country: "Ghana",
       timezone: "Africa/Accra",
       status: "ACTIVE",
+      organizationType: "HOSPITAL",
     })
 
     expect(result.membership).toMatchObject({
@@ -92,6 +93,8 @@ describe("organization provisioning", () => {
     expect(result.role).toMatchObject({
       name: "SUPER_ADMIN",
       organizationId: result.organization.id,
+      isSystem: true,
+      isActive: true,
     })
 
     expect(memory.tables.User).toHaveLength(1)
@@ -128,22 +131,18 @@ describe("organization provisioning", () => {
     }
   })
 
-  it("rejects a second organization when the user already has an ACTIVE membership", async () => {
-    await provisionOrganization(hospitalInput())
-
-    await expect(
-      provisionOrganization({
-        ...hospitalInput(),
-        name: "Ridge Hospital",
-      }),
-    ).rejects.toMatchObject({
-      name: "OrganizationProvisioningError",
-      code: "ALREADY_MEMBER",
+  it("lets an existing member provision a second organization", async () => {
+    const first = await provisionOrganization(hospitalInput())
+    const second = await provisionOrganization({
+      ...hospitalInput(),
+      name: "Ridge Hospital",
     })
 
-    expect(memory.tables.Organization).toHaveLength(1)
-    expect(memory.tables.OrganizationMember).toHaveLength(1)
-    expect(memory.tables.Role).toHaveLength(DEFAULT_ROLE_NAMES.length)
+    expect(second.organization.id).not.toBe(first.organization.id)
+    expect(second.membership.userId).toBe(first.user.id)
+    expect(second.role.name).toBe("SUPER_ADMIN")
+    expect(memory.tables.Organization).toHaveLength(2)
+    expect(memory.tables.OrganizationMember).toHaveLength(2)
   })
 
   it("ignores client-supplied roleId, userId, and permissionKeys and still assigns SUPER_ADMIN", async () => {

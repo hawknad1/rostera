@@ -202,7 +202,7 @@ describe("authorization architecture", () => {
     const membership = await getCurrentMembership()
 
     expect(membership).toBeNull()
-    await expectRedirect(requirePermission(permissions.staffView), "/login")
+    await expectRedirect(requirePermission(permissions.staffView), "/onboarding")
 
     const memberQuery = memory.queries.find(
       (query) => query.model === "OrganizationMember",
@@ -247,7 +247,7 @@ describe("authorization architecture", () => {
     })
 
     expect(await getCurrentMembership()).toBeNull()
-    await expectRedirect(requirePermission(permissions.staffView), "/login")
+    await expectRedirect(requirePermission(permissions.staffView), "/onboarding")
     expect(
       memory.queries.some((query) => query.model === "RolePermission"),
     ).toBe(false)

@@ -5,6 +5,19 @@ import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
 
+function safeNextPath() {
+  if (typeof window === "undefined") {
+    return "/"
+  }
+
+  const next = new URLSearchParams(window.location.search).get("next")
+  if (next && next.startsWith("/") && !next.startsWith("//")) {
+    return next
+  }
+
+  return "/"
+}
+
 export default function LoginPage() {
   const router = useRouter()
 
@@ -33,7 +46,7 @@ export default function LoginPage() {
       return
     }
 
-    router.push("/")
+    router.push(safeNextPath())
     router.refresh()
   }
 

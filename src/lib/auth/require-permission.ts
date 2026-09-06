@@ -8,8 +8,9 @@ import { requireOrganization } from "./require-organization"
 
 export async function requirePermission(
   permission: Permission,
+  options: { allowSuspended?: boolean } = {},
 ): Promise<CurrentMembership> {
-  const membership = await requireOrganization()
+  const membership = await requireOrganization(options)
   const authorized = await membershipHasPermission(membership, permission)
 
   if (!authorized) {

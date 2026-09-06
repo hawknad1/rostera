@@ -123,13 +123,18 @@ export async function processOutboxEvent(
     const channel = inAppChannel(orm)
 
     for (const intent of payload.intents) {
-      await channel.deliver(intent)
-      const notification = await orm.public.Notification.where({
-        organizationId: intent.organizationId,
-        recipientUserId: intent.recipientUserId,
-        type: intent.type,
-        eventId: intent.eventId,
-      }).first()
+      if (intent.type !== "ORGANIZATION_INVITED") {
+        await channel.deliver(intent)
+      }
+      const notification =
+        intent.type === "ORGANIZATION_INVITED"
+          ? null
+          : await orm.public.Notification.where({
+              organizationId: intent.organizationId,
+              recipientUserId: intent.recipientUserId,
+              type: intent.type,
+              eventId: intent.eventId,
+            }).first()
       await ensureChannelDeliveries(orm, {
         outboxId: String(claimed.id),
         intent,

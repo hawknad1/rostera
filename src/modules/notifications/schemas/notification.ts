@@ -22,6 +22,7 @@ export const notificationIntentSchema = z.object({
   entityId: z.string().trim().min(1).optional(),
   title: z.string().trim().min(1).max(200),
   body: z.string().trim().min(1).max(2000),
+  destinationEmail: z.email().optional(),
 })
 
 export function parseNotificationIntent(value: unknown): NotificationIntent {

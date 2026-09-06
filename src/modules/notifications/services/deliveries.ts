@@ -79,25 +79,32 @@ export async function ensureChannelDeliveries(
     contact,
   })
 
-  await ensureDelivery(orm, {
-    outboxId: input.outboxId,
-    notificationId: input.notificationId,
-    intent: input.intent,
-    channel: "IN_APP",
-    destination: null,
-    status: "DELIVERED",
-  })
+  if (input.intent.type !== "ORGANIZATION_INVITED") {
+    await ensureDelivery(orm, {
+      outboxId: input.outboxId,
+      notificationId: input.notificationId,
+      intent: input.intent,
+      channel: "IN_APP",
+      destination: null,
+      status: "DELIVERED",
+    })
+  }
 
   for (const resolution of resolutions) {
     if (resolution.channel === "IN_APP" || !resolution.eligible) {
       continue
     }
 
+    const destination =
+      resolution.channel === "EMAIL" && input.intent.destinationEmail
+        ? input.intent.destinationEmail
+        : destinationForChannel(resolution.channel, contact)
+
     await ensureDelivery(orm, {
       outboxId: input.outboxId,
       intent: input.intent,
       channel: resolution.channel,
-      destination: destinationForChannel(resolution.channel, contact),
+      destination,
       status: "PENDING",
     })
   }

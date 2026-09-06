@@ -8,7 +8,7 @@ import {
 export type EventChannelPolicy = {
   type: NotificationType
   label: string
-  group: "Leave" | "Shift swaps" | "Rosters" | "Attendance"
+  group: "Leave" | "Shift swaps" | "Rosters" | "Attendance" | "Organization"
   priority: NotificationPriority
   allowedChannels: readonly NotificationChannel[]
   defaultChannels: readonly NotificationChannel[]
@@ -70,6 +70,9 @@ export const NOTIFICATION_EVENT_REGISTRY: readonly EventChannelPolicy[] = [
     "IN_APP",
     "EMAIL",
   ]),
+  policy("ORGANIZATION_INVITED", "Organization invitation", "Organization", "operational", ["EMAIL"], [
+    "EMAIL",
+  ]),
 ]
 
 const BY_TYPE = new Map(NOTIFICATION_EVENT_REGISTRY.map((entry) => [entry.type, entry]))
@@ -117,6 +120,7 @@ export function preferenceGroups() {
     { id: "Leave", label: "Leave", events: [] },
     { id: "Shift swaps", label: "Shift swaps", events: [] },
     { id: "Attendance", label: "Attendance", events: [] },
+    { id: "Organization", label: "Organization", events: [] },
   ]
 
   for (const event of NOTIFICATION_EVENT_REGISTRY) {
