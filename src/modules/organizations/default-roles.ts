@@ -34,6 +34,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<DefaultRoleName, readonly Permissi
     permissions.reportsView,
     permissions.reportsExport,
     permissions.settingsView,
+    permissions.auditView,
   ],
 
   DEPARTMENT_HEAD: [
@@ -82,6 +83,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<DefaultRoleName, readonly Permissi
     permissions.usersInvite,
     permissions.usersEdit,
     permissions.usersDeactivate,
+    permissions.auditView,
   ],
 
   STAFF: [

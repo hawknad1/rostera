@@ -4,6 +4,8 @@ import { redirect } from "next/navigation"
 
 import { getAuthUser } from "@/lib/auth/get-auth-user"
 import { getCurrentMembership } from "@/lib/auth/get-current-membership"
+import { hasPermission } from "@/lib/auth/has-permission"
+import { permissions } from "@/lib/permissions/permissions"
 import { NotificationBell } from "@/modules/notifications/ui/notification-bell"
 import { ensureDefaultRoleGrants } from "@/modules/organizations/ensure-permissions"
 import { ensureDefaultSchedulingPolicy } from "@/modules/organizations/services/ensure-scheduling-policy"
@@ -28,6 +30,7 @@ export default async function DashboardLayout({
 
   await ensureDefaultRoleGrants(db.orm, membership.organizationId)
   await ensureDefaultSchedulingPolicy(db.orm, membership.organizationId)
+  const canViewAudit = await hasPermission(membership, permissions.auditView)
 
   return (
     <div className="flex min-h-full flex-col">
@@ -91,6 +94,14 @@ export default async function DashboardLayout({
             >
               Settings
             </Link>
+            {canViewAudit ? (
+              <Link
+                className="text-foreground underline-offset-4 hover:underline"
+                href="/audit"
+              >
+                Audit
+              </Link>
+            ) : null}
             <NotificationBell timeZone={String(membership.organization.timezone)} />
           </nav>
         </div>

@@ -140,7 +140,9 @@ GiST `shiftAssignment_staff_time_excl` is unchanged.
 
 ## Audit
 
-[`shiftSwapAuditPoint`](services/audit.ts) is called for `SHIFT_SWAP_COMPLETED` with organization, swap, assignment, previous staff, actor, and timestamp. It does not persist.
+Swap request/complete/reject/cancel persist `AuditEvent` rows in the same transaction as the swap write. Completed swaps are represented as `SHIFT_SWAP_COMPLETED` (including both assignment ids) rather than extra `ASSIGNMENT_*` events. Audit failure rolls back the swap. See [`audit/ARCHITECTURE.md`](../audit/ARCHITECTURE.md).
+
+[`shiftSwapAuditPoint`](services/audit.ts) remains a no-op compatibility hook from Phase 3I.
 
 ## Notifications
 

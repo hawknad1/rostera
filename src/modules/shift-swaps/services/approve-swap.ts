@@ -7,6 +7,7 @@ import {
   enqueueDomainNotification,
   processDomainNotification,
 } from "@/modules/notifications/services/emit"
+import { recordUserAudit } from "@/modules/audit/services/record"
 import { swapError } from "@/modules/shift-swaps/errors"
 import { assertSwapTransition } from "@/modules/shift-swaps/domain/status-transition"
 import {
@@ -171,6 +172,27 @@ export async function approveSwap(swapId: string) {
         actorUserId: membership.userId,
         requesterStaffId: String(requester.id),
         targetStaffId: String(targetStaff.id),
+      })
+
+      await recordUserAudit(tx, membership, {
+        action: "SHIFT_SWAP_COMPLETED",
+        entityType: "SHIFT_SWAP",
+        entityId: String(completed.id),
+        summary: "Completed shift swap between two staff assignments.",
+        metadata: {
+          before: {
+            sourceStaffId: requester.id,
+            targetStaffId: targetStaff.id,
+            status: "PENDING",
+          },
+          after: {
+            sourceAssignmentId: source.id,
+            targetAssignmentId: target.id,
+            sourceStaffId: targetStaff.id,
+            targetStaffId: requester.id,
+            status: "COMPLETED",
+          },
+        },
       })
 
       return completed

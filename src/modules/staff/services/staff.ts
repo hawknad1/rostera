@@ -6,6 +6,9 @@ import { isUniqueConstraintViolation } from "@/lib/db/unique-constraint"
 import type { Permission } from "@/lib/permissions/permissions"
 import { permissions } from "@/lib/permissions/permissions"
 import { StaffError } from "@/modules/staff/errors"
+import { quoteAuditName } from "@/modules/audit/copy"
+import { recordUserAudit } from "@/modules/audit/services/record"
+import { formatStaffName } from "@/modules/staff/labels"
 import type {
   AssignDepartmentHeadInput,
   CreateStaffInput,
@@ -292,20 +295,42 @@ export async function createStaff(input: CreateStaffInput) {
   await assertUniqueStaffNumber(db.orm, organizationId, input.staffNumber)
 
   try {
-    return await db.orm.public.StaffProfile.create({
-      organizationId,
-      staffNumber: input.staffNumber,
-      firstName: input.firstName,
-      lastName: input.lastName,
-      professionId: input.professionId,
-      departmentId: input.departmentId,
-      employmentStatus: input.employmentStatus,
-      employmentType: input.employmentType,
-      ...(input.middleName ? { middleName: input.middleName } : {}),
-      ...(input.phone ? { phone: input.phone } : {}),
-      ...(input.email ? { email: input.email } : {}),
-      ...(input.photoUrl ? { photoUrl: input.photoUrl } : {}),
-      ...(input.dateJoined ? { dateJoined: toDateJoined(input.dateJoined) } : {}),
+    return await db.transaction(async (tx: TxClient) => {
+      const created = await tx.orm.public.StaffProfile.create({
+        organizationId,
+        staffNumber: input.staffNumber,
+        firstName: input.firstName,
+        lastName: input.lastName,
+        professionId: input.professionId,
+        departmentId: input.departmentId,
+        employmentStatus: input.employmentStatus,
+        employmentType: input.employmentType,
+        ...(input.middleName ? { middleName: input.middleName } : {}),
+        ...(input.phone ? { phone: input.phone } : {}),
+        ...(input.email ? { email: input.email } : {}),
+        ...(input.photoUrl ? { photoUrl: input.photoUrl } : {}),
+        ...(input.dateJoined ? { dateJoined: toDateJoined(input.dateJoined) } : {}),
+      })
+
+      await recordUserAudit(tx, membership, {
+        action: "STAFF_CREATED",
+        entityType: "STAFF",
+        entityId: String(created.id),
+        summary: `Created staff member ${quoteAuditName(formatStaffName(input))}.`,
+        metadata: {
+          after: {
+            staffNumber: created.staffNumber,
+            firstName: created.firstName,
+            lastName: created.lastName,
+            departmentId: created.departmentId,
+            professionId: created.professionId,
+            employmentStatus: created.employmentStatus,
+            employmentType: created.employmentType,
+          },
+        },
+      })
+
+      return created
     })
   } catch (error) {
     if (isUniqueConstraintViolation(error)) {
@@ -338,44 +363,70 @@ export async function updateStaff(input: UpdateStaffInput) {
 
   const departmentChanged = existing.departmentId !== input.departmentId
 
-  try {
-    const updated = departmentChanged
-      ? await db.transaction(async (tx: TxClient) => {
-          await clearHeadedDepartment(tx.orm, organizationId, existing.id)
+  const staffFields = {
+    firstName: input.firstName,
+    middleName: input.middleName ?? null,
+    lastName: input.lastName,
+    phone: input.phone ?? null,
+    email: input.email ?? null,
+    professionId: input.professionId,
+    departmentId: input.departmentId,
+    employmentStatus: input.employmentStatus,
+    employmentType: input.employmentType,
+    dateJoined: input.dateJoined ? toDateJoined(input.dateJoined) : null,
+    photoUrl: input.photoUrl ?? null,
+  }
 
-          return tx.orm.public.StaffProfile.where({
-            id: existing.id,
-            organizationId,
-          }).update({
-            firstName: input.firstName,
-            middleName: input.middleName ?? null,
-            lastName: input.lastName,
-            phone: input.phone ?? null,
-            email: input.email ?? null,
-            professionId: input.professionId,
-            departmentId: input.departmentId,
-            employmentStatus: input.employmentStatus,
-            employmentType: input.employmentType,
-            dateJoined: input.dateJoined ? toDateJoined(input.dateJoined) : null,
-            photoUrl: input.photoUrl ?? null,
-          })
-        })
-      : await db.orm.public.StaffProfile.where({
-          id: existing.id,
-          organizationId,
-        }).update({
-          firstName: input.firstName,
-          middleName: input.middleName ?? null,
-          lastName: input.lastName,
-          phone: input.phone ?? null,
-          email: input.email ?? null,
-          professionId: input.professionId,
-          departmentId: input.departmentId,
-          employmentStatus: input.employmentStatus,
-          employmentType: input.employmentType,
-          dateJoined: input.dateJoined ? toDateJoined(input.dateJoined) : null,
-          photoUrl: input.photoUrl ?? null,
-        })
+  try {
+    const updated = await db.transaction(async (tx: TxClient) => {
+      if (departmentChanged) {
+        await clearHeadedDepartment(tx.orm, organizationId, existing.id)
+      }
+
+      const next = await tx.orm.public.StaffProfile.where({
+        id: existing.id,
+        organizationId,
+      }).update(staffFields)
+
+      if (!next) {
+        throw new StaffError("NOT_FOUND", "Staff member not found.")
+      }
+
+      await recordUserAudit(tx, membership, {
+        action: "STAFF_UPDATED",
+        entityType: "STAFF",
+        entityId: String(next.id),
+        summary: `Updated staff member ${quoteAuditName(formatStaffName(input))}.`,
+        metadata: {
+          changedFields: [
+            "firstName",
+            "lastName",
+            "departmentId",
+            "professionId",
+            "employmentStatus",
+            "employmentType",
+          ],
+          before: {
+            firstName: existing.firstName,
+            lastName: existing.lastName,
+            departmentId: existing.departmentId,
+            professionId: existing.professionId,
+            employmentStatus: existing.employmentStatus,
+            employmentType: existing.employmentType,
+          },
+          after: {
+            firstName: next.firstName,
+            lastName: next.lastName,
+            departmentId: next.departmentId,
+            professionId: next.professionId,
+            employmentStatus: next.employmentStatus,
+            employmentType: next.employmentType,
+          },
+        },
+      })
+
+      return next
+    })
 
     if (!updated) {
       throw new StaffError("NOT_FOUND", "Staff member not found.")
@@ -404,12 +455,35 @@ export async function deactivateStaff(input: StaffIdInput) {
     const updated = await db.transaction(async (tx: TxClient) => {
       await clearHeadedDepartment(tx.orm, organizationId, existing.id)
 
-      return tx.orm.public.StaffProfile.where({
+      const next = await tx.orm.public.StaffProfile.where({
         id: existing.id,
         organizationId,
       }).update({
         employmentStatus: "TERMINATED",
       })
+
+      if (!next) {
+        throw new StaffError("NOT_FOUND", "Staff member not found.")
+      }
+
+      await recordUserAudit(tx, membership, {
+        action: "STAFF_DEACTIVATED",
+        entityType: "STAFF",
+        entityId: String(next.id),
+        summary: `Deactivated staff member ${quoteAuditName(
+          formatStaffName({
+            firstName: String(existing.firstName),
+            middleName: existing.middleName == null ? null : String(existing.middleName),
+            lastName: String(existing.lastName),
+          }),
+        )}.`,
+        metadata: {
+          before: { employmentStatus: existing.employmentStatus },
+          after: { employmentStatus: "TERMINATED" },
+        },
+      })
+
+      return next
     })
 
     if (!updated) {
@@ -465,12 +539,29 @@ export async function assignDepartmentHead(input: AssignDepartmentHeadInput) {
 
   try {
     const updated = await db.transaction(async (tx: TxClient) => {
-      return tx.orm.public.Department.where({
+      const next = await tx.orm.public.Department.where({
         id: department.id,
         organizationId,
       }).update({
         headStaffId: staff.id,
       })
+
+      if (!next) {
+        throw new StaffError("NOT_FOUND", "Department not found.")
+      }
+
+      await recordUserAudit(tx, membership, {
+        action: "DEPARTMENT_HEAD_ASSIGNED",
+        entityType: "DEPARTMENT",
+        entityId: String(next.id),
+        summary: `Assigned department head for ${quoteAuditName(String(department.name))}.`,
+        metadata: {
+          before: { headStaffId: department.headStaffId ?? null },
+          after: { headStaffId: staff.id },
+        },
+      })
+
+      return next
     })
 
     if (!updated) {
@@ -503,11 +594,30 @@ export async function clearDepartmentHead(input: DepartmentHeadInput) {
     throw new StaffError("NOT_FOUND", "Department not found.")
   }
 
-  const updated = await db.orm.public.Department.where({
-    id: department.id,
-    organizationId,
-  }).update({
-    headStaffId: null,
+  const updated = await db.transaction(async (tx: TxClient) => {
+    const next = await tx.orm.public.Department.where({
+      id: department.id,
+      organizationId,
+    }).update({
+      headStaffId: null,
+    })
+
+    if (!next) {
+      throw new StaffError("NOT_FOUND", "Department not found.")
+    }
+
+    await recordUserAudit(tx, membership, {
+      action: "DEPARTMENT_HEAD_REMOVED",
+      entityType: "DEPARTMENT",
+      entityId: String(next.id),
+      summary: `Removed department head for ${quoteAuditName(String(department.name))}.`,
+      metadata: {
+        before: { headStaffId: department.headStaffId ?? null },
+        after: { headStaffId: null },
+      },
+    })
+
+    return next
   })
 
   if (!updated) {

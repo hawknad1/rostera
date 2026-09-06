@@ -5,6 +5,8 @@ import { isExclusionConstraintViolation } from "@/lib/db/exclusion-constraint"
 import { isUniqueConstraintViolation } from "@/lib/db/unique-constraint"
 import type { Permission } from "@/lib/permissions/permissions"
 import { permissions } from "@/lib/permissions/permissions"
+import { quoteAuditName } from "@/modules/audit/copy"
+import { recordUserAudit } from "@/modules/audit/services/record"
 import { RosterError, rosterError, type RosterErrorCode } from "@/modules/rosters/errors"
 import type { CreateAssignmentInput } from "@/modules/rosters/schemas/assignment"
 import {
@@ -313,6 +315,21 @@ export async function createAssignment(
         endDateTime: window.end,
       })
 
+      await recordUserAudit(tx, membership, {
+        action: "ASSIGNMENT_CREATED",
+        entityType: "ASSIGNMENT",
+        entityId: String(assignment.id),
+        summary: `Created assignment on ${quoteAuditName(String(roster.name))}.`,
+        metadata: {
+          after: {
+            rosterId: assignment.rosterId,
+            staffId: assignment.staffId,
+            shiftTypeId: assignment.shiftTypeId,
+            date: assignment.date,
+          },
+        },
+      })
+
       return {
         assignment,
         warnings: evaluation.conflicts.filter((conflict) => !conflict.blocking),
@@ -363,10 +380,33 @@ export async function deleteAssignment(input: { id: string }) {
 
   assertRosterDraft(roster)
 
-  const deleted = await db.orm.public.ShiftAssignment.where({
-    id: assignment.id,
-    organizationId,
-  }).delete()
+  const deleted = await db.transaction(async (tx: TxClient) => {
+    const removed = await tx.orm.public.ShiftAssignment.where({
+      id: assignment.id,
+      organizationId,
+    }).delete()
+
+    if (!removed) {
+      throw rosterError("ASSIGNMENT_NOT_FOUND")
+    }
+
+    await recordUserAudit(tx, membership, {
+      action: "ASSIGNMENT_DELETED",
+      entityType: "ASSIGNMENT",
+      entityId: String(removed.id),
+      summary: `Deleted assignment from ${quoteAuditName(String(roster.name))}.`,
+      metadata: {
+        before: {
+          rosterId: removed.rosterId,
+          staffId: removed.staffId,
+          shiftTypeId: removed.shiftTypeId,
+          date: removed.date,
+        },
+      },
+    })
+
+    return removed
+  })
 
   if (!deleted) {
     throw rosterError("ASSIGNMENT_NOT_FOUND")

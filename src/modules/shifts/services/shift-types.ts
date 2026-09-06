@@ -5,12 +5,16 @@ import { isUniqueConstraintViolation } from "@/lib/db/unique-constraint"
 import type { Permission } from "@/lib/permissions/permissions"
 import { permissions } from "@/lib/permissions/permissions"
 import { ShiftError } from "@/modules/shifts/errors"
+import { quoteAuditName } from "@/modules/audit/copy"
+import { recordUserAudit } from "@/modules/audit/services/record"
 import type {
   CreateShiftTypeInput,
   ShiftTypeIdInput,
   UpdateShiftTypeInput,
 } from "@/modules/shifts/schemas/shift-type"
 import { db } from "@/prisma/db"
+
+type TxClient = { orm: typeof db.orm }
 
 async function requireShiftAccess(permission: Permission) {
   const membership = await getCurrentMembership()
@@ -107,14 +111,33 @@ export async function createShiftType(input: CreateShiftTypeInput) {
   await assertUniqueShiftName(membership.organizationId, input.name)
 
   try {
-    const created = await db.orm.public.ShiftType.create({
-      organizationId: membership.organizationId,
-      name: input.name,
-      startTime: window.startTime,
-      endTime: window.endTime,
-      isOvernight: input.isOvernight,
-      isActive: true,
-      ...(input.description ? { description: input.description } : {}),
+    const created = await db.transaction(async (tx: TxClient) => {
+      const row = await tx.orm.public.ShiftType.create({
+        organizationId: membership.organizationId,
+        name: input.name,
+        startTime: window.startTime,
+        endTime: window.endTime,
+        isOvernight: input.isOvernight,
+        isActive: true,
+        ...(input.description ? { description: input.description } : {}),
+      })
+
+      await recordUserAudit(tx, membership, {
+        action: "SHIFT_TYPE_CREATED",
+        entityType: "SHIFT_TYPE",
+        entityId: String(row.id),
+        summary: `Created shift type ${quoteAuditName(String(row.name))}.`,
+        metadata: {
+          after: {
+            name: row.name,
+            startTime: row.startTime,
+            endTime: row.endTime,
+            isOvernight: row.isOvernight,
+          },
+        },
+      })
+
+      return row
     })
 
     return withDuration(created)
@@ -139,20 +162,46 @@ export async function updateShiftType(input: UpdateShiftTypeInput) {
   await assertUniqueShiftName(membership.organizationId, input.name, existing.id)
 
   try {
-    const updated = await db.orm.public.ShiftType.where({
-      id: existing.id,
-      organizationId: membership.organizationId,
-    }).update({
-      name: input.name,
-      description: input.description ?? null,
-      startTime: window.startTime,
-      endTime: window.endTime,
-      isOvernight: input.isOvernight,
-    })
+    const updated = await db.transaction(async (tx: TxClient) => {
+      const next = await tx.orm.public.ShiftType.where({
+        id: existing.id,
+        organizationId: membership.organizationId,
+      }).update({
+        name: input.name,
+        description: input.description ?? null,
+        startTime: window.startTime,
+        endTime: window.endTime,
+        isOvernight: input.isOvernight,
+      })
 
-    if (!updated) {
-      throw new ShiftError("NOT_FOUND", "Shift not found.")
-    }
+      if (!next) {
+        throw new ShiftError("NOT_FOUND", "Shift not found.")
+      }
+
+      await recordUserAudit(tx, membership, {
+        action: "SHIFT_TYPE_UPDATED",
+        entityType: "SHIFT_TYPE",
+        entityId: String(next.id),
+        summary: `Updated shift type ${quoteAuditName(String(next.name))}.`,
+        metadata: {
+          changedFields: ["name", "startTime", "endTime", "isOvernight"],
+          before: {
+            name: existing.name,
+            startTime: existing.startTime,
+            endTime: existing.endTime,
+            isOvernight: existing.isOvernight,
+          },
+          after: {
+            name: next.name,
+            startTime: next.startTime,
+            endTime: next.endTime,
+            isOvernight: next.isOvernight,
+          },
+        },
+      })
+
+      return next
+    })
 
     return withDuration(updated)
   } catch (error) {
@@ -176,16 +225,31 @@ export async function deactivateShiftType(input: ShiftTypeIdInput) {
     throw new ShiftError("NOT_FOUND", "Shift not found.")
   }
 
-  const updated = await db.orm.public.ShiftType.where({
-    id: existing.id,
-    organizationId: membership.organizationId,
-  }).update({
-    isActive: false,
-  })
+  const updated = await db.transaction(async (tx: TxClient) => {
+    const next = await tx.orm.public.ShiftType.where({
+      id: existing.id,
+      organizationId: membership.organizationId,
+    }).update({
+      isActive: false,
+    })
 
-  if (!updated) {
-    throw new ShiftError("NOT_FOUND", "Shift not found.")
-  }
+    if (!next) {
+      throw new ShiftError("NOT_FOUND", "Shift not found.")
+    }
+
+    await recordUserAudit(tx, membership, {
+      action: "SHIFT_TYPE_DEACTIVATED",
+      entityType: "SHIFT_TYPE",
+      entityId: String(next.id),
+      summary: `Deactivated shift type ${quoteAuditName(String(next.name))}.`,
+      metadata: {
+        before: { isActive: existing.isActive },
+        after: { isActive: false },
+      },
+    })
+
+    return next
+  })
 
   return withDuration(updated)
 }

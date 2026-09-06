@@ -28,6 +28,7 @@ const MODEL_NAMES = [
   "ShiftSwapRequest",
   "Notification",
   "NotificationOutbox",
+  "AuditEvent",
 ] as const
 
 type ModelName = (typeof MODEL_NAMES)[number]
@@ -267,6 +268,19 @@ function assertUnique(tables: Record<ModelName, Row[]>, model: ModelName, row: R
       throw uniqueViolation("notificationOutbox", "event")
     }
   }
+
+  if (model === "AuditEvent") {
+    if (
+      tables.AuditEvent.some(
+        (existing) =>
+          existing !== row &&
+          existing.organizationId === row.organizationId &&
+          existing.eventId === row.eventId,
+      )
+    ) {
+      throw uniqueViolation("auditEvent", "event")
+    }
+  }
 }
 
 function assertNoActiveLeaveOverlap(tables: Record<ModelName, Row[]>, model: ModelName, row: Row) {
@@ -397,6 +411,11 @@ function withCreateDefaults(model: ModelName, data: Row): Row {
     row.lastError ??= null
     row.createdAt ??= new Date().toISOString()
     row.updatedAt ??= row.createdAt
+  }
+
+  if (model === "AuditEvent") {
+    row.actorType ??= "USER"
+    row.createdAt ??= new Date().toISOString()
   }
 
   return row
@@ -616,6 +635,7 @@ function createPublicOrm(
       {},
       [],
     ),
+    AuditEvent: createCollection(tables, queries, failCreates, "AuditEvent", {}, []),
   }
 }
 
@@ -639,6 +659,7 @@ function emptyTables(): Record<ModelName, Row[]> {
     ShiftSwapRequest: [],
     Notification: [],
     NotificationOutbox: [],
+    AuditEvent: [],
   }
 }
 
@@ -668,6 +689,7 @@ export function createInMemoryPrisma() {
       ShiftSwapRequest: tables.ShiftSwapRequest.map((row) => ({ ...row })),
       Notification: tables.Notification.map((row) => ({ ...row })),
       NotificationOutbox: tables.NotificationOutbox.map((row) => ({ ...row })),
+      AuditEvent: tables.AuditEvent.map((row) => ({ ...row })),
     }
   }
 

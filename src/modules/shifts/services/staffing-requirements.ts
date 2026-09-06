@@ -4,6 +4,7 @@ import { isUniqueConstraintViolation } from "@/lib/db/unique-constraint"
 import type { Permission } from "@/lib/permissions/permissions"
 import { permissions } from "@/lib/permissions/permissions"
 import { ShiftError } from "@/modules/shifts/errors"
+import { recordUserAudit } from "@/modules/audit/services/record"
 import type {
   CreateStaffingRequirementInput,
   StaffingRequirementIdInput,
@@ -12,6 +13,7 @@ import type {
 import { db } from "@/prisma/db"
 
 type PublicOrm = typeof db.orm
+type TxClient = { orm: typeof db.orm }
 
 async function requireShiftAccess(permission: Permission) {
   const membership = await getCurrentMembership()
@@ -279,12 +281,31 @@ export async function createStaffingRequirement(input: CreateStaffingRequirement
   await assertUniqueRequirement(organizationId, input)
 
   try {
-    return await db.orm.public.StaffingRequirement.create({
-      organizationId,
-      departmentId: input.departmentId,
-      shiftTypeId: input.shiftTypeId,
-      professionId: input.professionId,
-      requiredCount: input.requiredCount,
+    return await db.transaction(async (tx: TxClient) => {
+      const created = await tx.orm.public.StaffingRequirement.create({
+        organizationId,
+        departmentId: input.departmentId,
+        shiftTypeId: input.shiftTypeId,
+        professionId: input.professionId,
+        requiredCount: input.requiredCount,
+      })
+
+      await recordUserAudit(tx, membership, {
+        action: "STAFFING_REQUIREMENT_CREATED",
+        entityType: "STAFFING_REQUIREMENT",
+        entityId: String(created.id),
+        summary: "Created staffing requirement.",
+        metadata: {
+          after: {
+            departmentId: created.departmentId,
+            shiftTypeId: created.shiftTypeId,
+            professionId: created.professionId,
+            requiredCount: created.requiredCount,
+          },
+        },
+      })
+
+      return created
     })
   } catch (error) {
     if (isUniqueConstraintViolation(error)) {
@@ -322,21 +343,45 @@ export async function updateStaffingRequirement(input: UpdateStaffingRequirement
   await assertUniqueRequirement(membership.organizationId, input, existing.id)
 
   try {
-    const updated = await db.orm.public.StaffingRequirement.where({
-      id: existing.id,
-      organizationId: membership.organizationId,
-    }).update({
-      departmentId: input.departmentId,
-      shiftTypeId: input.shiftTypeId,
-      professionId: input.professionId,
-      requiredCount: input.requiredCount,
+    return await db.transaction(async (tx: TxClient) => {
+      const updated = await tx.orm.public.StaffingRequirement.where({
+        id: existing.id,
+        organizationId: membership.organizationId,
+      }).update({
+        departmentId: input.departmentId,
+        shiftTypeId: input.shiftTypeId,
+        professionId: input.professionId,
+        requiredCount: input.requiredCount,
+      })
+
+      if (!updated) {
+        throw new ShiftError("NOT_FOUND", "Staffing requirement not found.")
+      }
+
+      await recordUserAudit(tx, membership, {
+        action: "STAFFING_REQUIREMENT_UPDATED",
+        entityType: "STAFFING_REQUIREMENT",
+        entityId: String(updated.id),
+        summary: "Updated staffing requirement.",
+        metadata: {
+          changedFields: ["departmentId", "shiftTypeId", "professionId", "requiredCount"],
+          before: {
+            departmentId: existing.departmentId,
+            shiftTypeId: existing.shiftTypeId,
+            professionId: existing.professionId,
+            requiredCount: existing.requiredCount,
+          },
+          after: {
+            departmentId: updated.departmentId,
+            shiftTypeId: updated.shiftTypeId,
+            professionId: updated.professionId,
+            requiredCount: updated.requiredCount,
+          },
+        },
+      })
+
+      return updated
     })
-
-    if (!updated) {
-      throw new ShiftError("NOT_FOUND", "Staffing requirement not found.")
-    }
-
-    return updated
   } catch (error) {
     if (error instanceof ShiftError) {
       throw error
@@ -361,14 +406,31 @@ export async function deleteStaffingRequirement(input: StaffingRequirementIdInpu
     throw new ShiftError("NOT_FOUND", "Staffing requirement not found.")
   }
 
-  const deleted = await db.orm.public.StaffingRequirement.where({
-    id: existing.id,
-    organizationId: membership.organizationId,
-  }).delete()
+  return db.transaction(async (tx: TxClient) => {
+    const deleted = await tx.orm.public.StaffingRequirement.where({
+      id: existing.id,
+      organizationId: membership.organizationId,
+    }).delete()
 
-  if (!deleted) {
-    throw new ShiftError("NOT_FOUND", "Staffing requirement not found.")
-  }
+    if (!deleted) {
+      throw new ShiftError("NOT_FOUND", "Staffing requirement not found.")
+    }
 
-  return deleted
+    await recordUserAudit(tx, membership, {
+      action: "STAFFING_REQUIREMENT_DELETED",
+      entityType: "STAFFING_REQUIREMENT",
+      entityId: String(deleted.id),
+      summary: "Deleted staffing requirement.",
+      metadata: {
+        before: {
+          departmentId: deleted.departmentId,
+          shiftTypeId: deleted.shiftTypeId,
+          professionId: deleted.professionId,
+          requiredCount: deleted.requiredCount,
+        },
+      },
+    })
+
+    return deleted
+  })
 }

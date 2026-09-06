@@ -8,6 +8,8 @@ import {
 } from "@/lib/dates/calendar-date"
 import type { Permission } from "@/lib/permissions/permissions"
 import { permissions } from "@/lib/permissions/permissions"
+import { quoteAuditName } from "@/modules/audit/copy"
+import { recordUserAudit } from "@/modules/audit/services/record"
 import { rosterError } from "@/modules/rosters/errors"
 import type { CreateRosterInput, UpdateRosterInput } from "@/modules/rosters/schemas/roster"
 import {
@@ -18,6 +20,7 @@ import {
 import { db } from "@/prisma/db"
 
 type PublicOrm = typeof db.orm
+type TxClient = { orm: PublicOrm }
 
 async function requireRosterAccess(permission: Permission) {
   const membership = await getCurrentMembership()
@@ -275,14 +278,34 @@ export async function createRoster(input: CreateRosterInput) {
   await assertOwnedDepartment(db.orm, membership.organizationId, input.departmentId)
 
   try {
-    return await db.orm.public.Roster.create({
-      organizationId: membership.organizationId,
-      departmentId: input.departmentId,
-      name: input.name,
-      startDate: input.startDate,
-      endDate: input.endDate,
-      status: "DRAFT",
-      createdByUserId: membership.userId,
+    return await db.transaction(async (tx: TxClient) => {
+      const created = await tx.orm.public.Roster.create({
+        organizationId: membership.organizationId,
+        departmentId: input.departmentId,
+        name: input.name,
+        startDate: input.startDate,
+        endDate: input.endDate,
+        status: "DRAFT",
+        createdByUserId: membership.userId,
+      })
+
+      await recordUserAudit(tx, membership, {
+        action: "ROSTER_CREATED",
+        entityType: "ROSTER",
+        entityId: String(created.id),
+        summary: `Created roster ${quoteAuditName(String(created.name))}.`,
+        metadata: {
+          after: {
+            name: created.name,
+            startDate: created.startDate,
+            endDate: created.endDate,
+            departmentId: created.departmentId,
+            status: created.status,
+          },
+        },
+      })
+
+      return created
     })
   } catch {
     throw rosterError("FAILED")
@@ -316,13 +339,41 @@ export async function updateRoster(input: UpdateRosterInput) {
     throw rosterError("ASSIGNMENT_OUTSIDE_ROSTER")
   }
 
-  const updated = await db.orm.public.Roster.where({
-    id: existing.id,
-    organizationId: membership.organizationId,
-  }).update({
-    name: input.name,
-    startDate: input.startDate,
-    endDate: input.endDate,
+  const updated = await db.transaction(async (tx: TxClient) => {
+    const next = await tx.orm.public.Roster.where({
+      id: existing.id,
+      organizationId: membership.organizationId,
+    }).update({
+      name: input.name,
+      startDate: input.startDate,
+      endDate: input.endDate,
+    })
+
+    if (!next) {
+      throw rosterError("ROSTER_NOT_FOUND")
+    }
+
+    await recordUserAudit(tx, membership, {
+      action: "ROSTER_UPDATED",
+      entityType: "ROSTER",
+      entityId: String(next.id),
+      summary: `Updated roster ${quoteAuditName(String(next.name))}.`,
+      metadata: {
+        changedFields: ["name", "startDate", "endDate"],
+        before: {
+          name: existing.name,
+          startDate: existing.startDate,
+          endDate: existing.endDate,
+        },
+        after: {
+          name: next.name,
+          startDate: next.startDate,
+          endDate: next.endDate,
+        },
+      },
+    })
+
+    return next
   })
 
   if (!updated) {
