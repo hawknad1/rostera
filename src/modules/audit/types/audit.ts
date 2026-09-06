@@ -40,6 +40,14 @@ export const auditActions = [
   "MEMBERSHIP_ROLE_CHANGED",
   "MEMBERSHIP_ACTIVATED",
   "MEMBERSHIP_DEACTIVATED",
+  "ATTENDANCE_CLOCKED_IN",
+  "ATTENDANCE_CLOCKED_OUT",
+  "ATTENDANCE_CORRECTED",
+  "ATTENDANCE_APPROVED",
+  "ATTENDANCE_REJECTED",
+  "ATTENDANCE_VOIDED",
+  "ATTENDANCE_EXCEPTION_RESOLVED",
+  "ATTENDANCE_POLICY_UPDATED",
 ] as const
 
 export type AuditAction = (typeof auditActions)[number]
@@ -57,6 +65,8 @@ export const auditEntityTypes = [
   "SCHEDULING_POLICY",
   "USER",
   "MEMBERSHIP",
+  "ATTENDANCE",
+  "ATTENDANCE_POLICY",
 ] as const
 
 export type AuditEntityType = (typeof auditEntityTypes)[number]
@@ -134,6 +144,14 @@ export const auditActionLabels: Record<AuditAction, string> = {
   MEMBERSHIP_ROLE_CHANGED: "Changed membership role",
   MEMBERSHIP_ACTIVATED: "Activated membership",
   MEMBERSHIP_DEACTIVATED: "Deactivated membership",
+  ATTENDANCE_CLOCKED_IN: "Clocked in",
+  ATTENDANCE_CLOCKED_OUT: "Clocked out",
+  ATTENDANCE_CORRECTED: "Corrected attendance",
+  ATTENDANCE_APPROVED: "Approved attendance",
+  ATTENDANCE_REJECTED: "Rejected attendance",
+  ATTENDANCE_VOIDED: "Voided attendance",
+  ATTENDANCE_EXCEPTION_RESOLVED: "Resolved attendance exception",
+  ATTENDANCE_POLICY_UPDATED: "Updated attendance policy",
 }
 
 export const auditEntityLabels: Record<AuditEntityType, string> = {
@@ -149,4 +167,6 @@ export const auditEntityLabels: Record<AuditEntityType, string> = {
   SCHEDULING_POLICY: "Scheduling policy",
   USER: "User",
   MEMBERSHIP: "Membership",
+  ATTENDANCE: "Attendance",
+  ATTENDANCE_POLICY: "Attendance policy",
 }

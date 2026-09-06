@@ -81,7 +81,7 @@ No duplicate tables or notification types. Staff actions call `createLeave`, `ca
 
 Swap requests remain requests. Completing a swap against a published roster still requires an amendment (`SWAP_REQUIRES_AMENDMENT`) inside the existing swap module.
 
-Staff notification “Open” uses `/me/leave/...`, `/me/swaps/...`, and `/me/roster`. Admin notification deep links are unchanged.
+Staff notification “Open” uses `/me/leave/...`, `/me/swaps/...`, `/me/roster`, and `/me/attendance`. Admin notification deep links are unchanged.
 
 ## PWA testing
 

@@ -14,6 +14,7 @@ const MODEL_NAMES = [
   "Organization",
   "OrganizationMember",
   "OrganizationSchedulingPolicy",
+  "OrganizationAttendancePolicy",
   "Role",
   "Permission",
   "RolePermission",
@@ -32,6 +33,9 @@ const MODEL_NAMES = [
   "NotificationPreference",
   "NotificationDeliveryReceipt",
   "AuditEvent",
+  "AttendanceRecord",
+  "AttendanceEvent",
+  "AttendanceException",
 ] as const
 
 type ModelName = (typeof MODEL_NAMES)[number]
@@ -257,6 +261,44 @@ function assertUnique(tables: Record<ModelName, Row[]>, model: ModelName, row: R
     throw uniqueViolation("organizationSchedulingPolicy", "organizationId")
   }
 
+  if (
+    model === "OrganizationAttendancePolicy" &&
+    tables.OrganizationAttendancePolicy.some(
+      (existing) => existing !== row && existing.organizationId === row.organizationId,
+    )
+  ) {
+    throw uniqueViolation("organizationAttendancePolicy", "organizationId")
+  }
+
+  if (model === "AttendanceRecord") {
+    if (
+      row.openSessionKey != null &&
+      tables.AttendanceRecord.some(
+        (existing) =>
+          existing !== row &&
+          existing.organizationId === row.organizationId &&
+          existing.staffId === row.staffId &&
+          existing.openSessionKey === row.openSessionKey,
+      )
+    ) {
+      throw uniqueViolation("attendanceRecord", "openSessionKey")
+    }
+  }
+
+  if (model === "AttendanceEvent") {
+    if (
+      row.punchKey != null &&
+      tables.AttendanceEvent.some(
+        (existing) =>
+          existing !== row &&
+          existing.attendanceRecordId === row.attendanceRecordId &&
+          existing.punchKey === row.punchKey,
+      )
+    ) {
+      throw uniqueViolation("attendanceEvent", "punchKey")
+    }
+  }
+
   if (model === "Notification") {
     if (
       tables.Notification.some(
@@ -419,6 +461,14 @@ function modelTable(model: ModelName) {
       return "notificationPreference"
     case "NotificationDeliveryReceipt":
       return "notificationDeliveryReceipt"
+    case "OrganizationAttendancePolicy":
+      return "organizationAttendancePolicy"
+    case "AttendanceRecord":
+      return "attendanceRecord"
+    case "AttendanceEvent":
+      return "attendanceEvent"
+    case "AttendanceException":
+      return "attendanceException"
     default:
       return model.charAt(0).toLowerCase() + model.slice(1)
   }
@@ -519,6 +569,38 @@ function withCreateDefaults(model: ModelName, data: Row): Row {
   if (model === "AuditEvent") {
     row.actorType ??= "USER"
     row.createdAt ??= new Date().toISOString()
+  }
+
+  if (model === "OrganizationAttendancePolicy") {
+    row.attendanceEnabled ??= true
+    row.lateThresholdMinutes ??= 0
+    row.earlyDepartureThresholdMinutes ??= 0
+    row.overtimeThresholdMinutes ??= 0
+    row.allowUnscheduledAttendance ??= true
+    row.allowEarlyClockIn ??= true
+    row.maximumEarlyClockInMinutes ??= 120
+    row.maximumLateClockOutMinutes ??= 720
+    row.createdAt ??= new Date().toISOString()
+    row.updatedAt ??= row.createdAt
+  }
+
+  if (model === "AttendanceRecord") {
+    row.reviewStatus ??= "UNREVIEWED"
+    row.lateMinutes ??= 0
+    row.earlyDepartureMinutes ??= 0
+    row.overtimeMinutes ??= 0
+    row.createdAt ??= new Date().toISOString()
+    row.updatedAt ??= row.createdAt
+  }
+
+  if (model === "AttendanceEvent") {
+    row.createdAt ??= new Date().toISOString()
+  }
+
+  if (model === "AttendanceException") {
+    row.status ??= "OPEN"
+    row.createdAt ??= new Date().toISOString()
+    row.updatedAt ??= row.createdAt
   }
 
   return row
@@ -710,6 +792,14 @@ function createPublicOrm(
       {},
       [],
     ),
+    OrganizationAttendancePolicy: createCollection(
+      tables,
+      queries,
+      failCreates,
+      "OrganizationAttendancePolicy",
+      {},
+      [],
+    ),
     Role: createCollection(tables, queries, failCreates, "Role", {}, []),
     Permission: createCollection(tables, queries, failCreates, "Permission", {}, []),
     RolePermission: createCollection(tables, queries, failCreates, "RolePermission", {}, []),
@@ -763,6 +853,16 @@ function createPublicOrm(
       [],
     ),
     AuditEvent: createCollection(tables, queries, failCreates, "AuditEvent", {}, []),
+    AttendanceRecord: createCollection(tables, queries, failCreates, "AttendanceRecord", {}, []),
+    AttendanceEvent: createCollection(tables, queries, failCreates, "AttendanceEvent", {}, []),
+    AttendanceException: createCollection(
+      tables,
+      queries,
+      failCreates,
+      "AttendanceException",
+      {},
+      [],
+    ),
   }
 }
 
@@ -772,6 +872,7 @@ function emptyTables(): Record<ModelName, Row[]> {
     Organization: [],
     OrganizationMember: [],
     OrganizationSchedulingPolicy: [],
+    OrganizationAttendancePolicy: [],
     Role: [],
     Permission: [],
     RolePermission: [],
@@ -790,6 +891,9 @@ function emptyTables(): Record<ModelName, Row[]> {
     NotificationPreference: [],
     NotificationDeliveryReceipt: [],
     AuditEvent: [],
+    AttendanceRecord: [],
+    AttendanceEvent: [],
+    AttendanceException: [],
   }
 }
 
@@ -805,6 +909,7 @@ export function createInMemoryPrisma() {
       Organization: tables.Organization.map((row) => ({ ...row })),
       OrganizationMember: tables.OrganizationMember.map((row) => ({ ...row })),
       OrganizationSchedulingPolicy: tables.OrganizationSchedulingPolicy.map((row) => ({ ...row })),
+      OrganizationAttendancePolicy: tables.OrganizationAttendancePolicy.map((row) => ({ ...row })),
       Role: tables.Role.map((row) => ({ ...row })),
       Permission: tables.Permission.map((row) => ({ ...row })),
       RolePermission: tables.RolePermission.map((row) => ({ ...row })),
@@ -823,6 +928,9 @@ export function createInMemoryPrisma() {
       NotificationPreference: tables.NotificationPreference.map((row) => ({ ...row })),
       NotificationDeliveryReceipt: tables.NotificationDeliveryReceipt.map((row) => ({ ...row })),
       AuditEvent: tables.AuditEvent.map((row) => ({ ...row })),
+      AttendanceRecord: tables.AttendanceRecord.map((row) => ({ ...row })),
+      AttendanceEvent: tables.AttendanceEvent.map((row) => ({ ...row })),
+      AttendanceException: tables.AttendanceException.map((row) => ({ ...row })),
     }
   }
 

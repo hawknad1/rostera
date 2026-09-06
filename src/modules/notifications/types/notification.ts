@@ -11,11 +11,14 @@ export const notificationTypes = [
   "ROSTER_PUBLISHED",
   "ROSTER_RETURNED_TO_DRAFT",
   "ROSTER_AMENDMENT_CREATED",
+  "ATTENDANCE_CORRECTED",
+  "ATTENDANCE_APPROVED",
+  "ATTENDANCE_REJECTED",
 ] as const
 
 export type NotificationType = (typeof notificationTypes)[number]
 
-export const notificationEntityTypes = ["LEAVE_REQUEST", "SHIFT_SWAP", "ROSTER"] as const
+export const notificationEntityTypes = ["LEAVE_REQUEST", "SHIFT_SWAP", "ROSTER", "ATTENDANCE"] as const
 
 export type NotificationEntityType = (typeof notificationEntityTypes)[number]
 
@@ -122,6 +125,13 @@ export type DomainNotificationEvent =
       rosterId: string
       startDate: string
       endDate: string
+    }
+  | {
+      type: "ATTENDANCE_CORRECTED" | "ATTENDANCE_APPROVED" | "ATTENDANCE_REJECTED"
+      organizationId: string
+      eventId: string
+      actorUserId: string
+      staffId: string
     }
 
 export const NOTIFICATION_PAGE_SIZE = 25

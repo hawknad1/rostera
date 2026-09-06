@@ -167,6 +167,12 @@ async function resolveRecipientUserIds(orm: PublicOrm, event: DomainNotification
       )
       return uniqueIds(userIds)
     }
+    case "ATTENDANCE_CORRECTED":
+    case "ATTENDANCE_APPROVED":
+    case "ATTENDANCE_REJECTED":
+      return uniqueIds([
+        await linkedUserIdForStaff(orm, event.organizationId, event.staffId),
+      ])
   }
 }
 

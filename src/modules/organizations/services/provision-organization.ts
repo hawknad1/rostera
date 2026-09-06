@@ -17,6 +17,7 @@ import {
   toOrganizationSlug,
 } from "@/modules/organizations/slug"
 import { syncAuthenticatedUser } from "@/modules/users/services/syncAuthenticatedUser"
+import { ensureDefaultAttendancePolicy } from "@/modules/attendance/services/policy"
 import { ensureDefaultSchedulingPolicy } from "@/modules/organizations/services/ensure-scheduling-policy"
 
 type PublicOrm = typeof db.orm
@@ -130,6 +131,7 @@ export async function provisionOrganization(input: ProvisionOrganizationInput) {
         })
 
         await ensureDefaultSchedulingPolicy(tx.orm, organization.id)
+        await ensureDefaultAttendancePolicy(tx.orm, organization.id)
 
         if (
           membership.status !== "ACTIVE" ||

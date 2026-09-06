@@ -7,6 +7,7 @@ import {
   Bell,
   CalendarDays,
   Clock3,
+  ClipboardCheck,
   House,
   Palmtree,
 } from "lucide-react"
@@ -15,6 +16,7 @@ const items = [
   { href: "/me", label: "Home", icon: House, exact: true },
   { href: "/me/roster", label: "Roster", icon: CalendarDays },
   { href: "/me/shifts", label: "Shifts", icon: Clock3 },
+  { href: "/me/attendance", label: "Clock", icon: ClipboardCheck },
   { href: "/me/leave", label: "Leave", icon: Palmtree },
   { href: "/me/swaps", label: "Swaps", icon: ArrowLeftRight },
   { href: "/me/notifications", label: "Notifications", icon: Bell },

@@ -15,5 +15,7 @@ export function staffNotificationHref(
       return `/me/swaps/${entityId}`
     case "ROSTER":
       return "/me/roster"
+    case "ATTENDANCE":
+      return "/me/attendance"
   }
 }

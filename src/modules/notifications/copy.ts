@@ -97,5 +97,20 @@ export function notificationCopy(event: DomainNotificationEvent): { title: strin
         title: "Roster amendment created",
         body: `${event.rosterName} version ${event.versionNumber} has been created as a draft amendment.`,
       }
+    case "ATTENDANCE_CORRECTED":
+      return {
+        title: "Attendance corrected",
+        body: "A supervisor has corrected your attendance record.",
+      }
+    case "ATTENDANCE_APPROVED":
+      return {
+        title: "Attendance correction approved",
+        body: "Your attendance correction has been approved.",
+      }
+    case "ATTENDANCE_REJECTED":
+      return {
+        title: "Attendance correction rejected",
+        body: "Your attendance correction has been rejected.",
+      }
   }
 }

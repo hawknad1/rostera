@@ -15,6 +15,8 @@ export function notificationHref(
       return `/shift-swaps/${entityId}`
     case "ROSTER":
       return `/rosters/${entityId}`
+    case "ATTENDANCE":
+      return `/attendance/${entityId}`
   }
 }
 
@@ -31,6 +33,10 @@ export function entityTypeForNotification(
 
   if (type.startsWith("ROSTER_")) {
     return "ROSTER"
+  }
+
+  if (type.startsWith("ATTENDANCE_")) {
+    return "ATTENDANCE"
   }
 
   return undefined

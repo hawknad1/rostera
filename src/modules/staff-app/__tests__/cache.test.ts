@@ -59,6 +59,8 @@ describe("staff offline cache", () => {
     expect(staffCacheStorageKey("user-a", "org-a")).toContain("user-a")
     expect(STAFF_CACHE_BOUNDARIES.denied).toContain("audit logs")
     expect(STAFF_CACHE_BOUNDARIES.mutationsNeverQueued).toContain("CREATE LEAVE")
+    expect(STAFF_CACHE_BOUNDARIES.mutationsNeverQueued).toContain("CLOCK IN")
+    expect(STAFF_CACHE_BOUNDARIES.mutationsNeverQueued).toContain("CLOCK OUT")
   })
 
   it("blocks offline mutations without queuing them", () => {
