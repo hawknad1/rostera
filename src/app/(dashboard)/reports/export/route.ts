@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 
+import { exportResponseHeaders, isCrossSiteExportRequest } from "@/lib/http/export-request"
 import { isReportError } from "@/modules/reports/errors"
 import { exportReport } from "@/modules/reports/services/exports"
 import { reportFiltersFromSearchParams } from "@/modules/reports/ui/report-query"
@@ -21,6 +22,10 @@ function statusFor(code: string) {
 }
 
 export async function GET(request: Request) {
+  if (isCrossSiteExportRequest(request)) {
+    return new NextResponse("Forbidden", { status: 403 })
+  }
+
   try {
     const url = new URL(request.url)
     const filters = reportFiltersFromSearchParams(Object.fromEntries(url.searchParams.entries()))
@@ -30,6 +35,7 @@ export async function GET(request: Request) {
       headers: {
         "Content-Type": result.contentType,
         "Content-Disposition": `attachment; filename="${result.filename}"`,
+        ...exportResponseHeaders,
       },
     })
   } catch (error) {

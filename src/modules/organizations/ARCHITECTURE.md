@@ -60,13 +60,15 @@ Acceptance requires:
 
 Email is sent through the existing outbox (`ORGANIZATION_INVITED`). The accept URL (including the token) is in the email payload only, not in audit metadata. In-app notification is skipped because the invitee often has no user row; the email `destination` is the invitee address and `recipientUserId` is the inviter (FK).
 
-Resend issues a new token hash and expiry, and is rate-limited. Revoked invitations cannot be reused.
+Resend issues a new token hash and expiry, and is rate-limited. Invitation **creation** is also limited to 20 invites per administrator per organization per 15 minutes (database-backed). Revoked invitations cannot be reused.
 
 ## Roles
 
 Default roles are **system** roles (`isSystem`). They are not editable or deactivatable. Custom roles are organization-owned. Cross-organization role IDs are rejected.
 
 An organization administrator is an active member whose role is system `SUPER_ADMIN` or has `organization.edit`. The last such member cannot be deactivated or demoted.
+
+Last-admin checks lock the organization row (`UPDATE` the current name) inside the same transaction before counting remaining admins. Concurrent demotions serialize in PostgreSQL. The in-memory test ORM cannot prove that race.
 
 ## User ↔ StaffProfile
 

@@ -1,16 +1,12 @@
 import { createHmac, timingSafeEqual } from "node:crypto"
 
 import { isUniqueConstraintViolation } from "@/lib/db/unique-constraint"
+import { env } from "@/lib/env"
 import { adminSafeDeliveryError } from "@/modules/notifications/providers/errors"
 import type { NotificationDeliveryProvider } from "@/modules/notifications/types/notification"
 import type { PublicOrm } from "@/modules/notifications/types/orm"
 import { db } from "@/prisma/db"
 import { Temporal } from "temporal-polyfill"
-
-function env(name: string) {
-  const value = process.env[name]
-  return value && value.trim() ? value.trim() : null
-}
 
 export function validateTwilioRequestSignature(input: {
   signature: string | null

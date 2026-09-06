@@ -1,3 +1,4 @@
+import { env, isProduction } from "@/lib/env"
 import { NextResponse } from "next/server"
 
 import {
@@ -6,10 +7,23 @@ import {
 } from "@/modules/notifications/services/webhooks"
 
 function callbackUrl(request: Request) {
-  return process.env.TWILIO_STATUS_CALLBACK_URL?.trim() || request.url
+  const configured = env("TWILIO_STATUS_CALLBACK_URL")
+  if (configured) {
+    return configured
+  }
+
+  if (isProduction()) {
+    return null
+  }
+
+  return request.url
 }
 
 export async function POST(request: Request) {
+  const url = callbackUrl(request)
+  if (!url) {
+    return new NextResponse("Unauthorized", { status: 401 })
+  }
   const form = await request.formData()
   const params: Record<string, string> = {}
   for (const [key, value] of form.entries()) {
@@ -20,7 +34,7 @@ export async function POST(request: Request) {
 
   const valid = validateTwilioRequestSignature({
     signature: request.headers.get("x-twilio-signature"),
-    url: callbackUrl(request),
+    url,
     params,
   })
 

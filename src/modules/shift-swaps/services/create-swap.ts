@@ -1,3 +1,4 @@
+import { lockAssignmentRows } from "@/lib/db/row-lock"
 import type { CreateSwapInput } from "@/modules/shift-swaps/schemas/swap"
 import { swapError } from "@/modules/shift-swaps/errors"
 import {
@@ -89,6 +90,12 @@ export async function createSwap(input: CreateSwapInput) {
       assertDistinctStaff(requester, targetStaff)
       assertStaffEligibleForSwap(requester, source.departmentId)
       assertStaffEligibleForSwap(targetStaff, source.departmentId)
+
+      const locked = await lockAssignmentRows(tx.orm, organizationId, [source.id, target.id])
+
+      if (!locked) {
+        throw swapError("SWAP_NOT_FOUND")
+      }
 
       await assertAssignmentsNotInActiveSwap(tx.orm, organizationId, [source.id, target.id])
 

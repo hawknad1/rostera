@@ -11,6 +11,7 @@ import {
   parseCalendarDate,
 } from "@/lib/dates/calendar-date"
 import { isExclusionConstraintViolation } from "@/lib/db/exclusion-constraint"
+import { lockStaffRow } from "@/lib/db/row-lock"
 import type { Permission } from "@/lib/permissions/permissions"
 import { permissions } from "@/lib/permissions/permissions"
 import { isLeaveError, leaveError } from "@/modules/leave/errors"
@@ -425,6 +426,12 @@ export async function createLeave(input: CreateLeaveInput) {
 
       if (staff.employmentStatus !== "ACTIVE") {
         throw leaveError("STAFF_NOT_ACTIVE")
+      }
+
+      const locked = await lockStaffRow(tx.orm, organizationId, staff.id)
+
+      if (!locked) {
+        throw leaveError("STAFF_NOT_IN_ORGANIZATION")
       }
 
       const active = await loadActiveLeaveForStaff(tx.orm, organizationId, staff.id)

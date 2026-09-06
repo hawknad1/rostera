@@ -5,17 +5,15 @@ import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
 
+import { safeInternalPath } from "@/lib/http/safe-path"
+
 function safeNextPath() {
   if (typeof window === "undefined") {
     return "/"
   }
 
-  const next = new URLSearchParams(window.location.search).get("next")
-  if (next && next.startsWith("/") && !next.startsWith("//")) {
-    return next
-  }
-
-  return "/"
+  const params = new URLSearchParams(window.location.search)
+  return safeInternalPath(params.get("next")) ?? safeInternalPath(params.get("redirectTo")) ?? "/"
 }
 
 export default function LoginPage() {
@@ -41,7 +39,7 @@ export default function LoginPage() {
     })
 
     if (error) {
-      setError(error.message)
+      setError("Invalid email or password.")
       setLoading(false)
       return
     }

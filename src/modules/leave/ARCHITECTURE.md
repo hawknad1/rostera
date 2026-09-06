@@ -81,7 +81,7 @@ Adjacent ranges are allowed (`10–12` then `13–15`). Rejected and cancelled l
 
 Enforced in the leave service inside a transaction. The in-memory test ORM also rejects overlapping active leave.
 
-A PostgreSQL gist exclusion on text `YYYY-MM-DD` columns is not practical here: `daterange(startDate::date, endDate::date)` is not `IMMUTABLE`, and Prisma 8's contract does not express exclusion constraints. Concurrent overlapping creates can therefore race. The service check plus transaction is the guaranteed path; do not claim database-level overlap safety.
+A PostgreSQL gist exclusion on text `YYYY-MM-DD` columns is not practical here: `daterange(startDate::date, endDate::date)` is not `IMMUTABLE`, and Prisma 8's contract does not express exclusion constraints. Concurrent overlapping creates are serialized by locking the staff row (`UPDATE`) before re-reading active leave. That is production-safe in PostgreSQL; it is not a database exclusion constraint.
 
 ## Scheduling integration
 

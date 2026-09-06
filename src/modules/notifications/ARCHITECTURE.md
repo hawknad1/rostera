@@ -236,6 +236,8 @@ Never log or return Twilio tokens, Resend keys, authorization headers, full phon
 
 `drainNotificationWork` is the stable entry. A later Vercel cron, queue consumer, or dedicated worker can call it without changing leave/roster/swap services. Do not introduce Redis, Kafka, or RabbitMQ for this phase.
 
+`POST /api/internal/notifications/drain` and `POST /api/webhooks/twilio/status` are session-exempt. They must not go through the Supabase login redirect. Drain requires `Authorization: Bearer $NOTIFICATION_WORKER_SECRET` (fails closed if the secret is missing). Twilio requires a valid `X-Twilio-Signature`. In production, `TWILIO_STATUS_CALLBACK_URL` must be set; the handler does not fall back to `request.url`.
+
 ## Known limitations
 
 - Prisma 8 equality `where` still loads by status and filters `availableAt` in memory.
