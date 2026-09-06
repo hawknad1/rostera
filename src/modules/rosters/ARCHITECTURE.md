@@ -46,6 +46,8 @@ The current published version of a series is the row with the highest `versionNu
 
 While a draft amendment exists, the previous published version stays current. There is never a gap where the series has no published roster because an amendment is being edited.
 
+Staff self-service (`/me`) uses `selectCurrentPublishedRosters`, not `selectOperationalRosters`. Draft and `IN_REVIEW` amendments are never staff-facing. When a newer version is published, it replaces the previous published version as the operational staff roster. Versions are not merged.
+
 Operational list views show **one row per series**: the unpublished amendment if one exists, otherwise the current published version, otherwise the latest draft.
 
 ## Assignment copying

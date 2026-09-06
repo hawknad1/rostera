@@ -7,8 +7,8 @@ export default function ForbiddenPage() {
       <p className="text-sm text-muted-foreground">
         You do not have permission to view this page.
       </p>
-      <Link className="text-sm font-medium text-primary underline-offset-4 hover:underline" href="/dashboard">
-        Back to dashboard
+      <Link className="text-sm font-medium text-primary underline-offset-4 hover:underline" href="/">
+        Back to Rostera
       </Link>
     </main>
   )
