@@ -1,0 +1,103 @@
+[
+  {
+    "id": "checkConstraint.shiftAssignment.shiftAssignment_window_order_78701f4f",
+    "label": "Add check constraint \"shiftAssignment_window_order_78701f4f\" on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "shiftAssignment_window_order_78701f4f",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"shiftAssignment_window_order_78701f4f\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_window_order_78701f4f",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"shiftAssignment_window_order_78701f4f\"",
+        "sql": "ALTER TABLE \"public\".\"shiftAssignment\" ADD CONSTRAINT \"shiftAssignment_window_order_78701f4f\" CHECK (\"startDateTime\" < \"endDateTime\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"shiftAssignment_window_order_78701f4f\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_window_order_78701f4f",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "extension.btree_gist",
+    "label": "Enable btree_gist for equality on text exclusion constraints",
+    "operationClass": "additive",
+    "invariantId": "rostera:btree_gist",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "create extension btree_gist in the extensions schema",
+        "sql": "CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA extensions"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify extension btree_gist is enabled",
+        "sql": "SELECT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'btree_gist') AS \"result\""
+      }
+    ]
+  },
+  {
+    "id": "exclusion.shiftAssignment.shiftAssignment_staff_time_excl",
+    "label": "Prevent overlapping half-open assignment windows for the same staff member",
+    "operationClass": "additive",
+    "invariantId": "rostera:shiftAssignment_staff_time_excl",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"shiftAssignment_staff_time_excl\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_staff_time_excl",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add exclusion constraint \"shiftAssignment_staff_time_excl\"",
+        "sql": "ALTER TABLE \"public\".\"shiftAssignment\" ADD CONSTRAINT \"shiftAssignment_staff_time_excl\" EXCLUDE USING gist (\"staffId\" WITH =, tstzrange(\"startDateTime\", \"endDateTime\", '[)') WITH &&)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"shiftAssignment_staff_time_excl\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_staff_time_excl",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ]
+  }
+]

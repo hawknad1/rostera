@@ -1,0 +1,164 @@
+[
+  {
+    "id": "table.organizationSchedulingPolicy",
+    "label": "Create table \"organizationSchedulingPolicy\"",
+    "summary": "Creates table \"organizationSchedulingPolicy\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "organizationSchedulingPolicy"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"organizationSchedulingPolicy\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationSchedulingPolicy\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"organizationSchedulingPolicy\"",
+        "sql": "CREATE TABLE \"public\".\"organizationSchedulingPolicy\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"maximumConsecutiveDays\" int4,\n  \"maximumNightShiftsPerWeek\" int4,\n  \"maximumWeekendShifts\" int4,\n  \"maximumWeeklyMinutes\" int4,\n  \"minimumRestMinutes\" int4,\n  \"organizationId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"organizationSchedulingPolicy\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationSchedulingPolicy\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.organizationSchedulingPolicy.organizationSchedulingPolicy_organizationId_key",
+    "label": "Add unique constraint on \"organizationSchedulingPolicy\" (organizationId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "organizationSchedulingPolicy_organizationId_key",
+        "table": "organizationSchedulingPolicy"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"organizationSchedulingPolicy_organizationId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationSchedulingPolicy_organizationId_key",
+          "public",
+          "\"public\".\"organizationSchedulingPolicy\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"organizationSchedulingPolicy_organizationId_key\"",
+        "sql": "ALTER TABLE \"public\".\"organizationSchedulingPolicy\" ADD CONSTRAINT \"organizationSchedulingPolicy_organizationId_key\" UNIQUE (\"organizationId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"organizationSchedulingPolicy_organizationId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationSchedulingPolicy_organizationId_key",
+          "public",
+          "\"public\".\"organizationSchedulingPolicy\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.organizationSchedulingPolicy.organizationSchedulingPolicy_organizationId_fkey",
+    "label": "Add foreign key \"organizationSchedulingPolicy_organizationId_fkey\" on \"organizationSchedulingPolicy\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "organizationSchedulingPolicy_organizationId_fkey",
+        "table": "organizationSchedulingPolicy"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"organizationSchedulingPolicy_organizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationSchedulingPolicy_organizationId_fkey",
+          "public",
+          "\"public\".\"organizationSchedulingPolicy\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"organizationSchedulingPolicy_organizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"organizationSchedulingPolicy\"\nADD CONSTRAINT \"organizationSchedulingPolicy_organizationId_fkey\"\nFOREIGN KEY (\"organizationId\")\nREFERENCES \"public\".\"organization\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"organizationSchedulingPolicy_organizationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationSchedulingPolicy_organizationId_fkey",
+          "public",
+          "\"public\".\"organizationSchedulingPolicy\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.organizationSchedulingPolicy",
+    "label": "Enable row-level security on \"organizationSchedulingPolicy\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "organizationSchedulingPolicy"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"organizationSchedulingPolicy\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "organizationSchedulingPolicy"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"organizationSchedulingPolicy\"",
+        "sql": "ALTER TABLE \"public\".\"organizationSchedulingPolicy\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"organizationSchedulingPolicy\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "organizationSchedulingPolicy"
+        ]
+      }
+    ]
+  }
+]
