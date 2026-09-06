@@ -1,0 +1,451 @@
+[
+  {
+    "id": "table.leaveRequest",
+    "label": "Create table \"leaveRequest\"",
+    "summary": "Creates table \"leaveRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "leaveRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"leaveRequest\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": ["\"public\".\"leaveRequest\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"leaveRequest\"",
+        "sql": "CREATE TABLE \"public\".\"leaveRequest\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"endDate\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"leaveType\" text NOT NULL,\n  \"notes\" text,\n  \"organizationId\" text NOT NULL,\n  \"requestedByUserId\" text NOT NULL,\n  \"reviewedAt\" timestamptz,\n  \"reviewedByUserId\" text,\n  \"staffId\" text NOT NULL,\n  \"startDate\" text NOT NULL,\n  \"status\" text DEFAULT 'PENDING' NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"leaveRequest_date_order_2aa69aa6\" CHECK (\"startDate\" <= \"endDate\"),\n  CONSTRAINT \"leaveRequest_leaveType_check_8e9923c5\" CHECK (\"leaveType\" IN ('ANNUAL', 'SICK', 'MATERNITY', 'PATERNITY', 'STUDY', 'COMPASSIONATE', 'OTHER')),\n  CONSTRAINT \"leaveRequest_status_check_57fe5f48\" CHECK (\"status\" IN ('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"leaveRequest\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": ["\"public\".\"leaveRequest\""]
+      }
+    ]
+  },
+  {
+    "id": "index.leaveRequest.leaveRequest_organizationId_idx_2e17ef41",
+    "label": "Create index \"leaveRequest_organizationId_idx_2e17ef41\" on \"leaveRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "leaveRequest_organizationId_idx_2e17ef41",
+        "table": "leaveRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"leaveRequest_organizationId_idx_2e17ef41\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": ["\"public\".\"leaveRequest_organizationId_idx_2e17ef41\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"leaveRequest_organizationId_idx_2e17ef41\"",
+        "sql": "CREATE INDEX \"leaveRequest_organizationId_idx_2e17ef41\" ON \"public\".\"leaveRequest\" (\"organizationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"leaveRequest_organizationId_idx_2e17ef41\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": ["\"public\".\"leaveRequest_organizationId_idx_2e17ef41\""]
+      }
+    ]
+  },
+  {
+    "id": "index.leaveRequest.leaveRequest_organizationId_staffId_idx_4ac10b62",
+    "label": "Create index \"leaveRequest_organizationId_staffId_idx_4ac10b62\" on \"leaveRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "leaveRequest_organizationId_staffId_idx_4ac10b62",
+        "table": "leaveRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"leaveRequest_organizationId_staffId_idx_4ac10b62\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": ["\"public\".\"leaveRequest_organizationId_staffId_idx_4ac10b62\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"leaveRequest_organizationId_staffId_idx_4ac10b62\"",
+        "sql": "CREATE INDEX \"leaveRequest_organizationId_staffId_idx_4ac10b62\" ON \"public\".\"leaveRequest\" (\"organizationId\", \"staffId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"leaveRequest_organizationId_staffId_idx_4ac10b62\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": ["\"public\".\"leaveRequest_organizationId_staffId_idx_4ac10b62\""]
+      }
+    ]
+  },
+  {
+    "id": "index.leaveRequest.leaveRequest_organizationId_status_idx_21af5e82",
+    "label": "Create index \"leaveRequest_organizationId_status_idx_21af5e82\" on \"leaveRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "leaveRequest_organizationId_status_idx_21af5e82",
+        "table": "leaveRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"leaveRequest_organizationId_status_idx_21af5e82\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": ["\"public\".\"leaveRequest_organizationId_status_idx_21af5e82\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"leaveRequest_organizationId_status_idx_21af5e82\"",
+        "sql": "CREATE INDEX \"leaveRequest_organizationId_status_idx_21af5e82\" ON \"public\".\"leaveRequest\" (\"organizationId\", \"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"leaveRequest_organizationId_status_idx_21af5e82\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": ["\"public\".\"leaveRequest_organizationId_status_idx_21af5e82\""]
+      }
+    ]
+  },
+  {
+    "id": "index.leaveRequest.leaveRequest_requestedByUserId_idx_85281b2d",
+    "label": "Create index \"leaveRequest_requestedByUserId_idx_85281b2d\" on \"leaveRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "leaveRequest_requestedByUserId_idx_85281b2d",
+        "table": "leaveRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"leaveRequest_requestedByUserId_idx_85281b2d\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": ["\"public\".\"leaveRequest_requestedByUserId_idx_85281b2d\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"leaveRequest_requestedByUserId_idx_85281b2d\"",
+        "sql": "CREATE INDEX \"leaveRequest_requestedByUserId_idx_85281b2d\" ON \"public\".\"leaveRequest\" (\"requestedByUserId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"leaveRequest_requestedByUserId_idx_85281b2d\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": ["\"public\".\"leaveRequest_requestedByUserId_idx_85281b2d\""]
+      }
+    ]
+  },
+  {
+    "id": "index.leaveRequest.leaveRequest_reviewedByUserId_idx_e62d4e38",
+    "label": "Create index \"leaveRequest_reviewedByUserId_idx_e62d4e38\" on \"leaveRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "leaveRequest_reviewedByUserId_idx_e62d4e38",
+        "table": "leaveRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"leaveRequest_reviewedByUserId_idx_e62d4e38\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": ["\"public\".\"leaveRequest_reviewedByUserId_idx_e62d4e38\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"leaveRequest_reviewedByUserId_idx_e62d4e38\"",
+        "sql": "CREATE INDEX \"leaveRequest_reviewedByUserId_idx_e62d4e38\" ON \"public\".\"leaveRequest\" (\"reviewedByUserId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"leaveRequest_reviewedByUserId_idx_e62d4e38\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": ["\"public\".\"leaveRequest_reviewedByUserId_idx_e62d4e38\""]
+      }
+    ]
+  },
+  {
+    "id": "index.leaveRequest.leaveRequest_staffId_idx_ce92c64e",
+    "label": "Create index \"leaveRequest_staffId_idx_ce92c64e\" on \"leaveRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "leaveRequest_staffId_idx_ce92c64e",
+        "table": "leaveRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"leaveRequest_staffId_idx_ce92c64e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": ["\"public\".\"leaveRequest_staffId_idx_ce92c64e\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"leaveRequest_staffId_idx_ce92c64e\"",
+        "sql": "CREATE INDEX \"leaveRequest_staffId_idx_ce92c64e\" ON \"public\".\"leaveRequest\" (\"staffId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"leaveRequest_staffId_idx_ce92c64e\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": ["\"public\".\"leaveRequest_staffId_idx_ce92c64e\""]
+      }
+    ]
+  },
+  {
+    "id": "index.leaveRequest.leaveRequest_staffId_status_startDate_endDate_idx_0f091dbe",
+    "label": "Create index \"leaveRequest_staffId_status_startDate_endDate_idx_0f091dbe\" on \"leaveRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "leaveRequest_staffId_status_startDate_endDate_idx_0f091dbe",
+        "table": "leaveRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"leaveRequest_staffId_status_startDate_endDate_idx_0f091dbe\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": ["\"public\".\"leaveRequest_staffId_status_startDate_endDate_idx_0f091dbe\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"leaveRequest_staffId_status_startDate_endDate_idx_0f091dbe\"",
+        "sql": "CREATE INDEX \"leaveRequest_staffId_status_startDate_endDate_idx_0f091dbe\" ON \"public\".\"leaveRequest\" (\"staffId\", \"status\", \"startDate\", \"endDate\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"leaveRequest_staffId_status_startDate_endDate_idx_0f091dbe\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": ["\"public\".\"leaveRequest_staffId_status_startDate_endDate_idx_0f091dbe\""]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.leaveRequest.leaveRequest_organizationId_fkey",
+    "label": "Add foreign key \"leaveRequest_organizationId_fkey\" on \"leaveRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "leaveRequest_organizationId_fkey",
+        "table": "leaveRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"leaveRequest_organizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": ["leaveRequest_organizationId_fkey", "public", "\"public\".\"leaveRequest\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"leaveRequest_organizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"leaveRequest\"\nADD CONSTRAINT \"leaveRequest_organizationId_fkey\"\nFOREIGN KEY (\"organizationId\")\nREFERENCES \"public\".\"organization\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"leaveRequest_organizationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": ["leaveRequest_organizationId_fkey", "public", "\"public\".\"leaveRequest\""]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.leaveRequest.leaveRequest_staffId_fkey",
+    "label": "Add foreign key \"leaveRequest_staffId_fkey\" on \"leaveRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "leaveRequest_staffId_fkey",
+        "table": "leaveRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"leaveRequest_staffId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": ["leaveRequest_staffId_fkey", "public", "\"public\".\"leaveRequest\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"leaveRequest_staffId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"leaveRequest\"\nADD CONSTRAINT \"leaveRequest_staffId_fkey\"\nFOREIGN KEY (\"staffId\")\nREFERENCES \"public\".\"staffProfile\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"leaveRequest_staffId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": ["leaveRequest_staffId_fkey", "public", "\"public\".\"leaveRequest\""]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.leaveRequest.leaveRequest_requestedByUserId_fkey",
+    "label": "Add foreign key \"leaveRequest_requestedByUserId_fkey\" on \"leaveRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "leaveRequest_requestedByUserId_fkey",
+        "table": "leaveRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"leaveRequest_requestedByUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": ["leaveRequest_requestedByUserId_fkey", "public", "\"public\".\"leaveRequest\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"leaveRequest_requestedByUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"leaveRequest\"\nADD CONSTRAINT \"leaveRequest_requestedByUserId_fkey\"\nFOREIGN KEY (\"requestedByUserId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"leaveRequest_requestedByUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": ["leaveRequest_requestedByUserId_fkey", "public", "\"public\".\"leaveRequest\""]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.leaveRequest.leaveRequest_reviewedByUserId_fkey",
+    "label": "Add foreign key \"leaveRequest_reviewedByUserId_fkey\" on \"leaveRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "leaveRequest_reviewedByUserId_fkey",
+        "table": "leaveRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"leaveRequest_reviewedByUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": ["leaveRequest_reviewedByUserId_fkey", "public", "\"public\".\"leaveRequest\""]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"leaveRequest_reviewedByUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"leaveRequest\"\nADD CONSTRAINT \"leaveRequest_reviewedByUserId_fkey\"\nFOREIGN KEY (\"reviewedByUserId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"leaveRequest_reviewedByUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": ["leaveRequest_reviewedByUserId_fkey", "public", "\"public\".\"leaveRequest\""]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.leaveRequest",
+    "label": "Enable row-level security on \"leaveRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "leaveRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"leaveRequest\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": ["public", "leaveRequest"]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"leaveRequest\"",
+        "sql": "ALTER TABLE \"public\".\"leaveRequest\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"leaveRequest\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": ["public", "leaveRequest"]
+      }
+    ]
+  }
+]

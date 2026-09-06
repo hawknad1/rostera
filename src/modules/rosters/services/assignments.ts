@@ -16,9 +16,9 @@ import {
   assertStaffProfession,
   buildAssignmentWindow,
 } from "@/modules/rosters/validation/assignment-validation"
+import { loadApprovedLeaveForAssignment } from "@/modules/leave/services/scheduling-leave"
 import { buildSchedulingContext } from "@/modules/scheduling/engine/buildSchedulingContext"
 import { validateAssignment } from "@/modules/scheduling/engine/validateAssignment"
-import type { SchedulingLeavePeriod } from "@/modules/scheduling/types/leave"
 import type {
   SchedulingConflict,
   SchedulingConflictCode,
@@ -125,10 +125,6 @@ export async function listAssignmentFormOptions(rosterId: string) {
   }
 }
 
-export type CreateAssignmentOptions = {
-  leavePeriods?: SchedulingLeavePeriod[]
-}
-
 export type CreateAssignmentResult = {
   assignment: {
     id: string
@@ -166,7 +162,6 @@ function throwBlockingSchedulingConflict(conflict: SchedulingConflict): never {
 
 export async function createAssignment(
   input: CreateAssignmentInput,
-  options: CreateAssignmentOptions = {},
 ): Promise<CreateAssignmentResult> {
   const membership = await requireRosterAccess(permissions.rosterEdit)
   const organizationId = membership.organizationId
@@ -254,6 +249,11 @@ export async function createAssignment(
       }
 
       const schedulingConfig = await schedulingConfigForOrganization(tx.orm, organizationId)
+      const leavePeriods = await loadApprovedLeaveForAssignment(tx.orm, {
+        organizationId,
+        staffId: staff.id,
+        date: input.date,
+      })
 
       const context = buildSchedulingContext({
         organizationId,
@@ -277,7 +277,7 @@ export async function createAssignment(
           professionId: requirement.professionId,
           requiredCount: requirement.requiredCount,
         })),
-        leavePeriods: options.leavePeriods ?? [],
+        leavePeriods,
         config: schedulingConfig,
       })
 

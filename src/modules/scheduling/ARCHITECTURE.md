@@ -71,7 +71,7 @@ Rules resolve config through [`resolveSchedulingPolicy`](policy/resolve.ts):
 
 Persisted org policy maps through [`toSchedulingConfig`](policy/to-scheduling-config.ts). Enabled night and weekend limits from org policy are **HARD** (they block assignment create and roster publish). Nested `nightShiftLimit` / `weekendLimit` with an explicit `constraint` remain available for engine tests and still choose HARD or SOFT.
 
-Always-on non-policy rules: overlap, qualification, approved leave (empty input today), staffing evaluation.
+Always-on non-policy rules: overlap, qualification, approved leave (loaded by the service layer from `LeaveRequest`), staffing evaluation.
 
 ## Default policy
 
@@ -86,6 +86,7 @@ Rostera uses organization-local calendar dates (`YYYY-MM-DD`) plus Instant windo
 - **Consecutive days:** unique assignment dates. An overnight shift counts as one day — the assignment date — not the following calendar day it ends on.
 - **Night shifts:** `assignment.isOvernight` from the shift type. Clock time is not inferred.
 - **Weekend:** Saturday and Sunday (`Temporal.PlainDate.dayOfWeek` 6 and 7). No public-holiday calendar.
+- **Leave:** inclusive calendar dates compared to `assignment.date`. An overnight shift is judged by its assignment date, not the morning it ends.
 
 The engine does not hardcode `Africa/Accra`. Organization timezone already exists on `Organization.timezone` and is passed in as `SchedulingContext.timeZone`. Per-user or per-department timezones are out of scope.
 
@@ -114,7 +115,7 @@ Plain data: organization id and timezone, roster period, staff, assignments (Ins
 
 The loader filters every row to a single `organizationId`. The engine does not perform authorization.
 
-Leave is a domain input (`PENDING | APPROVED | REJECTED | CANCELLED`). Only `APPROVED` leave overlaps. There is no Leave table in this phase.
+Leave is a domain input (`PENDING | APPROVED | REJECTED | CANCELLED`) with inclusive calendar dates (`startDate` / `endDate` as `YYYY-MM-DD`). Only `APPROVED` leave is a constraint. The engine compares leave to `assignment.date`, not Instant windows, so overnight shifts are judged by their assignment date. The service layer loads tenant-scoped approved leave from `LeaveRequest` into `SchedulingContext.leavePeriods`. PENDING leave does not block scheduling. See [`leave/ARCHITECTURE.md`](../leave/ARCHITECTURE.md).
 
 ## SchedulingConflict
 

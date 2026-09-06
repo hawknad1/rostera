@@ -35,7 +35,9 @@ Conditional `where({ id, organizationId, status })` updates prevent a concurrent
 
 [`validateRoster`](services/validation.ts) is tenant-scoped. It loads current rows and the current organization scheduling policy, builds a `SchedulingContext`, and calls [`detectConflicts`](../scheduling/engine/detectConflicts.ts). It does not reimplement rules.
 
-Configurable rest, weekly hours, consecutive days, night limits, and weekend limits run when the organization policy has a non-null threshold. `null` disables that rule. Always-on: overlap, qualification, approved leave (empty input today), staffing evaluation.
+Configurable rest, weekly hours, consecutive days, night limits, and weekend limits run when the organization policy has a non-null threshold. `null` disables that rule. Always-on: overlap, qualification, approved leave (loaded from `LeaveRequest` for the roster staff and date range), staffing evaluation.
+
+Clients cannot supply leave periods or policy on validate, submit, or publish. Approving or cancelling leave never mutates a published roster. If approved leave collides with a published assignment, the assignment stays; future amendment workflow will handle that operationally.
 
 A policy change is picked up on the next validate, submit, or publish. It does not mutate a published roster.
 

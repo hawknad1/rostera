@@ -43,6 +43,25 @@ export function isDateInInclusiveRange(date: string, startDate: string, endDate:
   )
 }
 
+export function calendarDateRangesOverlap(
+  leftStart: string,
+  leftEnd: string,
+  rightStart: string,
+  rightEnd: string,
+) {
+  return (
+    compareCalendarDates(leftStart, rightEnd) <= 0 &&
+    compareCalendarDates(leftEnd, rightStart) >= 0
+  )
+}
+
+export function inclusiveCalendarDayCount(startDate: string, endDate: string) {
+  assertValidDateRange(startDate, endDate)
+
+  return parseCalendarDate(startDate).until(parseCalendarDate(endDate), { largestUnit: "days" })
+    .days + 1
+}
+
 export function assertValidDateRange(startDate: string, endDate: string) {
   if (compareCalendarDates(startDate, endDate) > 0) {
     throw new CalendarDateError("The start date must be on or before the end date.")

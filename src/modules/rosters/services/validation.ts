@@ -5,18 +5,14 @@ import { permissions } from "@/lib/permissions/permissions"
 import { rosterError } from "@/modules/rosters/errors"
 import { calculateCoverage } from "@/modules/rosters/services/coverage"
 import type { RosterValidationResult } from "@/modules/rosters/types/validation"
+import { loadApprovedLeaveForRoster } from "@/modules/leave/services/scheduling-leave"
 import { buildSchedulingContext } from "@/modules/scheduling/engine/buildSchedulingContext"
 import { detectConflicts } from "@/modules/scheduling/engine/detectConflicts"
-import type { SchedulingLeavePeriod } from "@/modules/scheduling/types/leave"
 import type { SchedulingConflict } from "@/modules/scheduling/types/scheduling-conflict"
 import { schedulingConfigForOrganization } from "@/modules/organizations/services/scheduling-policy"
 import { db } from "@/prisma/db"
 
 type PublicOrm = typeof db.orm
-
-export type ValidateRosterOptions = {
-  leavePeriods?: SchedulingLeavePeriod[]
-}
 
 type RosterRow = {
   id: string
@@ -99,7 +95,6 @@ export async function evaluateRosterValidation(
     organizationId: string
     timeZone: string
     roster: RosterRow
-    options?: ValidateRosterOptions
   },
 ): Promise<RosterValidationResult> {
   const organizationId = input.organizationId
@@ -141,6 +136,12 @@ export async function evaluateRosterValidation(
   )
 
   const schedulingConfig = await schedulingConfigForOrganization(orm, organizationId)
+  const leavePeriods = await loadApprovedLeaveForRoster(orm, {
+    organizationId,
+    staffIds: [...rosterStaffIds],
+    startDate: roster.startDate,
+    endDate: roster.endDate,
+  })
 
   const context = buildSchedulingContext({
     organizationId,
@@ -162,7 +163,7 @@ export async function evaluateRosterValidation(
       professionId: requirement.professionId,
       requiredCount: requirement.requiredCount,
     })),
-    leavePeriods: input.options?.leavePeriods ?? [],
+    leavePeriods,
     config: schedulingConfig,
   })
 
@@ -189,7 +190,7 @@ export async function evaluateRosterValidation(
   })
 }
 
-export async function validateRoster(rosterId: string, options: ValidateRosterOptions = {}) {
+export async function validateRoster(rosterId: string) {
   const membership = await requireRosterAccess(permissions.rosterView)
   const roster = await db.orm.public.Roster.where({
     id: rosterId,
@@ -204,6 +205,5 @@ export async function validateRoster(rosterId: string, options: ValidateRosterOp
     organizationId: membership.organizationId,
     timeZone: String(membership.organization.timezone),
     roster,
-    options,
   })
 }

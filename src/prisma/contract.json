@@ -8,6 +8,10 @@
       "model": "Department",
       "namespace": "public"
     },
+    "leaveRequest": {
+      "model": "LeaveRequest",
+      "namespace": "public"
+    },
     "organization": {
       "model": "Organization",
       "namespace": "public"
@@ -108,6 +112,60 @@
               {
                 "name": "CASUAL",
                 "value": "CASUAL"
+              }
+            ]
+          },
+          "LeaveStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "PENDING",
+                "value": "PENDING"
+              },
+              {
+                "name": "APPROVED",
+                "value": "APPROVED"
+              },
+              {
+                "name": "REJECTED",
+                "value": "REJECTED"
+              },
+              {
+                "name": "CANCELLED",
+                "value": "CANCELLED"
+              }
+            ]
+          },
+          "LeaveType": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "ANNUAL",
+                "value": "ANNUAL"
+              },
+              {
+                "name": "SICK",
+                "value": "SICK"
+              },
+              {
+                "name": "MATERNITY",
+                "value": "MATERNITY"
+              },
+              {
+                "name": "PATERNITY",
+                "value": "PATERNITY"
+              },
+              {
+                "name": "STUDY",
+                "value": "STUDY"
+              },
+              {
+                "name": "COMPASSIONATE",
+                "value": "COMPASSIONATE"
+              },
+              {
+                "name": "OTHER",
+                "value": "OTHER"
               }
             ]
           },
@@ -344,6 +402,220 @@
               "table": "department"
             }
           },
+          "LeaveRequest": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "endDate": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "leaveType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "LeaveType",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "notes": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "requestedByUserId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "reviewedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "reviewedByUserId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "staffId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "startDate": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "LeaveStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "organization": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              },
+              "requestedBy": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "requestedByUserId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              },
+              "reviewedBy": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "reviewedByUserId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              },
+              "staff": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "staffId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StaffProfile",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "endDate": {
+                  "column": "endDate"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "leaveType": {
+                  "column": "leaveType"
+                },
+                "notes": {
+                  "column": "notes"
+                },
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "requestedByUserId": {
+                  "column": "requestedByUserId"
+                },
+                "reviewedAt": {
+                  "column": "reviewedAt"
+                },
+                "reviewedByUserId": {
+                  "column": "reviewedByUserId"
+                },
+                "staffId": {
+                  "column": "staffId"
+                },
+                "startDate": {
+                  "column": "startDate"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "leaveRequest"
+            }
+          },
           "Organization": {
             "fields": {
               "address": {
@@ -464,6 +736,21 @@
                 },
                 "to": {
                   "model": "Department",
+                  "namespace": "public"
+                }
+              },
+              "leaveRequests": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "LeaveRequest",
                   "namespace": "public"
                 }
               },
@@ -2032,6 +2319,21 @@
                   "namespace": "public"
                 }
               },
+              "leaveRequests": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "staffId"
+                  ]
+                },
+                "to": {
+                  "model": "LeaveRequest",
+                  "namespace": "public"
+                }
+              },
               "organization": {
                 "cardinality": "N:1",
                 "on": {
@@ -2379,6 +2681,36 @@
                   "namespace": "public"
                 }
               },
+              "requestedLeaveRequests": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "requestedByUserId"
+                  ]
+                },
+                "to": {
+                  "model": "LeaveRequest",
+                  "namespace": "public"
+                }
+              },
+              "reviewedLeaveRequests": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "reviewedByUserId"
+                  ]
+                },
+                "to": {
+                  "model": "LeaveRequest",
+                  "namespace": "public"
+                }
+              },
               "staffProfiles": {
                 "cardinality": "1:N",
                 "on": {
@@ -2433,6 +2765,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "department"
+            },
+            "leaveRequest": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "leaveRequest"
             },
             "organization": {
               "kind": "rls",
@@ -2607,6 +2944,248 @@
                   ]
                 }
               ]
+            },
+            "leaveRequest": {
+              "checks": [
+                {
+                  "expression": "\"startDate\" <= \"endDate\"",
+                  "name": "leaveRequest_date_order_2aa69aa6",
+                  "prefix": "leaveRequest_date_order"
+                },
+                {
+                  "expression": "\"leaveType\" IN ('ANNUAL', 'SICK', 'MATERNITY', 'PATERNITY', 'STUDY', 'COMPASSIONATE', 'OTHER')",
+                  "name": "leaveRequest_leaveType_check_8e9923c5",
+                  "prefix": "leaveRequest_leaveType_check"
+                },
+                {
+                  "expression": "\"status\" IN ('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED')",
+                  "name": "leaveRequest_status_check_57fe5f48",
+                  "prefix": "leaveRequest_status_check"
+                }
+              ],
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "endDate": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "leaveType": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "LeaveType",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "notes": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "requestedByUserId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "reviewedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "reviewedByUserId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "staffId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "startDate": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "PENDING"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "LeaveStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "leaveRequest"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organization"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "staffId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "leaveRequest"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "staffProfile"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "requestedByUserId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "leaveRequest"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "reviewedByUserId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "leaveRequest"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "organizationId"
+                  ],
+                  "name": "leaveRequest_organizationId_idx_2e17ef41",
+                  "prefix": "leaveRequest_organizationId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "staffId"
+                  ],
+                  "name": "leaveRequest_organizationId_staffId_idx_4ac10b62",
+                  "prefix": "leaveRequest_organizationId_staffId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "status"
+                  ],
+                  "name": "leaveRequest_organizationId_status_idx_21af5e82",
+                  "prefix": "leaveRequest_organizationId_status_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "requestedByUserId"
+                  ],
+                  "name": "leaveRequest_requestedByUserId_idx_85281b2d",
+                  "prefix": "leaveRequest_requestedByUserId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "reviewedByUserId"
+                  ],
+                  "name": "leaveRequest_reviewedByUserId_idx_e62d4e38",
+                  "prefix": "leaveRequest_reviewedByUserId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "staffId"
+                  ],
+                  "name": "leaveRequest_staffId_idx_ce92c64e",
+                  "prefix": "leaveRequest_staffId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "staffId",
+                    "status",
+                    "startDate",
+                    "endDate"
+                  ],
+                  "name": "leaveRequest_staffId_status_startDate_endDate_idx_0f091dbe",
+                  "prefix": "leaveRequest_staffId_status_startDate_endDate_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
             },
             "organization": {
               "checks": [
@@ -4278,6 +4857,27 @@
                 "CASUAL"
               ]
             },
+            "LeaveStatus": {
+              "kind": "valueSet",
+              "values": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED",
+                "CANCELLED"
+              ]
+            },
+            "LeaveType": {
+              "kind": "valueSet",
+              "values": [
+                "ANNUAL",
+                "SICK",
+                "MATERNITY",
+                "PATERNITY",
+                "STUDY",
+                "COMPASSIONATE",
+                "OTHER"
+              ]
+            },
             "MembershipStatus": {
               "kind": "valueSet",
               "values": [
@@ -4310,10 +4910,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "98b17e1d9e257d081aa70fd73d38c2038132d65970fe4574c73a8a4696e38c0c"
+    "storageHash": "a2fc0cbc5d315c9619f7b2655e73e93c553df0500593ede8fdb5d59388473055"
   },
   "execution": {
-    "executionHash": "894e4c896f347fd9a5e351f7a60ae4175674257fdcf78e170b29b2a84e780c7a",
+    "executionHash": "fcc57c94fcde802ece9bf4a38392cde358008cf6690d68e58a3c635a608fad6a",
     "mutations": {
       "defaults": [
         {
@@ -4340,6 +4940,32 @@
             "column": "updatedAt",
             "namespace": "public",
             "table": "department"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "leaveRequest"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "leaveRequest"
           }
         },
         {
