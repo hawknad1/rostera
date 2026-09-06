@@ -28,6 +28,34 @@ export const notificationOutboxStatuses = [
 
 export type NotificationOutboxStatus = (typeof notificationOutboxStatuses)[number]
 
+export const notificationChannels = ["IN_APP", "EMAIL", "SMS", "WHATSAPP"] as const
+
+export type NotificationChannel = (typeof notificationChannels)[number]
+
+export const notificationDeliveryStatuses = [
+  "PENDING",
+  "PROCESSING",
+  "SENT",
+  "DELIVERED",
+  "FAILED",
+  "CANCELLED",
+] as const
+
+export type NotificationDeliveryStatus = (typeof notificationDeliveryStatuses)[number]
+
+export const notificationDeliveryProviders = [
+  "IN_APP",
+  "RESEND",
+  "TWILIO_SMS",
+  "TWILIO_WHATSAPP",
+] as const
+
+export type NotificationDeliveryProvider = (typeof notificationDeliveryProviders)[number]
+
+export const notificationPriorities = ["operational", "optional"] as const
+
+export type NotificationPriority = (typeof notificationPriorities)[number]
+
 export type NotificationIntent = {
   organizationId: string
   eventId: string
@@ -99,3 +127,7 @@ export type DomainNotificationEvent =
 export const NOTIFICATION_PAGE_SIZE = 25
 export const NOTIFICATION_PREVIEW_SIZE = 8
 export const NOTIFICATION_MAX_ATTEMPTS = 5
+export const NOTIFICATION_DELIVERY_MAX_ATTEMPTS = 5
+export const NOTIFICATION_PROCESSING_LEASE_SECONDS = 120
+export const NOTIFICATION_WORKER_BATCH_SIZE = 25
+export const NOTIFICATION_DELIVERY_PAGE_SIZE = 25

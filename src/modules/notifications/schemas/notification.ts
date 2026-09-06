@@ -27,3 +27,9 @@ export const notificationIntentSchema = z.object({
 export function parseNotificationIntent(value: unknown): NotificationIntent {
   return notificationIntentSchema.parse(value)
 }
+
+export const notificationPreferenceInputSchema = z.object({
+  eventType: notificationTypeSchema,
+  channel: z.enum(["EMAIL", "SMS", "WHATSAPP"]),
+  enabled: z.enum(["true", "false"]),
+})

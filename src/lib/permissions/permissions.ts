@@ -43,6 +43,8 @@ export const permissions = {
   settingsEdit: "settings.edit",
 
   auditView: "audit.view",
+
+  notificationsView: "notifications.view",
 } as const
 
 export type Permission = (typeof permissions)[keyof typeof permissions]

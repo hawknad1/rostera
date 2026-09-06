@@ -28,6 +28,9 @@ const MODEL_NAMES = [
   "ShiftSwapRequest",
   "Notification",
   "NotificationOutbox",
+  "NotificationDelivery",
+  "NotificationPreference",
+  "NotificationDeliveryReceipt",
   "AuditEvent",
 ] as const
 
@@ -283,6 +286,51 @@ function assertUnique(tables: Record<ModelName, Row[]>, model: ModelName, row: R
     }
   }
 
+  if (model === "NotificationDelivery") {
+    if (
+      tables.NotificationDelivery.some(
+        (existing) =>
+          existing !== row &&
+          existing.organizationId === row.organizationId &&
+          existing.eventType === row.eventType &&
+          existing.eventId === row.eventId &&
+          existing.recipientUserId === row.recipientUserId &&
+          existing.channel === row.channel,
+      )
+    ) {
+      throw uniqueViolation("notificationDelivery", "idempotency")
+    }
+  }
+
+  if (model === "NotificationPreference") {
+    if (
+      tables.NotificationPreference.some(
+        (existing) =>
+          existing !== row &&
+          existing.organizationId === row.organizationId &&
+          existing.userId === row.userId &&
+          existing.eventType === row.eventType &&
+          existing.channel === row.channel,
+      )
+    ) {
+      throw uniqueViolation("notificationPreference", "key")
+    }
+  }
+
+  if (model === "NotificationDeliveryReceipt") {
+    if (
+      tables.NotificationDeliveryReceipt.some(
+        (existing) =>
+          existing !== row &&
+          existing.organizationId === row.organizationId &&
+          existing.provider === row.provider &&
+          existing.providerEventId === row.providerEventId,
+      )
+    ) {
+      throw uniqueViolation("notificationDeliveryReceipt", "event")
+    }
+  }
+
   if (model === "AuditEvent") {
     if (
       tables.AuditEvent.some(
@@ -365,6 +413,12 @@ function modelTable(model: ModelName) {
       return "shiftAssignment"
     case "NotificationOutbox":
       return "notificationOutbox"
+    case "NotificationDelivery":
+      return "notificationDelivery"
+    case "NotificationPreference":
+      return "notificationPreference"
+    case "NotificationDeliveryReceipt":
+      return "notificationDeliveryReceipt"
     default:
       return model.charAt(0).toLowerCase() + model.slice(1)
   }
@@ -431,9 +485,35 @@ function withCreateDefaults(model: ModelName, data: Row): Row {
     row.attempts ??= 0
     row.availableAt ??= new Date().toISOString()
     row.processedAt ??= null
+    row.processingStartedAt ??= null
     row.lastError ??= null
     row.createdAt ??= new Date().toISOString()
     row.updatedAt ??= row.createdAt
+  }
+
+  if (model === "NotificationDelivery") {
+    row.status ??= "PENDING"
+    row.attemptCount ??= 0
+    row.availableAt ??= new Date().toISOString()
+    row.processingStartedAt ??= null
+    row.sentAt ??= null
+    row.deliveredAt ??= null
+    row.failedAt ??= null
+    row.lastError ??= null
+    row.providerMessageId ??= null
+    row.notificationId ??= null
+    row.destination ??= null
+    row.createdAt ??= new Date().toISOString()
+    row.updatedAt ??= row.createdAt
+  }
+
+  if (model === "NotificationPreference") {
+    row.createdAt ??= new Date().toISOString()
+    row.updatedAt ??= row.createdAt
+  }
+
+  if (model === "NotificationDeliveryReceipt") {
+    row.createdAt ??= new Date().toISOString()
   }
 
   if (model === "AuditEvent") {
@@ -658,6 +738,30 @@ function createPublicOrm(
       {},
       [],
     ),
+    NotificationDelivery: createCollection(
+      tables,
+      queries,
+      failCreates,
+      "NotificationDelivery",
+      {},
+      [],
+    ),
+    NotificationPreference: createCollection(
+      tables,
+      queries,
+      failCreates,
+      "NotificationPreference",
+      {},
+      [],
+    ),
+    NotificationDeliveryReceipt: createCollection(
+      tables,
+      queries,
+      failCreates,
+      "NotificationDeliveryReceipt",
+      {},
+      [],
+    ),
     AuditEvent: createCollection(tables, queries, failCreates, "AuditEvent", {}, []),
   }
 }
@@ -682,6 +786,9 @@ function emptyTables(): Record<ModelName, Row[]> {
     ShiftSwapRequest: [],
     Notification: [],
     NotificationOutbox: [],
+    NotificationDelivery: [],
+    NotificationPreference: [],
+    NotificationDeliveryReceipt: [],
     AuditEvent: [],
   }
 }
@@ -712,6 +819,9 @@ export function createInMemoryPrisma() {
       ShiftSwapRequest: tables.ShiftSwapRequest.map((row) => ({ ...row })),
       Notification: tables.Notification.map((row) => ({ ...row })),
       NotificationOutbox: tables.NotificationOutbox.map((row) => ({ ...row })),
+      NotificationDelivery: tables.NotificationDelivery.map((row) => ({ ...row })),
+      NotificationPreference: tables.NotificationPreference.map((row) => ({ ...row })),
+      NotificationDeliveryReceipt: tables.NotificationDeliveryReceipt.map((row) => ({ ...row })),
       AuditEvent: tables.AuditEvent.map((row) => ({ ...row })),
     }
   }

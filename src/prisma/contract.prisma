@@ -86,6 +86,29 @@ enum NotificationOutboxStatus {
   FAILED
 }
 
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  SMS
+  WHATSAPP
+}
+
+enum NotificationDeliveryStatus {
+  PENDING
+  PROCESSING
+  SENT
+  DELIVERED
+  FAILED
+  CANCELLED
+}
+
+enum NotificationDeliveryProvider {
+  IN_APP
+  RESEND
+  TWILIO_SMS
+  TWILIO_WHATSAPP
+}
+
 enum AuditActorType {
   USER
   SYSTEM
@@ -179,9 +202,12 @@ model Organization {
   schedulingPolicy     OrganizationSchedulingPolicy?
   leaveRequests        LeaveRequest[]
   shiftSwapRequests    ShiftSwapRequest[]
-  notifications        Notification[]
-  notificationOutbox   NotificationOutbox[]
-  auditEvents          AuditEvent[]
+  notifications                 Notification[]
+  notificationOutbox            NotificationOutbox[]
+  notificationDeliveries        NotificationDelivery[]
+  notificationPreferences       NotificationPreference[]
+  notificationDeliveryReceipts  NotificationDeliveryReceipt[]
+  auditEvents                   AuditEvent[]
 
   @@rls
 }
@@ -203,8 +229,10 @@ model User {
   reviewedLeaveRequests  LeaveRequest[] @relation("LeaveReviewedBy")
   requestedShiftSwaps    ShiftSwapRequest[] @relation("ShiftSwapRequestedBy")
   reviewedShiftSwaps     ShiftSwapRequest[] @relation("ShiftSwapReviewedBy")
-  notifications          Notification[]
-  auditEvents            AuditEvent[]
+  notifications            Notification[]
+  notificationDeliveries   NotificationDelivery[]
+  notificationPreferences  NotificationPreference[]
+  auditEvents              AuditEvent[]
 
   @@rls
 }
@@ -578,6 +606,7 @@ model Notification {
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   recipient    User         @relation(fields: [recipientUserId], references: [id], onDelete: Cascade)
+  deliveries   NotificationDelivery[]
 
   @@unique([organizationId, recipientUserId, type, eventId], map: "notification_idempotency_key")
   @@index([organizationId, recipientUserId, createdAt], map: "notification_inbox_created_idx")
@@ -593,16 +622,91 @@ model NotificationOutbox {
   payload        String
   status         NotificationOutboxStatus   @default(PENDING)
   attempts       Int                        @default(0)
-  availableAt    DateTime                   @default(now())
-  processedAt    DateTime?
-  lastError      String?
-  createdAt      DateTime                   @default(now())
-  updatedAt      temporal.updatedAt()
+  availableAt           DateTime                   @default(now())
+  processingStartedAt   DateTime?
+  processedAt           DateTime?
+  lastError             String?
+  createdAt             DateTime                   @default(now())
+  updatedAt             temporal.updatedAt()
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  deliveries   NotificationDelivery[]
 
   @@unique([organizationId, eventType, eventId], map: "notificationOutbox_event_key")
   @@index([organizationId, status, availableAt], map: "notificationOutbox_pickup_idx")
+  @@rls
+}
+
+model NotificationDelivery {
+  id                    String                         @id @default(uuid())
+  organizationId        String
+  notificationOutboxId  String
+  notificationId        String?
+  recipientUserId       String
+  eventType             NotificationType
+  eventId               String
+  channel               NotificationChannel
+  provider              NotificationDeliveryProvider
+  status                NotificationDeliveryStatus     @default(PENDING)
+  destination           String?
+  templateKey           String
+  attemptCount          Int                            @default(0)
+  availableAt           DateTime                       @default(now())
+  processingStartedAt   DateTime?
+  sentAt                DateTime?
+  deliveredAt           DateTime?
+  failedAt              DateTime?
+  lastError             String?
+  providerMessageId     String?
+  createdAt             DateTime                       @default(now())
+  updatedAt             temporal.updatedAt()
+
+  organization Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  outbox       NotificationOutbox  @relation(fields: [notificationOutboxId], references: [id], onDelete: Cascade)
+  notification Notification?       @relation(fields: [notificationId], references: [id], onDelete: SetNull)
+  recipient    User                @relation(fields: [recipientUserId], references: [id], onDelete: Cascade)
+  receipts     NotificationDeliveryReceipt[]
+
+  @@unique([organizationId, eventType, eventId, recipientUserId, channel], map: "notificationDelivery_idempotency_key")
+  @@index([organizationId, status, availableAt], map: "notificationDelivery_pickup_idx")
+  @@index([organizationId, providerMessageId], map: "notificationDelivery_provider_message_idx")
+  @@index([notificationOutboxId])
+  @@index([recipientUserId])
+  @@rls
+}
+
+model NotificationPreference {
+  id             String               @id @default(uuid())
+  organizationId String
+  userId         String
+  eventType      NotificationType
+  channel        NotificationChannel
+  enabled        Boolean
+  createdAt      DateTime             @default(now())
+  updatedAt      temporal.updatedAt()
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId, eventType, channel], map: "notificationPreference_key")
+  @@index([organizationId, userId], map: "notificationPreference_user_idx")
+  @@rls
+}
+
+model NotificationDeliveryReceipt {
+  id              String                         @id @default(uuid())
+  organizationId  String
+  deliveryId      String
+  provider        NotificationDeliveryProvider
+  providerEventId String
+  status          String
+  createdAt       DateTime                       @default(now())
+
+  organization Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  delivery     NotificationDelivery @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, provider, providerEventId], map: "notificationDeliveryReceipt_event_key")
+  @@index([deliveryId])
   @@rls
 }
 
