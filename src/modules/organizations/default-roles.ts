@@ -36,6 +36,8 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<DefaultRoleName, readonly Permissi
     permissions.settingsView,
     permissions.auditView,
     permissions.notificationsView,
+    permissions.attendanceView,
+    permissions.attendanceExport,
   ],
 
   DEPARTMENT_HEAD: [
@@ -55,6 +57,8 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<DefaultRoleName, readonly Permissi
     permissions.shiftSwapApprove,
     permissions.shiftSwapReject,
     permissions.reportsView,
+    permissions.attendanceView,
+    permissions.attendanceApprove,
   ],
 
   SUPERVISOR: [
@@ -65,6 +69,8 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<DefaultRoleName, readonly Permissi
     permissions.leaveView,
     permissions.shiftSwapView,
     permissions.reportsView,
+    permissions.attendanceView,
+    permissions.attendanceApprove,
   ],
 
   HR: [
@@ -86,6 +92,10 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<DefaultRoleName, readonly Permissi
     permissions.usersDeactivate,
     permissions.auditView,
     permissions.notificationsView,
+    permissions.attendanceView,
+    permissions.attendanceCorrect,
+    permissions.attendanceApprove,
+    permissions.attendanceExport,
   ],
 
   STAFF: [
@@ -95,5 +105,8 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<DefaultRoleName, readonly Permissi
     permissions.leaveCreate,
     permissions.shiftSwapView,
     permissions.shiftSwapRequest,
+    permissions.attendanceView,
+    permissions.attendanceClockIn,
+    permissions.attendanceClockOut,
   ],
 }

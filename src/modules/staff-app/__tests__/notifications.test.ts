@@ -79,5 +79,6 @@ describe("staff notifications", () => {
     expect(staffNotificationHref("LEAVE_REQUEST", "leave-1")).toBe("/me/leave/leave-1")
     expect(staffNotificationHref("SHIFT_SWAP", "swap-1")).toBe("/me/swaps/swap-1")
     expect(staffNotificationHref("ROSTER", "roster-1")).toBe("/me/roster")
+    expect(staffNotificationHref("ATTENDANCE", "att-1")).toBe("/me/attendance")
   })
 })

@@ -35,6 +35,19 @@ export default async function SettingsPage() {
       </section>
 
       <section className="flex flex-col gap-2">
+        <h2 className="text-lg font-medium">Attendance policy</h2>
+        <p className="text-sm text-muted-foreground">
+          Clock-in rules and exception thresholds. Policy changes do not rewrite historical attendance.
+        </p>
+        <Link
+          className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+          href="/settings/attendance"
+        >
+          Open attendance policy
+        </Link>
+      </section>
+
+      <section className="flex flex-col gap-2">
         <h2 className="text-lg font-medium">Notifications</h2>
         <p className="text-sm text-muted-foreground">
           Provider credentials stay in the server environment. This page only shows whether a

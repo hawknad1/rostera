@@ -4,6 +4,18 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
+    "attendanceEvent": {
+      "model": "AttendanceEvent",
+      "namespace": "public"
+    },
+    "attendanceException": {
+      "model": "AttendanceException",
+      "namespace": "public"
+    },
+    "attendanceRecord": {
+      "model": "AttendanceRecord",
+      "namespace": "public"
+    },
     "auditEvent": {
       "model": "AuditEvent",
       "namespace": "public"
@@ -38,6 +50,10 @@
     },
     "organization": {
       "model": "Organization",
+      "namespace": "public"
+    },
+    "organizationAttendancePolicy": {
+      "model": "OrganizationAttendancePolicy",
       "namespace": "public"
     },
     "organizationMember": {
@@ -97,6 +113,169 @@
     "namespaces": {
       "public": {
         "enum": {
+          "AttendanceEventType": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "CLOCK_IN",
+                "value": "CLOCK_IN"
+              },
+              {
+                "name": "CLOCK_OUT",
+                "value": "CLOCK_OUT"
+              },
+              {
+                "name": "MANUAL_CLOCK_IN",
+                "value": "MANUAL_CLOCK_IN"
+              },
+              {
+                "name": "MANUAL_CLOCK_OUT",
+                "value": "MANUAL_CLOCK_OUT"
+              },
+              {
+                "name": "CORRECTION",
+                "value": "CORRECTION"
+              },
+              {
+                "name": "VOID",
+                "value": "VOID"
+              }
+            ]
+          },
+          "AttendanceExceptionSeverity": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "INFO",
+                "value": "INFO"
+              },
+              {
+                "name": "WARNING",
+                "value": "WARNING"
+              }
+            ]
+          },
+          "AttendanceExceptionStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "OPEN",
+                "value": "OPEN"
+              },
+              {
+                "name": "ACKNOWLEDGED",
+                "value": "ACKNOWLEDGED"
+              },
+              {
+                "name": "RESOLVED",
+                "value": "RESOLVED"
+              },
+              {
+                "name": "WAIVED",
+                "value": "WAIVED"
+              }
+            ]
+          },
+          "AttendanceExceptionType": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "LATE_ARRIVAL",
+                "value": "LATE_ARRIVAL"
+              },
+              {
+                "name": "EARLY_DEPARTURE",
+                "value": "EARLY_DEPARTURE"
+              },
+              {
+                "name": "MISSED_CLOCK_IN",
+                "value": "MISSED_CLOCK_IN"
+              },
+              {
+                "name": "MISSED_CLOCK_OUT",
+                "value": "MISSED_CLOCK_OUT"
+              },
+              {
+                "name": "UNSCHEDULED_ATTENDANCE",
+                "value": "UNSCHEDULED_ATTENDANCE"
+              },
+              {
+                "name": "OVERTIME",
+                "value": "OVERTIME"
+              },
+              {
+                "name": "OUTSIDE_SCHEDULE",
+                "value": "OUTSIDE_SCHEDULE"
+              }
+            ]
+          },
+          "AttendanceReviewStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "UNREVIEWED",
+                "value": "UNREVIEWED"
+              },
+              {
+                "name": "APPROVED",
+                "value": "APPROVED"
+              },
+              {
+                "name": "REJECTED",
+                "value": "REJECTED"
+              }
+            ]
+          },
+          "AttendanceSource": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "STAFF_PWA",
+                "value": "STAFF_PWA"
+              },
+              {
+                "name": "ADMIN",
+                "value": "ADMIN"
+              },
+              {
+                "name": "SYSTEM",
+                "value": "SYSTEM"
+              },
+              {
+                "name": "DEVICE",
+                "value": "DEVICE"
+              }
+            ]
+          },
+          "AttendanceStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "OPEN",
+                "value": "OPEN"
+              },
+              {
+                "name": "COMPLETED",
+                "value": "COMPLETED"
+              },
+              {
+                "name": "MISSED",
+                "value": "MISSED"
+              },
+              {
+                "name": "EXCEPTION",
+                "value": "EXCEPTION"
+              },
+              {
+                "name": "CORRECTED",
+                "value": "CORRECTED"
+              },
+              {
+                "name": "VOIDED",
+                "value": "VOIDED"
+              }
+            ]
+          },
           "AuditAction": {
             "codecId": "pg/text@1",
             "members": [
@@ -263,6 +442,38 @@
               {
                 "name": "MEMBERSHIP_DEACTIVATED",
                 "value": "MEMBERSHIP_DEACTIVATED"
+              },
+              {
+                "name": "ATTENDANCE_CLOCKED_IN",
+                "value": "ATTENDANCE_CLOCKED_IN"
+              },
+              {
+                "name": "ATTENDANCE_CLOCKED_OUT",
+                "value": "ATTENDANCE_CLOCKED_OUT"
+              },
+              {
+                "name": "ATTENDANCE_CORRECTED",
+                "value": "ATTENDANCE_CORRECTED"
+              },
+              {
+                "name": "ATTENDANCE_APPROVED",
+                "value": "ATTENDANCE_APPROVED"
+              },
+              {
+                "name": "ATTENDANCE_REJECTED",
+                "value": "ATTENDANCE_REJECTED"
+              },
+              {
+                "name": "ATTENDANCE_VOIDED",
+                "value": "ATTENDANCE_VOIDED"
+              },
+              {
+                "name": "ATTENDANCE_EXCEPTION_RESOLVED",
+                "value": "ATTENDANCE_EXCEPTION_RESOLVED"
+              },
+              {
+                "name": "ATTENDANCE_POLICY_UPDATED",
+                "value": "ATTENDANCE_POLICY_UPDATED"
               }
             ]
           },
@@ -329,6 +540,14 @@
               {
                 "name": "MEMBERSHIP",
                 "value": "MEMBERSHIP"
+              },
+              {
+                "name": "ATTENDANCE",
+                "value": "ATTENDANCE"
+              },
+              {
+                "name": "ATTENDANCE_POLICY",
+                "value": "ATTENDANCE_POLICY"
               }
             ]
           },
@@ -538,6 +757,10 @@
               {
                 "name": "ROSTER",
                 "value": "ROSTER"
+              },
+              {
+                "name": "ATTENDANCE",
+                "value": "ATTENDANCE"
               }
             ]
           },
@@ -612,6 +835,18 @@
               {
                 "name": "ROSTER_AMENDMENT_CREATED",
                 "value": "ROSTER_AMENDMENT_CREATED"
+              },
+              {
+                "name": "ATTENDANCE_CORRECTED",
+                "value": "ATTENDANCE_CORRECTED"
+              },
+              {
+                "name": "ATTENDANCE_APPROVED",
+                "value": "ATTENDANCE_APPROVED"
+              },
+              {
+                "name": "ATTENDANCE_REJECTED",
+                "value": "ATTENDANCE_REJECTED"
               }
             ]
           },
@@ -680,6 +915,805 @@
           }
         },
         "models": {
+          "AttendanceEvent": {
+            "fields": {
+              "actorUserId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "attendanceRecordId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "metadata": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "occurredAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "punchKey": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "source": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "AttendanceSource",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "staffId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "type": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "AttendanceEventType",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              }
+            },
+            "relations": {
+              "actor": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "actorUserId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              },
+              "organization": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              },
+              "record": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "attendanceRecordId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceRecord",
+                  "namespace": "public"
+                }
+              },
+              "staff": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "staffId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StaffProfile",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "actorUserId": {
+                  "column": "actorUserId"
+                },
+                "attendanceRecordId": {
+                  "column": "attendanceRecordId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "metadata": {
+                  "column": "metadata"
+                },
+                "occurredAt": {
+                  "column": "occurredAt"
+                },
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "punchKey": {
+                  "column": "punchKey"
+                },
+                "source": {
+                  "column": "source"
+                },
+                "staffId": {
+                  "column": "staffId"
+                },
+                "type": {
+                  "column": "type"
+                }
+              },
+              "namespaceId": "public",
+              "table": "attendanceEvent"
+            }
+          },
+          "AttendanceException": {
+            "fields": {
+              "attendanceRecordId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "detectedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "metadata": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "notes": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "resolvedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "resolvedByUserId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "severity": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "AttendanceExceptionSeverity",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "staffId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "AttendanceExceptionStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "type": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "AttendanceExceptionType",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "organization": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              },
+              "record": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "attendanceRecordId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceRecord",
+                  "namespace": "public"
+                }
+              },
+              "resolvedBy": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "resolvedByUserId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              },
+              "staff": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "staffId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StaffProfile",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "attendanceRecordId": {
+                  "column": "attendanceRecordId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "detectedAt": {
+                  "column": "detectedAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "metadata": {
+                  "column": "metadata"
+                },
+                "notes": {
+                  "column": "notes"
+                },
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "resolvedAt": {
+                  "column": "resolvedAt"
+                },
+                "resolvedByUserId": {
+                  "column": "resolvedByUserId"
+                },
+                "severity": {
+                  "column": "severity"
+                },
+                "staffId": {
+                  "column": "staffId"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "type": {
+                  "column": "type"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "attendanceException"
+            }
+          },
+          "AttendanceRecord": {
+            "fields": {
+              "actualClockInDateTime": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "actualClockOutDateTime": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "actualMinutes": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "approvedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "approvedByUserId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "assignmentId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "attendanceDate": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "earlyDepartureMinutes": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "lateMinutes": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "notes": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "openSessionKey": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "overtimeMinutes": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "reviewStatus": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "AttendanceReviewStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "rosterId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "scheduledEndDateTime": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "scheduledMinutes": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "scheduledStartDateTime": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "source": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "AttendanceSource",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "staffId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "AttendanceStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "approvedBy": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "approvedByUserId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              },
+              "assignment": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "assignmentId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftAssignment",
+                  "namespace": "public"
+                }
+              },
+              "events": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "attendanceRecordId"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceEvent",
+                  "namespace": "public"
+                }
+              },
+              "exceptions": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "attendanceRecordId"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceException",
+                  "namespace": "public"
+                }
+              },
+              "organization": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              },
+              "roster": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "rosterId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Roster",
+                  "namespace": "public"
+                }
+              },
+              "staff": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "staffId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StaffProfile",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "actualClockInDateTime": {
+                  "column": "actualClockInDateTime"
+                },
+                "actualClockOutDateTime": {
+                  "column": "actualClockOutDateTime"
+                },
+                "actualMinutes": {
+                  "column": "actualMinutes"
+                },
+                "approvedAt": {
+                  "column": "approvedAt"
+                },
+                "approvedByUserId": {
+                  "column": "approvedByUserId"
+                },
+                "assignmentId": {
+                  "column": "assignmentId"
+                },
+                "attendanceDate": {
+                  "column": "attendanceDate"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "earlyDepartureMinutes": {
+                  "column": "earlyDepartureMinutes"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "lateMinutes": {
+                  "column": "lateMinutes"
+                },
+                "notes": {
+                  "column": "notes"
+                },
+                "openSessionKey": {
+                  "column": "openSessionKey"
+                },
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "overtimeMinutes": {
+                  "column": "overtimeMinutes"
+                },
+                "reviewStatus": {
+                  "column": "reviewStatus"
+                },
+                "rosterId": {
+                  "column": "rosterId"
+                },
+                "scheduledEndDateTime": {
+                  "column": "scheduledEndDateTime"
+                },
+                "scheduledMinutes": {
+                  "column": "scheduledMinutes"
+                },
+                "scheduledStartDateTime": {
+                  "column": "scheduledStartDateTime"
+                },
+                "source": {
+                  "column": "source"
+                },
+                "staffId": {
+                  "column": "staffId"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "attendanceRecord"
+            }
+          },
           "AuditEvent": {
             "fields": {
               "action": {
@@ -2355,6 +3389,66 @@
               }
             },
             "relations": {
+              "attendanceEvents": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceEvent",
+                  "namespace": "public"
+                }
+              },
+              "attendanceExceptions": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceException",
+                  "namespace": "public"
+                }
+              },
+              "attendancePolicy": {
+                "cardinality": "1:1",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "OrganizationAttendancePolicy",
+                  "namespace": "public"
+                }
+              },
+              "attendanceRecords": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceRecord",
+                  "namespace": "public"
+                }
+              },
               "auditEvents": {
                 "cardinality": "1:N",
                 "on": {
@@ -2673,6 +3767,153 @@
               },
               "namespaceId": "public",
               "table": "organization"
+            }
+          },
+          "OrganizationAttendancePolicy": {
+            "fields": {
+              "allowEarlyClockIn": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "allowUnscheduledAttendance": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "attendanceEnabled": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "earlyDepartureThresholdMinutes": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "lateThresholdMinutes": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "maximumEarlyClockInMinutes": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "maximumLateClockOutMinutes": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "overtimeThresholdMinutes": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "organization": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "allowEarlyClockIn": {
+                  "column": "allowEarlyClockIn"
+                },
+                "allowUnscheduledAttendance": {
+                  "column": "allowUnscheduledAttendance"
+                },
+                "attendanceEnabled": {
+                  "column": "attendanceEnabled"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "earlyDepartureThresholdMinutes": {
+                  "column": "earlyDepartureThresholdMinutes"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "lateThresholdMinutes": {
+                  "column": "lateThresholdMinutes"
+                },
+                "maximumEarlyClockInMinutes": {
+                  "column": "maximumEarlyClockInMinutes"
+                },
+                "maximumLateClockOutMinutes": {
+                  "column": "maximumLateClockOutMinutes"
+                },
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "overtimeThresholdMinutes": {
+                  "column": "overtimeThresholdMinutes"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "organizationAttendancePolicy"
             }
           },
           "OrganizationMember": {
@@ -3441,6 +4682,21 @@
                   "namespace": "public"
                 }
               },
+              "attendanceRecords": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "rosterId"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceRecord",
+                  "namespace": "public"
+                }
+              },
               "childVersions": {
                 "cardinality": "1:N",
                 "on": {
@@ -3697,6 +4953,21 @@
               }
             },
             "relations": {
+              "attendanceRecords": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "assignmentId"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceRecord",
+                  "namespace": "public"
+                }
+              },
               "department": {
                 "cardinality": "N:1",
                 "on": {
@@ -4473,6 +5744,51 @@
               }
             },
             "relations": {
+              "attendanceEvents": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "staffId"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceEvent",
+                  "namespace": "public"
+                }
+              },
+              "attendanceExceptions": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "staffId"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceException",
+                  "namespace": "public"
+                }
+              },
+              "attendanceRecords": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "staffId"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceRecord",
+                  "namespace": "public"
+                }
+              },
               "department": {
                 "cardinality": "N:1",
                 "on": {
@@ -4865,6 +6181,36 @@
               }
             },
             "relations": {
+              "approvedAttendance": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "approvedByUserId"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceRecord",
+                  "namespace": "public"
+                }
+              },
+              "attendanceEvents": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "actorUserId"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceEvent",
+                  "namespace": "public"
+                }
+              },
               "auditEvents": {
                 "cardinality": "1:N",
                 "on": {
@@ -4985,6 +6331,21 @@
                   "namespace": "public"
                 }
               },
+              "resolvedExceptions": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "resolvedByUserId"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceException",
+                  "namespace": "public"
+                }
+              },
               "reviewedLeaveRequests": {
                 "cardinality": "1:N",
                 "on": {
@@ -5065,6 +6426,21 @@
       "public": {
         "entries": {
           "rls": {
+            "attendanceEvent": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "attendanceEvent"
+            },
+            "attendanceException": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "attendanceException"
+            },
+            "attendanceRecord": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "attendanceRecord"
+            },
             "auditEvent": {
               "kind": "rls",
               "namespaceId": "public",
@@ -5109,6 +6485,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "organization"
+            },
+            "organizationAttendancePolicy": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "organizationAttendancePolicy"
             },
             "organizationMember": {
               "kind": "rls",
@@ -5177,11 +6558,830 @@
             }
           },
           "table": {
+            "attendanceEvent": {
+              "checks": [
+                {
+                  "expression": "(\"type\" IN ('CLOCK_IN', 'CLOCK_OUT', 'VOID') AND \"punchKey\" = \"type\") OR (\"type\" NOT IN ('CLOCK_IN', 'CLOCK_OUT', 'VOID') AND \"punchKey\" IS NULL)",
+                  "name": "attendanceEvent_punch_key_state_05dae0e5",
+                  "prefix": "attendanceEvent_punch_key_state"
+                },
+                {
+                  "expression": "\"source\" IN ('STAFF_PWA', 'ADMIN', 'SYSTEM', 'DEVICE')",
+                  "name": "attendanceEvent_source_check_72e31ebd",
+                  "prefix": "attendanceEvent_source_check"
+                },
+                {
+                  "expression": "\"type\" IN ('CLOCK_IN', 'CLOCK_OUT', 'MANUAL_CLOCK_IN', 'MANUAL_CLOCK_OUT', 'CORRECTION', 'VOID')",
+                  "name": "attendanceEvent_type_check_de0a0cef",
+                  "prefix": "attendanceEvent_type_check"
+                }
+              ],
+              "columns": {
+                "actorUserId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "attendanceRecordId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "metadata": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "occurredAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "punchKey": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "source": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "AttendanceSource",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "staffId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "type": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "AttendanceEventType",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attendanceEvent"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organization"
+                  }
+                },
+                {
+                  "onDelete": "restrict",
+                  "source": {
+                    "columns": [
+                      "attendanceRecordId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attendanceEvent"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attendanceRecord"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "staffId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attendanceEvent"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "staffProfile"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "actorUserId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attendanceEvent"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "actorUserId"
+                  ],
+                  "name": "attendanceEvent_actorUserId_idx_96dac96c",
+                  "prefix": "attendanceEvent_actorUserId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId"
+                  ],
+                  "name": "attendanceEvent_org_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "staffId"
+                  ],
+                  "name": "attendanceEvent_org_staff_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "attendanceRecordId"
+                  ],
+                  "name": "attendanceEvent_record_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "staffId"
+                  ],
+                  "name": "attendanceEvent_staffId_idx_ce92c64e",
+                  "prefix": "attendanceEvent_staffId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "attendanceRecordId",
+                    "punchKey"
+                  ],
+                  "name": "attendanceEvent_punch_key"
+                }
+              ]
+            },
+            "attendanceException": {
+              "checks": [
+                {
+                  "expression": "\"severity\" IN ('INFO', 'WARNING')",
+                  "name": "attendanceException_severity_check_1efcb0ef",
+                  "prefix": "attendanceException_severity_check"
+                },
+                {
+                  "expression": "\"status\" IN ('OPEN', 'ACKNOWLEDGED', 'RESOLVED', 'WAIVED')",
+                  "name": "attendanceException_status_check_bbf5c264",
+                  "prefix": "attendanceException_status_check"
+                },
+                {
+                  "expression": "\"type\" IN ('LATE_ARRIVAL', 'EARLY_DEPARTURE', 'MISSED_CLOCK_IN', 'MISSED_CLOCK_OUT', 'UNSCHEDULED_ATTENDANCE', 'OVERTIME', 'OUTSIDE_SCHEDULE')",
+                  "name": "attendanceException_type_check_c3f9a979",
+                  "prefix": "attendanceException_type_check"
+                }
+              ],
+              "columns": {
+                "attendanceRecordId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "detectedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "metadata": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "notes": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "resolvedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "resolvedByUserId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "severity": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "AttendanceExceptionSeverity",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "staffId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "OPEN"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "AttendanceExceptionStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "type": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "AttendanceExceptionType",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attendanceException"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organization"
+                  }
+                },
+                {
+                  "onDelete": "restrict",
+                  "source": {
+                    "columns": [
+                      "attendanceRecordId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attendanceException"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attendanceRecord"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "staffId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attendanceException"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "staffProfile"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "resolvedByUserId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attendanceException"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "organizationId"
+                  ],
+                  "name": "attendanceException_org_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "staffId"
+                  ],
+                  "name": "attendanceException_org_staff_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "status"
+                  ],
+                  "name": "attendanceException_org_status_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "type"
+                  ],
+                  "name": "attendanceException_org_type_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "attendanceRecordId"
+                  ],
+                  "name": "attendanceException_record_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "resolvedByUserId"
+                  ],
+                  "name": "attendanceException_resolvedByUserId_idx_fe6c7b89",
+                  "prefix": "attendanceException_resolvedByUserId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "staffId"
+                  ],
+                  "name": "attendanceException_staffId_idx_ce92c64e",
+                  "prefix": "attendanceException_staffId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "attendanceRecord": {
+              "checks": [
+                {
+                  "expression": "\"actualClockOutDateTime\" IS NULL OR \"actualClockInDateTime\" IS NULL OR \"actualClockInDateTime\" < \"actualClockOutDateTime\"",
+                  "name": "attendanceRecord_clock_order_df6e0de9",
+                  "prefix": "attendanceRecord_clock_order"
+                },
+                {
+                  "expression": "\"lateMinutes\" >= 0 AND \"earlyDepartureMinutes\" >= 0 AND \"overtimeMinutes\" >= 0",
+                  "name": "attendanceRecord_minutes_non_negative_0e4a46f6",
+                  "prefix": "attendanceRecord_minutes_non_negative"
+                },
+                {
+                  "expression": "(\"status\" = 'OPEN' AND \"openSessionKey\" = 'OPEN') OR (\"status\" <> 'OPEN' AND \"openSessionKey\" IS NULL)",
+                  "name": "attendanceRecord_open_session_state_91438b77",
+                  "prefix": "attendanceRecord_open_session_state"
+                },
+                {
+                  "expression": "\"reviewStatus\" IN ('UNREVIEWED', 'APPROVED', 'REJECTED')",
+                  "name": "attendanceRecord_reviewStatus_check_dc1bd288",
+                  "prefix": "attendanceRecord_reviewStatus_check"
+                },
+                {
+                  "expression": "\"source\" IN ('STAFF_PWA', 'ADMIN', 'SYSTEM', 'DEVICE')",
+                  "name": "attendanceRecord_source_check_72e31ebd",
+                  "prefix": "attendanceRecord_source_check"
+                },
+                {
+                  "expression": "\"status\" IN ('OPEN', 'COMPLETED', 'MISSED', 'EXCEPTION', 'CORRECTED', 'VOIDED')",
+                  "name": "attendanceRecord_status_check_b8e3f284",
+                  "prefix": "attendanceRecord_status_check"
+                }
+              ],
+              "columns": {
+                "actualClockInDateTime": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "actualClockOutDateTime": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "actualMinutes": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "approvedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "approvedByUserId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "assignmentId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "attendanceDate": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "earlyDepartureMinutes": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "lateMinutes": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "notes": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "openSessionKey": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "overtimeMinutes": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "reviewStatus": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "UNREVIEWED"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "AttendanceReviewStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "rosterId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "scheduledEndDateTime": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "scheduledMinutes": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "scheduledStartDateTime": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "source": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "AttendanceSource",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "staffId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "AttendanceStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attendanceRecord"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organization"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "staffId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attendanceRecord"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "staffProfile"
+                  }
+                },
+                {
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "rosterId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attendanceRecord"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "roster"
+                  }
+                },
+                {
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "assignmentId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attendanceRecord"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftAssignment"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "approvedByUserId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attendanceRecord"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "approvedByUserId"
+                  ],
+                  "name": "attendanceRecord_approvedByUserId_idx_500ef1e1",
+                  "prefix": "attendanceRecord_approvedByUserId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "assignmentId"
+                  ],
+                  "name": "attendanceRecord_assignment_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "attendanceDate"
+                  ],
+                  "name": "attendanceRecord_org_date_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId"
+                  ],
+                  "name": "attendanceRecord_org_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "staffId",
+                    "attendanceDate"
+                  ],
+                  "name": "attendanceRecord_org_staff_date_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "status"
+                  ],
+                  "name": "attendanceRecord_org_status_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "rosterId"
+                  ],
+                  "name": "attendanceRecord_roster_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "staffId"
+                  ],
+                  "name": "attendanceRecord_staffId_idx_ce92c64e",
+                  "prefix": "attendanceRecord_staffId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "organizationId",
+                    "staffId",
+                    "openSessionKey"
+                  ],
+                  "name": "attendanceRecord_open_session_key"
+                }
+              ]
+            },
             "auditEvent": {
               "checks": [
                 {
-                  "expression": "\"action\" IN ('ROSTER_CREATED', 'ROSTER_UPDATED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_PUBLISHED', 'ROSTER_AMENDMENT_CREATED', 'ROSTER_DELETED', 'ASSIGNMENT_CREATED', 'ASSIGNMENT_DELETED', 'LEAVE_CREATED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'STAFF_CREATED', 'STAFF_UPDATED', 'STAFF_DEACTIVATED', 'DEPARTMENT_CREATED', 'DEPARTMENT_UPDATED', 'DEPARTMENT_DELETED', 'DEPARTMENT_HEAD_ASSIGNED', 'DEPARTMENT_HEAD_REMOVED', 'PROFESSION_CREATED', 'PROFESSION_UPDATED', 'PROFESSION_DEACTIVATED', 'SHIFT_TYPE_CREATED', 'SHIFT_TYPE_UPDATED', 'SHIFT_TYPE_DEACTIVATED', 'STAFFING_REQUIREMENT_CREATED', 'STAFFING_REQUIREMENT_UPDATED', 'STAFFING_REQUIREMENT_DELETED', 'SCHEDULING_POLICY_UPDATED', 'USER_INVITED', 'USER_UPDATED', 'USER_DEACTIVATED', 'MEMBERSHIP_ROLE_CHANGED', 'MEMBERSHIP_ACTIVATED', 'MEMBERSHIP_DEACTIVATED')",
-                  "name": "auditEvent_action_check_8d257f60",
+                  "expression": "\"action\" IN ('ROSTER_CREATED', 'ROSTER_UPDATED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_PUBLISHED', 'ROSTER_AMENDMENT_CREATED', 'ROSTER_DELETED', 'ASSIGNMENT_CREATED', 'ASSIGNMENT_DELETED', 'LEAVE_CREATED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'STAFF_CREATED', 'STAFF_UPDATED', 'STAFF_DEACTIVATED', 'DEPARTMENT_CREATED', 'DEPARTMENT_UPDATED', 'DEPARTMENT_DELETED', 'DEPARTMENT_HEAD_ASSIGNED', 'DEPARTMENT_HEAD_REMOVED', 'PROFESSION_CREATED', 'PROFESSION_UPDATED', 'PROFESSION_DEACTIVATED', 'SHIFT_TYPE_CREATED', 'SHIFT_TYPE_UPDATED', 'SHIFT_TYPE_DEACTIVATED', 'STAFFING_REQUIREMENT_CREATED', 'STAFFING_REQUIREMENT_UPDATED', 'STAFFING_REQUIREMENT_DELETED', 'SCHEDULING_POLICY_UPDATED', 'USER_INVITED', 'USER_UPDATED', 'USER_DEACTIVATED', 'MEMBERSHIP_ROLE_CHANGED', 'MEMBERSHIP_ACTIVATED', 'MEMBERSHIP_DEACTIVATED', 'ATTENDANCE_CLOCKED_IN', 'ATTENDANCE_CLOCKED_OUT', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED', 'ATTENDANCE_VOIDED', 'ATTENDANCE_EXCEPTION_RESOLVED', 'ATTENDANCE_POLICY_UPDATED')",
+                  "name": "auditEvent_action_check_c0c9e06e",
                   "prefix": "auditEvent_action_check"
                 },
                 {
@@ -5190,8 +7390,8 @@
                   "prefix": "auditEvent_actorType_check"
                 },
                 {
-                  "expression": "\"entityType\" IN ('ROSTER', 'ASSIGNMENT', 'LEAVE_REQUEST', 'SHIFT_SWAP', 'STAFF', 'DEPARTMENT', 'PROFESSION', 'SHIFT_TYPE', 'STAFFING_REQUIREMENT', 'SCHEDULING_POLICY', 'USER', 'MEMBERSHIP')",
-                  "name": "auditEvent_entityType_check_1d250f14",
+                  "expression": "\"entityType\" IN ('ROSTER', 'ASSIGNMENT', 'LEAVE_REQUEST', 'SHIFT_SWAP', 'STAFF', 'DEPARTMENT', 'PROFESSION', 'SHIFT_TYPE', 'STAFFING_REQUIREMENT', 'SCHEDULING_POLICY', 'USER', 'MEMBERSHIP', 'ATTENDANCE', 'ATTENDANCE_POLICY')",
+                  "name": "auditEvent_entityType_check_98d0e24c",
                   "prefix": "auditEvent_entityType_check"
                 }
               ],
@@ -5776,13 +7976,13 @@
             "notification": {
               "checks": [
                 {
-                  "expression": "\"entityType\" IN ('LEAVE_REQUEST', 'SHIFT_SWAP', 'ROSTER')",
-                  "name": "notification_entityType_check_23970d2f",
+                  "expression": "\"entityType\" IN ('LEAVE_REQUEST', 'SHIFT_SWAP', 'ROSTER', 'ATTENDANCE')",
+                  "name": "notification_entityType_check_7c527aeb",
                   "prefix": "notification_entityType_check"
                 },
                 {
-                  "expression": "\"type\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED')",
-                  "name": "notification_type_check_cdb06ba8",
+                  "expression": "\"type\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED')",
+                  "name": "notification_type_check_e6328a7f",
                   "prefix": "notification_type_check"
                 }
               ],
@@ -5961,8 +8161,8 @@
                   "prefix": "notificationDelivery_channel_check"
                 },
                 {
-                  "expression": "\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED')",
-                  "name": "notificationDelivery_eventType_check_485b977b",
+                  "expression": "\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED')",
+                  "name": "notificationDelivery_eventType_check_1f1ba224",
                   "prefix": "notificationDelivery_eventType_check"
                 },
                 {
@@ -6395,8 +8595,8 @@
             "notificationOutbox": {
               "checks": [
                 {
-                  "expression": "\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED')",
-                  "name": "notificationOutbox_eventType_check_485b977b",
+                  "expression": "\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED')",
+                  "name": "notificationOutbox_eventType_check_1f1ba224",
                   "prefix": "notificationOutbox_eventType_check"
                 },
                 {
@@ -6562,8 +8762,8 @@
                   "prefix": "notificationPreference_channel_check"
                 },
                 {
-                  "expression": "\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED')",
-                  "name": "notificationPreference_eventType_check_485b977b",
+                  "expression": "\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED')",
+                  "name": "notificationPreference_eventType_check_1f1ba224",
                   "prefix": "notificationPreference_eventType_check"
                 }
               ],
@@ -6817,6 +9017,165 @@
                 {
                   "columns": [
                     "slug"
+                  ]
+                }
+              ]
+            },
+            "organizationAttendancePolicy": {
+              "checks": [
+                {
+                  "expression": "\"maximumEarlyClockInMinutes\" >= 0",
+                  "name": "attendancePolicy_early_clock_in_2a71cca9",
+                  "prefix": "attendancePolicy_early_clock_in"
+                },
+                {
+                  "expression": "\"earlyDepartureThresholdMinutes\" >= 0",
+                  "name": "attendancePolicy_early_threshold_ea899a5a",
+                  "prefix": "attendancePolicy_early_threshold"
+                },
+                {
+                  "expression": "\"maximumLateClockOutMinutes\" >= 0",
+                  "name": "attendancePolicy_late_clock_out_be26e741",
+                  "prefix": "attendancePolicy_late_clock_out"
+                },
+                {
+                  "expression": "\"lateThresholdMinutes\" >= 0",
+                  "name": "attendancePolicy_late_threshold_8305e593",
+                  "prefix": "attendancePolicy_late_threshold"
+                },
+                {
+                  "expression": "\"overtimeThresholdMinutes\" >= 0",
+                  "name": "attendancePolicy_overtime_threshold_da722c70",
+                  "prefix": "attendancePolicy_overtime_threshold"
+                }
+              ],
+              "columns": {
+                "allowEarlyClockIn": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "allowUnscheduledAttendance": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "attendanceEnabled": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "earlyDepartureThresholdMinutes": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "lateThresholdMinutes": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "maximumEarlyClockInMinutes": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 120
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "maximumLateClockOutMinutes": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 720
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "overtimeThresholdMinutes": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organizationAttendancePolicy"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organization"
+                  }
+                }
+              ],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "organizationId"
                   ]
                 }
               ]
@@ -8771,6 +11130,73 @@
             }
           },
           "valueSet": {
+            "AttendanceEventType": {
+              "kind": "valueSet",
+              "values": [
+                "CLOCK_IN",
+                "CLOCK_OUT",
+                "MANUAL_CLOCK_IN",
+                "MANUAL_CLOCK_OUT",
+                "CORRECTION",
+                "VOID"
+              ]
+            },
+            "AttendanceExceptionSeverity": {
+              "kind": "valueSet",
+              "values": [
+                "INFO",
+                "WARNING"
+              ]
+            },
+            "AttendanceExceptionStatus": {
+              "kind": "valueSet",
+              "values": [
+                "OPEN",
+                "ACKNOWLEDGED",
+                "RESOLVED",
+                "WAIVED"
+              ]
+            },
+            "AttendanceExceptionType": {
+              "kind": "valueSet",
+              "values": [
+                "LATE_ARRIVAL",
+                "EARLY_DEPARTURE",
+                "MISSED_CLOCK_IN",
+                "MISSED_CLOCK_OUT",
+                "UNSCHEDULED_ATTENDANCE",
+                "OVERTIME",
+                "OUTSIDE_SCHEDULE"
+              ]
+            },
+            "AttendanceReviewStatus": {
+              "kind": "valueSet",
+              "values": [
+                "UNREVIEWED",
+                "APPROVED",
+                "REJECTED"
+              ]
+            },
+            "AttendanceSource": {
+              "kind": "valueSet",
+              "values": [
+                "STAFF_PWA",
+                "ADMIN",
+                "SYSTEM",
+                "DEVICE"
+              ]
+            },
+            "AttendanceStatus": {
+              "kind": "valueSet",
+              "values": [
+                "OPEN",
+                "COMPLETED",
+                "MISSED",
+                "EXCEPTION",
+                "CORRECTED",
+                "VOIDED"
+              ]
+            },
             "AuditAction": {
               "kind": "valueSet",
               "values": [
@@ -8814,7 +11240,15 @@
                 "USER_DEACTIVATED",
                 "MEMBERSHIP_ROLE_CHANGED",
                 "MEMBERSHIP_ACTIVATED",
-                "MEMBERSHIP_DEACTIVATED"
+                "MEMBERSHIP_DEACTIVATED",
+                "ATTENDANCE_CLOCKED_IN",
+                "ATTENDANCE_CLOCKED_OUT",
+                "ATTENDANCE_CORRECTED",
+                "ATTENDANCE_APPROVED",
+                "ATTENDANCE_REJECTED",
+                "ATTENDANCE_VOIDED",
+                "ATTENDANCE_EXCEPTION_RESOLVED",
+                "ATTENDANCE_POLICY_UPDATED"
               ]
             },
             "AuditActorType": {
@@ -8838,7 +11272,9 @@
                 "STAFFING_REQUIREMENT",
                 "SCHEDULING_POLICY",
                 "USER",
-                "MEMBERSHIP"
+                "MEMBERSHIP",
+                "ATTENDANCE",
+                "ATTENDANCE_POLICY"
               ]
             },
             "EmploymentStatus": {
@@ -8924,7 +11360,8 @@
               "values": [
                 "LEAVE_REQUEST",
                 "SHIFT_SWAP",
-                "ROSTER"
+                "ROSTER",
+                "ATTENDANCE"
               ]
             },
             "NotificationOutboxStatus": {
@@ -8950,7 +11387,10 @@
                 "ROSTER_SUBMITTED_FOR_REVIEW",
                 "ROSTER_PUBLISHED",
                 "ROSTER_RETURNED_TO_DRAFT",
-                "ROSTER_AMENDMENT_CREATED"
+                "ROSTER_AMENDMENT_CREATED",
+                "ATTENDANCE_CORRECTED",
+                "ATTENDANCE_APPROVED",
+                "ATTENDANCE_REJECTED"
               ]
             },
             "OrganizationStatus": {
@@ -8986,12 +11426,75 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "f3b78639b417ee02669f1685229730267c4f5d0f51cd4e3f04991803211c9767"
+    "storageHash": "9acf65ad5ff2677c6d472b262ceff9e6b72a2e164d849d856c3efebb57d0f246"
   },
   "execution": {
-    "executionHash": "2f84c4fa8d8dfc9708070b48cfdcada479f63f503f3709e9d08269f07159849a",
+    "executionHash": "05c8d6cc589fd1ec3e088083a6491b21681e9490aa80bc5b5d6115f7ec1f7394",
     "mutations": {
       "defaults": [
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "attendanceEvent"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "attendanceException"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "attendanceException"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "attendanceRecord"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "attendanceRecord"
+          }
+        },
         {
           "onCreate": {
             "id": "uuidv4",
@@ -9194,6 +11697,32 @@
             "column": "updatedAt",
             "namespace": "public",
             "table": "organization"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "organizationAttendancePolicy"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "organizationAttendancePolicy"
           }
         },
         {

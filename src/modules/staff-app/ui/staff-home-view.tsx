@@ -108,6 +108,10 @@ export function StaffHomeView({ home, cachedAt }: { home: StaffHomeView; cachedA
 
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-medium text-muted-foreground">Requests</h2>
+        <Link className="flex min-h-11 items-center justify-between text-sm" href="/me/attendance">
+          <span>Attendance</span>
+          <span className="text-muted-foreground">Clock in or out</span>
+        </Link>
         <Link className="flex min-h-11 items-center justify-between text-sm" href="/me/leave">
           <span>Leave</span>
           <span className="text-muted-foreground">

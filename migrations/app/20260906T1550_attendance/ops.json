@@ -1,0 +1,2396 @@
+[
+  {
+    "id": "dropCheckConstraint.auditEvent.auditEvent_action_check_8d257f60",
+    "label": "Drop check constraint \"auditEvent_action_check_8d257f60\" on \"auditEvent\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "auditEvent_action_check_8d257f60",
+        "table": "auditEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"auditEvent_action_check_8d257f60\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_action_check_8d257f60",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"auditEvent_action_check_8d257f60\"",
+        "sql": "ALTER TABLE \"public\".\"auditEvent\" DROP CONSTRAINT \"auditEvent_action_check_8d257f60\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"auditEvent_action_check_8d257f60\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_action_check_8d257f60",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.auditEvent.auditEvent_entityType_check_1d250f14",
+    "label": "Drop check constraint \"auditEvent_entityType_check_1d250f14\" on \"auditEvent\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "auditEvent_entityType_check_1d250f14",
+        "table": "auditEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"auditEvent_entityType_check_1d250f14\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_entityType_check_1d250f14",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"auditEvent_entityType_check_1d250f14\"",
+        "sql": "ALTER TABLE \"public\".\"auditEvent\" DROP CONSTRAINT \"auditEvent_entityType_check_1d250f14\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"auditEvent_entityType_check_1d250f14\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_entityType_check_1d250f14",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.notification.notification_entityType_check_23970d2f",
+    "label": "Drop check constraint \"notification_entityType_check_23970d2f\" on \"notification\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notification_entityType_check_23970d2f",
+        "table": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notification_entityType_check_23970d2f\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_entityType_check_23970d2f",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"notification_entityType_check_23970d2f\"",
+        "sql": "ALTER TABLE \"public\".\"notification\" DROP CONSTRAINT \"notification_entityType_check_23970d2f\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notification_entityType_check_23970d2f\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_entityType_check_23970d2f",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.notification.notification_type_check_cdb06ba8",
+    "label": "Drop check constraint \"notification_type_check_cdb06ba8\" on \"notification\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notification_type_check_cdb06ba8",
+        "table": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notification_type_check_cdb06ba8\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_type_check_cdb06ba8",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"notification_type_check_cdb06ba8\"",
+        "sql": "ALTER TABLE \"public\".\"notification\" DROP CONSTRAINT \"notification_type_check_cdb06ba8\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notification_type_check_cdb06ba8\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_type_check_cdb06ba8",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.notificationDelivery.notificationDelivery_eventType_check_485b977b",
+    "label": "Drop check constraint \"notificationDelivery_eventType_check_485b977b\" on \"notificationDelivery\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notificationDelivery_eventType_check_485b977b",
+        "table": "notificationDelivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notificationDelivery_eventType_check_485b977b\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationDelivery_eventType_check_485b977b",
+          "public",
+          "\"public\".\"notificationDelivery\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"notificationDelivery_eventType_check_485b977b\"",
+        "sql": "ALTER TABLE \"public\".\"notificationDelivery\" DROP CONSTRAINT \"notificationDelivery_eventType_check_485b977b\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notificationDelivery_eventType_check_485b977b\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationDelivery_eventType_check_485b977b",
+          "public",
+          "\"public\".\"notificationDelivery\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.notificationOutbox.notificationOutbox_eventType_check_485b977b",
+    "label": "Drop check constraint \"notificationOutbox_eventType_check_485b977b\" on \"notificationOutbox\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notificationOutbox_eventType_check_485b977b",
+        "table": "notificationOutbox"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notificationOutbox_eventType_check_485b977b\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationOutbox_eventType_check_485b977b",
+          "public",
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"notificationOutbox_eventType_check_485b977b\"",
+        "sql": "ALTER TABLE \"public\".\"notificationOutbox\" DROP CONSTRAINT \"notificationOutbox_eventType_check_485b977b\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notificationOutbox_eventType_check_485b977b\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationOutbox_eventType_check_485b977b",
+          "public",
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.notificationPreference.notificationPreference_eventType_check_485b977b",
+    "label": "Drop check constraint \"notificationPreference_eventType_check_485b977b\" on \"notificationPreference\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notificationPreference_eventType_check_485b977b",
+        "table": "notificationPreference"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notificationPreference_eventType_check_485b977b\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationPreference_eventType_check_485b977b",
+          "public",
+          "\"public\".\"notificationPreference\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"notificationPreference_eventType_check_485b977b\"",
+        "sql": "ALTER TABLE \"public\".\"notificationPreference\" DROP CONSTRAINT \"notificationPreference_eventType_check_485b977b\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notificationPreference_eventType_check_485b977b\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationPreference_eventType_check_485b977b",
+          "public",
+          "\"public\".\"notificationPreference\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.attendanceEvent",
+    "label": "Create table \"attendanceEvent\"",
+    "summary": "Creates table \"attendanceEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "attendanceEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"attendanceEvent\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"attendanceEvent\"",
+        "sql": "CREATE TABLE \"public\".\"attendanceEvent\" (\n  \"actorUserId\" text,\n  \"attendanceRecordId\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"metadata\" text,\n  \"occurredAt\" timestamptz NOT NULL,\n  \"organizationId\" text NOT NULL,\n  \"punchKey\" text,\n  \"source\" text NOT NULL,\n  \"staffId\" text NOT NULL,\n  \"type\" text NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"attendanceEvent_punch_key_state_05dae0e5\" CHECK ((\"type\" IN ('CLOCK_IN', 'CLOCK_OUT', 'VOID') AND \"punchKey\" = \"type\") OR (\"type\" NOT IN ('CLOCK_IN', 'CLOCK_OUT', 'VOID') AND \"punchKey\" IS NULL)),\n  CONSTRAINT \"attendanceEvent_source_check_72e31ebd\" CHECK (\"source\" IN ('STAFF_PWA', 'ADMIN', 'SYSTEM', 'DEVICE')),\n  CONSTRAINT \"attendanceEvent_type_check_de0a0cef\" CHECK (\"type\" IN ('CLOCK_IN', 'CLOCK_OUT', 'MANUAL_CLOCK_IN', 'MANUAL_CLOCK_OUT', 'CORRECTION', 'VOID'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"attendanceEvent\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.attendanceException",
+    "label": "Create table \"attendanceException\"",
+    "summary": "Creates table \"attendanceException\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "attendanceException"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"attendanceException\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceException\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"attendanceException\"",
+        "sql": "CREATE TABLE \"public\".\"attendanceException\" (\n  \"attendanceRecordId\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"detectedAt\" timestamptz NOT NULL,\n  \"id\" text NOT NULL,\n  \"metadata\" text,\n  \"notes\" text,\n  \"organizationId\" text NOT NULL,\n  \"resolvedAt\" timestamptz,\n  \"resolvedByUserId\" text,\n  \"severity\" text NOT NULL,\n  \"staffId\" text NOT NULL,\n  \"status\" text DEFAULT 'OPEN' NOT NULL,\n  \"type\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"attendanceException_severity_check_1efcb0ef\" CHECK (\"severity\" IN ('INFO', 'WARNING')),\n  CONSTRAINT \"attendanceException_status_check_bbf5c264\" CHECK (\"status\" IN ('OPEN', 'ACKNOWLEDGED', 'RESOLVED', 'WAIVED')),\n  CONSTRAINT \"attendanceException_type_check_c3f9a979\" CHECK (\"type\" IN ('LATE_ARRIVAL', 'EARLY_DEPARTURE', 'MISSED_CLOCK_IN', 'MISSED_CLOCK_OUT', 'UNSCHEDULED_ATTENDANCE', 'OVERTIME', 'OUTSIDE_SCHEDULE'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"attendanceException\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceException\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.attendanceRecord",
+    "label": "Create table \"attendanceRecord\"",
+    "summary": "Creates table \"attendanceRecord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "attendanceRecord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"attendanceRecord\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"attendanceRecord\"",
+        "sql": "CREATE TABLE \"public\".\"attendanceRecord\" (\n  \"actualClockInDateTime\" timestamptz,\n  \"actualClockOutDateTime\" timestamptz,\n  \"actualMinutes\" int4,\n  \"approvedAt\" timestamptz,\n  \"approvedByUserId\" text,\n  \"assignmentId\" text,\n  \"attendanceDate\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"earlyDepartureMinutes\" int4 DEFAULT 0 NOT NULL,\n  \"id\" text NOT NULL,\n  \"lateMinutes\" int4 DEFAULT 0 NOT NULL,\n  \"notes\" text,\n  \"openSessionKey\" text,\n  \"organizationId\" text NOT NULL,\n  \"overtimeMinutes\" int4 DEFAULT 0 NOT NULL,\n  \"reviewStatus\" text DEFAULT 'UNREVIEWED' NOT NULL,\n  \"rosterId\" text,\n  \"scheduledEndDateTime\" timestamptz,\n  \"scheduledMinutes\" int4,\n  \"scheduledStartDateTime\" timestamptz,\n  \"source\" text NOT NULL,\n  \"staffId\" text NOT NULL,\n  \"status\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"attendanceRecord_clock_order_df6e0de9\" CHECK (\"actualClockOutDateTime\" IS NULL OR \"actualClockInDateTime\" IS NULL OR \"actualClockInDateTime\" < \"actualClockOutDateTime\"),\n  CONSTRAINT \"attendanceRecord_minutes_non_negative_0e4a46f6\" CHECK (\"lateMinutes\" >= 0 AND \"earlyDepartureMinutes\" >= 0 AND \"overtimeMinutes\" >= 0),\n  CONSTRAINT \"attendanceRecord_open_session_state_91438b77\" CHECK ((\"status\" = 'OPEN' AND \"openSessionKey\" = 'OPEN') OR (\"status\" <> 'OPEN' AND \"openSessionKey\" IS NULL)),\n  CONSTRAINT \"attendanceRecord_reviewStatus_check_dc1bd288\" CHECK (\"reviewStatus\" IN ('UNREVIEWED', 'APPROVED', 'REJECTED')),\n  CONSTRAINT \"attendanceRecord_source_check_72e31ebd\" CHECK (\"source\" IN ('STAFF_PWA', 'ADMIN', 'SYSTEM', 'DEVICE')),\n  CONSTRAINT \"attendanceRecord_status_check_b8e3f284\" CHECK (\"status\" IN ('OPEN', 'COMPLETED', 'MISSED', 'EXCEPTION', 'CORRECTED', 'VOIDED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"attendanceRecord\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.organizationAttendancePolicy",
+    "label": "Create table \"organizationAttendancePolicy\"",
+    "summary": "Creates table \"organizationAttendancePolicy\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "organizationAttendancePolicy"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"organizationAttendancePolicy\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationAttendancePolicy\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"organizationAttendancePolicy\"",
+        "sql": "CREATE TABLE \"public\".\"organizationAttendancePolicy\" (\n  \"allowEarlyClockIn\" bool DEFAULT true NOT NULL,\n  \"allowUnscheduledAttendance\" bool DEFAULT true NOT NULL,\n  \"attendanceEnabled\" bool DEFAULT true NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"earlyDepartureThresholdMinutes\" int4 DEFAULT 0 NOT NULL,\n  \"id\" text NOT NULL,\n  \"lateThresholdMinutes\" int4 DEFAULT 0 NOT NULL,\n  \"maximumEarlyClockInMinutes\" int4 DEFAULT 120 NOT NULL,\n  \"maximumLateClockOutMinutes\" int4 DEFAULT 720 NOT NULL,\n  \"organizationId\" text NOT NULL,\n  \"overtimeThresholdMinutes\" int4 DEFAULT 0 NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"attendancePolicy_early_clock_in_2a71cca9\" CHECK (\"maximumEarlyClockInMinutes\" >= 0),\n  CONSTRAINT \"attendancePolicy_early_threshold_ea899a5a\" CHECK (\"earlyDepartureThresholdMinutes\" >= 0),\n  CONSTRAINT \"attendancePolicy_late_clock_out_be26e741\" CHECK (\"maximumLateClockOutMinutes\" >= 0),\n  CONSTRAINT \"attendancePolicy_late_threshold_8305e593\" CHECK (\"lateThresholdMinutes\" >= 0),\n  CONSTRAINT \"attendancePolicy_overtime_threshold_da722c70\" CHECK (\"overtimeThresholdMinutes\" >= 0)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"organizationAttendancePolicy\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"organizationAttendancePolicy\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.attendanceEvent.attendanceEvent_punch_key",
+    "label": "Add unique constraint on \"attendanceEvent\" (attendanceRecordId, punchKey)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "attendanceEvent_punch_key",
+        "table": "attendanceEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"attendanceEvent_punch_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceEvent_punch_key",
+          "public",
+          "\"public\".\"attendanceEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"attendanceEvent_punch_key\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceEvent\" ADD CONSTRAINT \"attendanceEvent_punch_key\" UNIQUE (\"attendanceRecordId\", \"punchKey\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"attendanceEvent_punch_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceEvent_punch_key",
+          "public",
+          "\"public\".\"attendanceEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.attendanceRecord.attendanceRecord_open_session_key",
+    "label": "Add unique constraint on \"attendanceRecord\" (organizationId, staffId, openSessionKey)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "attendanceRecord_open_session_key",
+        "table": "attendanceRecord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"attendanceRecord_open_session_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceRecord_open_session_key",
+          "public",
+          "\"public\".\"attendanceRecord\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"attendanceRecord_open_session_key\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceRecord\" ADD CONSTRAINT \"attendanceRecord_open_session_key\" UNIQUE (\"organizationId\", \"staffId\", \"openSessionKey\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"attendanceRecord_open_session_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceRecord_open_session_key",
+          "public",
+          "\"public\".\"attendanceRecord\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.auditEvent.auditEvent_action_check_c0c9e06e",
+    "label": "Add check constraint \"auditEvent_action_check_c0c9e06e\" on \"auditEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "auditEvent_action_check_c0c9e06e",
+        "table": "auditEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"auditEvent_action_check_c0c9e06e\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_action_check_c0c9e06e",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"auditEvent_action_check_c0c9e06e\"",
+        "sql": "ALTER TABLE \"public\".\"auditEvent\" ADD CONSTRAINT \"auditEvent_action_check_c0c9e06e\" CHECK (\"action\" IN ('ROSTER_CREATED', 'ROSTER_UPDATED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_PUBLISHED', 'ROSTER_AMENDMENT_CREATED', 'ROSTER_DELETED', 'ASSIGNMENT_CREATED', 'ASSIGNMENT_DELETED', 'LEAVE_CREATED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'STAFF_CREATED', 'STAFF_UPDATED', 'STAFF_DEACTIVATED', 'DEPARTMENT_CREATED', 'DEPARTMENT_UPDATED', 'DEPARTMENT_DELETED', 'DEPARTMENT_HEAD_ASSIGNED', 'DEPARTMENT_HEAD_REMOVED', 'PROFESSION_CREATED', 'PROFESSION_UPDATED', 'PROFESSION_DEACTIVATED', 'SHIFT_TYPE_CREATED', 'SHIFT_TYPE_UPDATED', 'SHIFT_TYPE_DEACTIVATED', 'STAFFING_REQUIREMENT_CREATED', 'STAFFING_REQUIREMENT_UPDATED', 'STAFFING_REQUIREMENT_DELETED', 'SCHEDULING_POLICY_UPDATED', 'USER_INVITED', 'USER_UPDATED', 'USER_DEACTIVATED', 'MEMBERSHIP_ROLE_CHANGED', 'MEMBERSHIP_ACTIVATED', 'MEMBERSHIP_DEACTIVATED', 'ATTENDANCE_CLOCKED_IN', 'ATTENDANCE_CLOCKED_OUT', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED', 'ATTENDANCE_VOIDED', 'ATTENDANCE_EXCEPTION_RESOLVED', 'ATTENDANCE_POLICY_UPDATED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"auditEvent_action_check_c0c9e06e\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_action_check_c0c9e06e",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.auditEvent.auditEvent_entityType_check_98d0e24c",
+    "label": "Add check constraint \"auditEvent_entityType_check_98d0e24c\" on \"auditEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "auditEvent_entityType_check_98d0e24c",
+        "table": "auditEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"auditEvent_entityType_check_98d0e24c\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_entityType_check_98d0e24c",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"auditEvent_entityType_check_98d0e24c\"",
+        "sql": "ALTER TABLE \"public\".\"auditEvent\" ADD CONSTRAINT \"auditEvent_entityType_check_98d0e24c\" CHECK (\"entityType\" IN ('ROSTER', 'ASSIGNMENT', 'LEAVE_REQUEST', 'SHIFT_SWAP', 'STAFF', 'DEPARTMENT', 'PROFESSION', 'SHIFT_TYPE', 'STAFFING_REQUIREMENT', 'SCHEDULING_POLICY', 'USER', 'MEMBERSHIP', 'ATTENDANCE', 'ATTENDANCE_POLICY'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"auditEvent_entityType_check_98d0e24c\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_entityType_check_98d0e24c",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.notification.notification_entityType_check_7c527aeb",
+    "label": "Add check constraint \"notification_entityType_check_7c527aeb\" on \"notification\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notification_entityType_check_7c527aeb",
+        "table": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notification_entityType_check_7c527aeb\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_entityType_check_7c527aeb",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"notification_entityType_check_7c527aeb\"",
+        "sql": "ALTER TABLE \"public\".\"notification\" ADD CONSTRAINT \"notification_entityType_check_7c527aeb\" CHECK (\"entityType\" IN ('LEAVE_REQUEST', 'SHIFT_SWAP', 'ROSTER', 'ATTENDANCE'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notification_entityType_check_7c527aeb\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_entityType_check_7c527aeb",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.notification.notification_type_check_e6328a7f",
+    "label": "Add check constraint \"notification_type_check_e6328a7f\" on \"notification\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notification_type_check_e6328a7f",
+        "table": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notification_type_check_e6328a7f\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_type_check_e6328a7f",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"notification_type_check_e6328a7f\"",
+        "sql": "ALTER TABLE \"public\".\"notification\" ADD CONSTRAINT \"notification_type_check_e6328a7f\" CHECK (\"type\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notification_type_check_e6328a7f\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_type_check_e6328a7f",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.notificationDelivery.notificationDelivery_eventType_check_1f1ba224",
+    "label": "Add check constraint \"notificationDelivery_eventType_check_1f1ba224\" on \"notificationDelivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notificationDelivery_eventType_check_1f1ba224",
+        "table": "notificationDelivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notificationDelivery_eventType_check_1f1ba224\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationDelivery_eventType_check_1f1ba224",
+          "public",
+          "\"public\".\"notificationDelivery\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"notificationDelivery_eventType_check_1f1ba224\"",
+        "sql": "ALTER TABLE \"public\".\"notificationDelivery\" ADD CONSTRAINT \"notificationDelivery_eventType_check_1f1ba224\" CHECK (\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notificationDelivery_eventType_check_1f1ba224\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationDelivery_eventType_check_1f1ba224",
+          "public",
+          "\"public\".\"notificationDelivery\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.notificationOutbox.notificationOutbox_eventType_check_1f1ba224",
+    "label": "Add check constraint \"notificationOutbox_eventType_check_1f1ba224\" on \"notificationOutbox\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notificationOutbox_eventType_check_1f1ba224",
+        "table": "notificationOutbox"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notificationOutbox_eventType_check_1f1ba224\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationOutbox_eventType_check_1f1ba224",
+          "public",
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"notificationOutbox_eventType_check_1f1ba224\"",
+        "sql": "ALTER TABLE \"public\".\"notificationOutbox\" ADD CONSTRAINT \"notificationOutbox_eventType_check_1f1ba224\" CHECK (\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notificationOutbox_eventType_check_1f1ba224\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationOutbox_eventType_check_1f1ba224",
+          "public",
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.notificationPreference.notificationPreference_eventType_check_1f1ba224",
+    "label": "Add check constraint \"notificationPreference_eventType_check_1f1ba224\" on \"notificationPreference\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notificationPreference_eventType_check_1f1ba224",
+        "table": "notificationPreference"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notificationPreference_eventType_check_1f1ba224\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationPreference_eventType_check_1f1ba224",
+          "public",
+          "\"public\".\"notificationPreference\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"notificationPreference_eventType_check_1f1ba224\"",
+        "sql": "ALTER TABLE \"public\".\"notificationPreference\" ADD CONSTRAINT \"notificationPreference_eventType_check_1f1ba224\" CHECK (\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED', 'ATTENDANCE_CORRECTED', 'ATTENDANCE_APPROVED', 'ATTENDANCE_REJECTED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notificationPreference_eventType_check_1f1ba224\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationPreference_eventType_check_1f1ba224",
+          "public",
+          "\"public\".\"notificationPreference\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.organizationAttendancePolicy.organizationAttendancePolicy_organizationId_key",
+    "label": "Add unique constraint on \"organizationAttendancePolicy\" (organizationId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "organizationAttendancePolicy_organizationId_key",
+        "table": "organizationAttendancePolicy"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"organizationAttendancePolicy_organizationId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationAttendancePolicy_organizationId_key",
+          "public",
+          "\"public\".\"organizationAttendancePolicy\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"organizationAttendancePolicy_organizationId_key\"",
+        "sql": "ALTER TABLE \"public\".\"organizationAttendancePolicy\" ADD CONSTRAINT \"organizationAttendancePolicy_organizationId_key\" UNIQUE (\"organizationId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"organizationAttendancePolicy_organizationId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationAttendancePolicy_organizationId_key",
+          "public",
+          "\"public\".\"organizationAttendancePolicy\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceEvent.attendanceEvent_actorUserId_idx_96dac96c",
+    "label": "Create index \"attendanceEvent_actorUserId_idx_96dac96c\" on \"attendanceEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceEvent_actorUserId_idx_96dac96c",
+        "table": "attendanceEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceEvent_actorUserId_idx_96dac96c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceEvent_actorUserId_idx_96dac96c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceEvent_actorUserId_idx_96dac96c\"",
+        "sql": "CREATE INDEX \"attendanceEvent_actorUserId_idx_96dac96c\" ON \"public\".\"attendanceEvent\" (\"actorUserId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceEvent_actorUserId_idx_96dac96c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceEvent_actorUserId_idx_96dac96c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceEvent.attendanceEvent_org_idx",
+    "label": "Create index \"attendanceEvent_org_idx\" on \"attendanceEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceEvent_org_idx",
+        "table": "attendanceEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceEvent_org_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceEvent_org_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceEvent_org_idx\"",
+        "sql": "CREATE INDEX \"attendanceEvent_org_idx\" ON \"public\".\"attendanceEvent\" (\"organizationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceEvent_org_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceEvent_org_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceEvent.attendanceEvent_org_staff_idx",
+    "label": "Create index \"attendanceEvent_org_staff_idx\" on \"attendanceEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceEvent_org_staff_idx",
+        "table": "attendanceEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceEvent_org_staff_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceEvent_org_staff_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceEvent_org_staff_idx\"",
+        "sql": "CREATE INDEX \"attendanceEvent_org_staff_idx\" ON \"public\".\"attendanceEvent\" (\"organizationId\", \"staffId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceEvent_org_staff_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceEvent_org_staff_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceEvent.attendanceEvent_record_idx",
+    "label": "Create index \"attendanceEvent_record_idx\" on \"attendanceEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceEvent_record_idx",
+        "table": "attendanceEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceEvent_record_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceEvent_record_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceEvent_record_idx\"",
+        "sql": "CREATE INDEX \"attendanceEvent_record_idx\" ON \"public\".\"attendanceEvent\" (\"attendanceRecordId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceEvent_record_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceEvent_record_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceEvent.attendanceEvent_staffId_idx_ce92c64e",
+    "label": "Create index \"attendanceEvent_staffId_idx_ce92c64e\" on \"attendanceEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceEvent_staffId_idx_ce92c64e",
+        "table": "attendanceEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceEvent_staffId_idx_ce92c64e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceEvent_staffId_idx_ce92c64e\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceEvent_staffId_idx_ce92c64e\"",
+        "sql": "CREATE INDEX \"attendanceEvent_staffId_idx_ce92c64e\" ON \"public\".\"attendanceEvent\" (\"staffId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceEvent_staffId_idx_ce92c64e\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceEvent_staffId_idx_ce92c64e\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceException.attendanceException_org_idx",
+    "label": "Create index \"attendanceException_org_idx\" on \"attendanceException\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceException_org_idx",
+        "table": "attendanceException"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceException_org_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceException_org_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceException_org_idx\"",
+        "sql": "CREATE INDEX \"attendanceException_org_idx\" ON \"public\".\"attendanceException\" (\"organizationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceException_org_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceException_org_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceException.attendanceException_org_staff_idx",
+    "label": "Create index \"attendanceException_org_staff_idx\" on \"attendanceException\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceException_org_staff_idx",
+        "table": "attendanceException"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceException_org_staff_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceException_org_staff_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceException_org_staff_idx\"",
+        "sql": "CREATE INDEX \"attendanceException_org_staff_idx\" ON \"public\".\"attendanceException\" (\"organizationId\", \"staffId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceException_org_staff_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceException_org_staff_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceException.attendanceException_org_status_idx",
+    "label": "Create index \"attendanceException_org_status_idx\" on \"attendanceException\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceException_org_status_idx",
+        "table": "attendanceException"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceException_org_status_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceException_org_status_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceException_org_status_idx\"",
+        "sql": "CREATE INDEX \"attendanceException_org_status_idx\" ON \"public\".\"attendanceException\" (\"organizationId\", \"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceException_org_status_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceException_org_status_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceException.attendanceException_org_type_idx",
+    "label": "Create index \"attendanceException_org_type_idx\" on \"attendanceException\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceException_org_type_idx",
+        "table": "attendanceException"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceException_org_type_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceException_org_type_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceException_org_type_idx\"",
+        "sql": "CREATE INDEX \"attendanceException_org_type_idx\" ON \"public\".\"attendanceException\" (\"organizationId\", \"type\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceException_org_type_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceException_org_type_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceException.attendanceException_record_idx",
+    "label": "Create index \"attendanceException_record_idx\" on \"attendanceException\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceException_record_idx",
+        "table": "attendanceException"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceException_record_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceException_record_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceException_record_idx\"",
+        "sql": "CREATE INDEX \"attendanceException_record_idx\" ON \"public\".\"attendanceException\" (\"attendanceRecordId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceException_record_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceException_record_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceException.attendanceException_resolvedByUserId_idx_fe6c7b89",
+    "label": "Create index \"attendanceException_resolvedByUserId_idx_fe6c7b89\" on \"attendanceException\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceException_resolvedByUserId_idx_fe6c7b89",
+        "table": "attendanceException"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceException_resolvedByUserId_idx_fe6c7b89\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceException_resolvedByUserId_idx_fe6c7b89\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceException_resolvedByUserId_idx_fe6c7b89\"",
+        "sql": "CREATE INDEX \"attendanceException_resolvedByUserId_idx_fe6c7b89\" ON \"public\".\"attendanceException\" (\"resolvedByUserId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceException_resolvedByUserId_idx_fe6c7b89\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceException_resolvedByUserId_idx_fe6c7b89\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceException.attendanceException_staffId_idx_ce92c64e",
+    "label": "Create index \"attendanceException_staffId_idx_ce92c64e\" on \"attendanceException\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceException_staffId_idx_ce92c64e",
+        "table": "attendanceException"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceException_staffId_idx_ce92c64e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceException_staffId_idx_ce92c64e\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceException_staffId_idx_ce92c64e\"",
+        "sql": "CREATE INDEX \"attendanceException_staffId_idx_ce92c64e\" ON \"public\".\"attendanceException\" (\"staffId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceException_staffId_idx_ce92c64e\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceException_staffId_idx_ce92c64e\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceRecord.attendanceRecord_approvedByUserId_idx_500ef1e1",
+    "label": "Create index \"attendanceRecord_approvedByUserId_idx_500ef1e1\" on \"attendanceRecord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceRecord_approvedByUserId_idx_500ef1e1",
+        "table": "attendanceRecord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceRecord_approvedByUserId_idx_500ef1e1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord_approvedByUserId_idx_500ef1e1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceRecord_approvedByUserId_idx_500ef1e1\"",
+        "sql": "CREATE INDEX \"attendanceRecord_approvedByUserId_idx_500ef1e1\" ON \"public\".\"attendanceRecord\" (\"approvedByUserId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceRecord_approvedByUserId_idx_500ef1e1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord_approvedByUserId_idx_500ef1e1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceRecord.attendanceRecord_assignment_idx",
+    "label": "Create index \"attendanceRecord_assignment_idx\" on \"attendanceRecord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceRecord_assignment_idx",
+        "table": "attendanceRecord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceRecord_assignment_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord_assignment_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceRecord_assignment_idx\"",
+        "sql": "CREATE INDEX \"attendanceRecord_assignment_idx\" ON \"public\".\"attendanceRecord\" (\"assignmentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceRecord_assignment_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord_assignment_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceRecord.attendanceRecord_org_date_idx",
+    "label": "Create index \"attendanceRecord_org_date_idx\" on \"attendanceRecord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceRecord_org_date_idx",
+        "table": "attendanceRecord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceRecord_org_date_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord_org_date_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceRecord_org_date_idx\"",
+        "sql": "CREATE INDEX \"attendanceRecord_org_date_idx\" ON \"public\".\"attendanceRecord\" (\"organizationId\", \"attendanceDate\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceRecord_org_date_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord_org_date_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceRecord.attendanceRecord_org_idx",
+    "label": "Create index \"attendanceRecord_org_idx\" on \"attendanceRecord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceRecord_org_idx",
+        "table": "attendanceRecord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceRecord_org_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord_org_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceRecord_org_idx\"",
+        "sql": "CREATE INDEX \"attendanceRecord_org_idx\" ON \"public\".\"attendanceRecord\" (\"organizationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceRecord_org_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord_org_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceRecord.attendanceRecord_org_staff_date_idx",
+    "label": "Create index \"attendanceRecord_org_staff_date_idx\" on \"attendanceRecord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceRecord_org_staff_date_idx",
+        "table": "attendanceRecord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceRecord_org_staff_date_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord_org_staff_date_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceRecord_org_staff_date_idx\"",
+        "sql": "CREATE INDEX \"attendanceRecord_org_staff_date_idx\" ON \"public\".\"attendanceRecord\" (\"organizationId\", \"staffId\", \"attendanceDate\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceRecord_org_staff_date_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord_org_staff_date_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceRecord.attendanceRecord_org_status_idx",
+    "label": "Create index \"attendanceRecord_org_status_idx\" on \"attendanceRecord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceRecord_org_status_idx",
+        "table": "attendanceRecord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceRecord_org_status_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord_org_status_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceRecord_org_status_idx\"",
+        "sql": "CREATE INDEX \"attendanceRecord_org_status_idx\" ON \"public\".\"attendanceRecord\" (\"organizationId\", \"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceRecord_org_status_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord_org_status_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceRecord.attendanceRecord_roster_idx",
+    "label": "Create index \"attendanceRecord_roster_idx\" on \"attendanceRecord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceRecord_roster_idx",
+        "table": "attendanceRecord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceRecord_roster_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord_roster_idx\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceRecord_roster_idx\"",
+        "sql": "CREATE INDEX \"attendanceRecord_roster_idx\" ON \"public\".\"attendanceRecord\" (\"rosterId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceRecord_roster_idx\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord_roster_idx\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendanceRecord.attendanceRecord_staffId_idx_ce92c64e",
+    "label": "Create index \"attendanceRecord_staffId_idx_ce92c64e\" on \"attendanceRecord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attendanceRecord_staffId_idx_ce92c64e",
+        "table": "attendanceRecord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendanceRecord_staffId_idx_ce92c64e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord_staffId_idx_ce92c64e\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendanceRecord_staffId_idx_ce92c64e\"",
+        "sql": "CREATE INDEX \"attendanceRecord_staffId_idx_ce92c64e\" ON \"public\".\"attendanceRecord\" (\"staffId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendanceRecord_staffId_idx_ce92c64e\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attendanceRecord_staffId_idx_ce92c64e\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attendanceEvent.attendanceEvent_organizationId_fkey",
+    "label": "Add foreign key \"attendanceEvent_organizationId_fkey\" on \"attendanceEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attendanceEvent_organizationId_fkey",
+        "table": "attendanceEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attendanceEvent_organizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceEvent_organizationId_fkey",
+          "public",
+          "\"public\".\"attendanceEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attendanceEvent_organizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceEvent\"\nADD CONSTRAINT \"attendanceEvent_organizationId_fkey\"\nFOREIGN KEY (\"organizationId\")\nREFERENCES \"public\".\"organization\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attendanceEvent_organizationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceEvent_organizationId_fkey",
+          "public",
+          "\"public\".\"attendanceEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attendanceEvent.attendanceEvent_attendanceRecordId_fkey",
+    "label": "Add foreign key \"attendanceEvent_attendanceRecordId_fkey\" on \"attendanceEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attendanceEvent_attendanceRecordId_fkey",
+        "table": "attendanceEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attendanceEvent_attendanceRecordId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceEvent_attendanceRecordId_fkey",
+          "public",
+          "\"public\".\"attendanceEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attendanceEvent_attendanceRecordId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceEvent\"\nADD CONSTRAINT \"attendanceEvent_attendanceRecordId_fkey\"\nFOREIGN KEY (\"attendanceRecordId\")\nREFERENCES \"public\".\"attendanceRecord\" (\"id\")\nON DELETE RESTRICT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attendanceEvent_attendanceRecordId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceEvent_attendanceRecordId_fkey",
+          "public",
+          "\"public\".\"attendanceEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attendanceEvent.attendanceEvent_staffId_fkey",
+    "label": "Add foreign key \"attendanceEvent_staffId_fkey\" on \"attendanceEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attendanceEvent_staffId_fkey",
+        "table": "attendanceEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attendanceEvent_staffId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceEvent_staffId_fkey",
+          "public",
+          "\"public\".\"attendanceEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attendanceEvent_staffId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceEvent\"\nADD CONSTRAINT \"attendanceEvent_staffId_fkey\"\nFOREIGN KEY (\"staffId\")\nREFERENCES \"public\".\"staffProfile\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attendanceEvent_staffId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceEvent_staffId_fkey",
+          "public",
+          "\"public\".\"attendanceEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attendanceEvent.attendanceEvent_actorUserId_fkey",
+    "label": "Add foreign key \"attendanceEvent_actorUserId_fkey\" on \"attendanceEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attendanceEvent_actorUserId_fkey",
+        "table": "attendanceEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attendanceEvent_actorUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceEvent_actorUserId_fkey",
+          "public",
+          "\"public\".\"attendanceEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attendanceEvent_actorUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceEvent\"\nADD CONSTRAINT \"attendanceEvent_actorUserId_fkey\"\nFOREIGN KEY (\"actorUserId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attendanceEvent_actorUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceEvent_actorUserId_fkey",
+          "public",
+          "\"public\".\"attendanceEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attendanceException.attendanceException_organizationId_fkey",
+    "label": "Add foreign key \"attendanceException_organizationId_fkey\" on \"attendanceException\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attendanceException_organizationId_fkey",
+        "table": "attendanceException"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attendanceException_organizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceException_organizationId_fkey",
+          "public",
+          "\"public\".\"attendanceException\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attendanceException_organizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceException\"\nADD CONSTRAINT \"attendanceException_organizationId_fkey\"\nFOREIGN KEY (\"organizationId\")\nREFERENCES \"public\".\"organization\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attendanceException_organizationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceException_organizationId_fkey",
+          "public",
+          "\"public\".\"attendanceException\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attendanceException.attendanceException_attendanceRecordId_fkey",
+    "label": "Add foreign key \"attendanceException_attendanceRecordId_fkey\" on \"attendanceException\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attendanceException_attendanceRecordId_fkey",
+        "table": "attendanceException"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attendanceException_attendanceRecordId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceException_attendanceRecordId_fkey",
+          "public",
+          "\"public\".\"attendanceException\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attendanceException_attendanceRecordId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceException\"\nADD CONSTRAINT \"attendanceException_attendanceRecordId_fkey\"\nFOREIGN KEY (\"attendanceRecordId\")\nREFERENCES \"public\".\"attendanceRecord\" (\"id\")\nON DELETE RESTRICT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attendanceException_attendanceRecordId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceException_attendanceRecordId_fkey",
+          "public",
+          "\"public\".\"attendanceException\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attendanceException.attendanceException_staffId_fkey",
+    "label": "Add foreign key \"attendanceException_staffId_fkey\" on \"attendanceException\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attendanceException_staffId_fkey",
+        "table": "attendanceException"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attendanceException_staffId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceException_staffId_fkey",
+          "public",
+          "\"public\".\"attendanceException\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attendanceException_staffId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceException\"\nADD CONSTRAINT \"attendanceException_staffId_fkey\"\nFOREIGN KEY (\"staffId\")\nREFERENCES \"public\".\"staffProfile\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attendanceException_staffId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceException_staffId_fkey",
+          "public",
+          "\"public\".\"attendanceException\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attendanceException.attendanceException_resolvedByUserId_fkey",
+    "label": "Add foreign key \"attendanceException_resolvedByUserId_fkey\" on \"attendanceException\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attendanceException_resolvedByUserId_fkey",
+        "table": "attendanceException"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attendanceException_resolvedByUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceException_resolvedByUserId_fkey",
+          "public",
+          "\"public\".\"attendanceException\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attendanceException_resolvedByUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceException\"\nADD CONSTRAINT \"attendanceException_resolvedByUserId_fkey\"\nFOREIGN KEY (\"resolvedByUserId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attendanceException_resolvedByUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceException_resolvedByUserId_fkey",
+          "public",
+          "\"public\".\"attendanceException\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attendanceRecord.attendanceRecord_organizationId_fkey",
+    "label": "Add foreign key \"attendanceRecord_organizationId_fkey\" on \"attendanceRecord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attendanceRecord_organizationId_fkey",
+        "table": "attendanceRecord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attendanceRecord_organizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceRecord_organizationId_fkey",
+          "public",
+          "\"public\".\"attendanceRecord\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attendanceRecord_organizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceRecord\"\nADD CONSTRAINT \"attendanceRecord_organizationId_fkey\"\nFOREIGN KEY (\"organizationId\")\nREFERENCES \"public\".\"organization\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attendanceRecord_organizationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceRecord_organizationId_fkey",
+          "public",
+          "\"public\".\"attendanceRecord\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attendanceRecord.attendanceRecord_staffId_fkey",
+    "label": "Add foreign key \"attendanceRecord_staffId_fkey\" on \"attendanceRecord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attendanceRecord_staffId_fkey",
+        "table": "attendanceRecord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attendanceRecord_staffId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceRecord_staffId_fkey",
+          "public",
+          "\"public\".\"attendanceRecord\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attendanceRecord_staffId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceRecord\"\nADD CONSTRAINT \"attendanceRecord_staffId_fkey\"\nFOREIGN KEY (\"staffId\")\nREFERENCES \"public\".\"staffProfile\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attendanceRecord_staffId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceRecord_staffId_fkey",
+          "public",
+          "\"public\".\"attendanceRecord\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attendanceRecord.attendanceRecord_rosterId_fkey",
+    "label": "Add foreign key \"attendanceRecord_rosterId_fkey\" on \"attendanceRecord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attendanceRecord_rosterId_fkey",
+        "table": "attendanceRecord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attendanceRecord_rosterId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceRecord_rosterId_fkey",
+          "public",
+          "\"public\".\"attendanceRecord\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attendanceRecord_rosterId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceRecord\"\nADD CONSTRAINT \"attendanceRecord_rosterId_fkey\"\nFOREIGN KEY (\"rosterId\")\nREFERENCES \"public\".\"roster\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attendanceRecord_rosterId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceRecord_rosterId_fkey",
+          "public",
+          "\"public\".\"attendanceRecord\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attendanceRecord.attendanceRecord_assignmentId_fkey",
+    "label": "Add foreign key \"attendanceRecord_assignmentId_fkey\" on \"attendanceRecord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attendanceRecord_assignmentId_fkey",
+        "table": "attendanceRecord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attendanceRecord_assignmentId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceRecord_assignmentId_fkey",
+          "public",
+          "\"public\".\"attendanceRecord\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attendanceRecord_assignmentId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceRecord\"\nADD CONSTRAINT \"attendanceRecord_assignmentId_fkey\"\nFOREIGN KEY (\"assignmentId\")\nREFERENCES \"public\".\"shiftAssignment\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attendanceRecord_assignmentId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceRecord_assignmentId_fkey",
+          "public",
+          "\"public\".\"attendanceRecord\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attendanceRecord.attendanceRecord_approvedByUserId_fkey",
+    "label": "Add foreign key \"attendanceRecord_approvedByUserId_fkey\" on \"attendanceRecord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attendanceRecord_approvedByUserId_fkey",
+        "table": "attendanceRecord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attendanceRecord_approvedByUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceRecord_approvedByUserId_fkey",
+          "public",
+          "\"public\".\"attendanceRecord\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attendanceRecord_approvedByUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceRecord\"\nADD CONSTRAINT \"attendanceRecord_approvedByUserId_fkey\"\nFOREIGN KEY (\"approvedByUserId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attendanceRecord_approvedByUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendanceRecord_approvedByUserId_fkey",
+          "public",
+          "\"public\".\"attendanceRecord\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.organizationAttendancePolicy.organizationAttendancePolicy_organizationId_fkey",
+    "label": "Add foreign key \"organizationAttendancePolicy_organizationId_fkey\" on \"organizationAttendancePolicy\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "organizationAttendancePolicy_organizationId_fkey",
+        "table": "organizationAttendancePolicy"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"organizationAttendancePolicy_organizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationAttendancePolicy_organizationId_fkey",
+          "public",
+          "\"public\".\"organizationAttendancePolicy\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"organizationAttendancePolicy_organizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"organizationAttendancePolicy\"\nADD CONSTRAINT \"organizationAttendancePolicy_organizationId_fkey\"\nFOREIGN KEY (\"organizationId\")\nREFERENCES \"public\".\"organization\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"organizationAttendancePolicy_organizationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "organizationAttendancePolicy_organizationId_fkey",
+          "public",
+          "\"public\".\"organizationAttendancePolicy\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.attendanceEvent",
+    "label": "Enable row-level security on \"attendanceEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "attendanceEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"attendanceEvent\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "attendanceEvent"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"attendanceEvent\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceEvent\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"attendanceEvent\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "attendanceEvent"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.attendanceException",
+    "label": "Enable row-level security on \"attendanceException\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "attendanceException"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"attendanceException\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "attendanceException"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"attendanceException\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceException\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"attendanceException\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "attendanceException"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.attendanceRecord",
+    "label": "Enable row-level security on \"attendanceRecord\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "attendanceRecord"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"attendanceRecord\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "attendanceRecord"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"attendanceRecord\"",
+        "sql": "ALTER TABLE \"public\".\"attendanceRecord\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"attendanceRecord\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "attendanceRecord"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.organizationAttendancePolicy",
+    "label": "Enable row-level security on \"organizationAttendancePolicy\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "organizationAttendancePolicy"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"organizationAttendancePolicy\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "organizationAttendancePolicy"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"organizationAttendancePolicy\"",
+        "sql": "ALTER TABLE \"public\".\"organizationAttendancePolicy\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"organizationAttendancePolicy\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "organizationAttendancePolicy"
+        ]
+      }
+    ]
+  }
+]

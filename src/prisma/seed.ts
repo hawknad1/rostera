@@ -1,3 +1,4 @@
+import { ensureDefaultAttendancePolicy } from "@/modules/attendance/services/policy"
 import { ensureDefaultSchedulingPolicy } from "@/modules/organizations/services/ensure-scheduling-policy"
 import { db } from "./db"
 
@@ -70,6 +71,7 @@ async function main() {
   }
 
   await ensureDefaultSchedulingPolicy(db.orm, organization.id)
+  await ensureDefaultAttendancePolicy(db.orm, organization.id)
 
   console.log("Rostera seed completed.")
 }

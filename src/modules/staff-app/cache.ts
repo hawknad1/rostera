@@ -137,5 +137,8 @@ export const STAFF_CACHE_BOUNDARIES = {
     "EDIT ROSTER",
     "PUBLISH ROSTER",
     "AMEND ROSTER",
+    "CLOCK IN",
+    "CLOCK OUT",
+    "CORRECT ATTENDANCE",
   ],
 } as const

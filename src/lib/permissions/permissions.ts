@@ -45,6 +45,13 @@ export const permissions = {
   auditView: "audit.view",
 
   notificationsView: "notifications.view",
+
+  attendanceView: "attendance.view",
+  attendanceClockIn: "attendance.clock_in",
+  attendanceClockOut: "attendance.clock_out",
+  attendanceCorrect: "attendance.correct",
+  attendanceApprove: "attendance.approve",
+  attendanceExport: "attendance.export",
 } as const
 
 export type Permission = (typeof permissions)[keyof typeof permissions]

@@ -71,12 +71,16 @@ enum NotificationType {
   ROSTER_PUBLISHED
   ROSTER_RETURNED_TO_DRAFT
   ROSTER_AMENDMENT_CREATED
+  ATTENDANCE_CORRECTED
+  ATTENDANCE_APPROVED
+  ATTENDANCE_REJECTED
 }
 
 enum NotificationEntityType {
   LEAVE_REQUEST
   SHIFT_SWAP
   ROSTER
+  ATTENDANCE
 }
 
 enum NotificationOutboxStatus {
@@ -156,6 +160,14 @@ enum AuditAction {
   MEMBERSHIP_ROLE_CHANGED
   MEMBERSHIP_ACTIVATED
   MEMBERSHIP_DEACTIVATED
+  ATTENDANCE_CLOCKED_IN
+  ATTENDANCE_CLOCKED_OUT
+  ATTENDANCE_CORRECTED
+  ATTENDANCE_APPROVED
+  ATTENDANCE_REJECTED
+  ATTENDANCE_VOIDED
+  ATTENDANCE_EXCEPTION_RESOLVED
+  ATTENDANCE_POLICY_UPDATED
 }
 
 enum AuditEntityType {
@@ -171,6 +183,8 @@ enum AuditEntityType {
   SCHEDULING_POLICY
   USER
   MEMBERSHIP
+  ATTENDANCE
+  ATTENDANCE_POLICY
 }
 
 model Organization {
@@ -208,6 +222,10 @@ model Organization {
   notificationPreferences       NotificationPreference[]
   notificationDeliveryReceipts  NotificationDeliveryReceipt[]
   auditEvents                   AuditEvent[]
+  attendancePolicy              OrganizationAttendancePolicy?
+  attendanceRecords             AttendanceRecord[]
+  attendanceEvents              AttendanceEvent[]
+  attendanceExceptions          AttendanceException[]
 
   @@rls
 }
@@ -233,6 +251,9 @@ model User {
   notificationDeliveries   NotificationDelivery[]
   notificationPreferences  NotificationPreference[]
   auditEvents              AuditEvent[]
+  approvedAttendance       AttendanceRecord[] @relation("AttendanceApprovedBy")
+  attendanceEvents         AttendanceEvent[] @relation("AttendanceEventActor")
+  resolvedExceptions       AttendanceException[] @relation("AttendanceExceptionResolvedBy")
 
   @@rls
 }
@@ -380,6 +401,9 @@ model StaffProfile {
   leaveRequests    LeaveRequest[]
   requestedSwaps   ShiftSwapRequest[] @relation("ShiftSwapRequesterStaff")
   targetedSwaps    ShiftSwapRequest[] @relation("ShiftSwapTargetStaff")
+  attendanceRecords AttendanceRecord[]
+  attendanceEvents  AttendanceEvent[]
+  attendanceExceptions AttendanceException[]
 
   @@unique([organizationId, staffNumber])
   @@unique([organizationId, userId])
@@ -458,6 +482,7 @@ model Roster {
   childVersions Roster[]         @relation("RosterVersionParent")
   assignments  ShiftAssignment[]
   shiftSwaps   ShiftSwapRequest[]
+  attendanceRecords AttendanceRecord[]
 
   @@unique([organizationId, seriesId, versionNumber], map: "roster_series_version_key")
   @@check(expression: "\"versionNumber\" >= 1", name: "roster_version_number")
@@ -495,6 +520,7 @@ model ShiftAssignment {
   profession   Profession   @relation(fields: [professionId], references: [id])
   sourceSwaps  ShiftSwapRequest[] @relation("ShiftSwapSourceAssignment")
   targetSwaps  ShiftSwapRequest[] @relation("ShiftSwapTargetAssignment")
+  attendanceRecords AttendanceRecord[]
 
   @@unique([rosterId, staffId, shiftTypeId, date], map: "shiftAssignment_combo_key")
   @@check(expression: "\"startDateTime\" < \"endDateTime\"", name: "shiftAssignment_window_order")
@@ -520,6 +546,185 @@ model OrganizationSchedulingPolicy {
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  @@rls
+}
+
+enum AttendanceStatus {
+  OPEN
+  COMPLETED
+  MISSED
+  EXCEPTION
+  CORRECTED
+  VOIDED
+}
+
+enum AttendanceReviewStatus {
+  UNREVIEWED
+  APPROVED
+  REJECTED
+}
+
+enum AttendanceSource {
+  STAFF_PWA
+  ADMIN
+  SYSTEM
+  DEVICE
+}
+
+enum AttendanceEventType {
+  CLOCK_IN
+  CLOCK_OUT
+  MANUAL_CLOCK_IN
+  MANUAL_CLOCK_OUT
+  CORRECTION
+  VOID
+}
+
+enum AttendanceExceptionType {
+  LATE_ARRIVAL
+  EARLY_DEPARTURE
+  MISSED_CLOCK_IN
+  MISSED_CLOCK_OUT
+  UNSCHEDULED_ATTENDANCE
+  OVERTIME
+  OUTSIDE_SCHEDULE
+}
+
+enum AttendanceExceptionStatus {
+  OPEN
+  ACKNOWLEDGED
+  RESOLVED
+  WAIVED
+}
+
+enum AttendanceExceptionSeverity {
+  INFO
+  WARNING
+}
+
+model OrganizationAttendancePolicy {
+  id                             String   @id @default(uuid())
+  organizationId                 String   @unique
+  attendanceEnabled              Boolean  @default(true)
+  lateThresholdMinutes           Int      @default(0)
+  earlyDepartureThresholdMinutes Int      @default(0)
+  overtimeThresholdMinutes       Int      @default(0)
+  allowUnscheduledAttendance     Boolean  @default(true)
+  allowEarlyClockIn              Boolean  @default(true)
+  maximumEarlyClockInMinutes     Int      @default(120)
+  maximumLateClockOutMinutes     Int      @default(720)
+  createdAt                      DateTime @default(now())
+  updatedAt                      temporal.updatedAt()
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@check(expression: "\"lateThresholdMinutes\" >= 0", name: "attendancePolicy_late_threshold")
+  @@check(expression: "\"earlyDepartureThresholdMinutes\" >= 0", name: "attendancePolicy_early_threshold")
+  @@check(expression: "\"overtimeThresholdMinutes\" >= 0", name: "attendancePolicy_overtime_threshold")
+  @@check(expression: "\"maximumEarlyClockInMinutes\" >= 0", name: "attendancePolicy_early_clock_in")
+  @@check(expression: "\"maximumLateClockOutMinutes\" >= 0", name: "attendancePolicy_late_clock_out")
+  @@rls
+}
+
+model AttendanceRecord {
+  id                       String                  @id @default(uuid())
+  organizationId           String
+  staffId                  String
+  rosterId                 String?
+  assignmentId             String?
+  attendanceDate           String
+  scheduledStartDateTime   DateTime?
+  scheduledEndDateTime     DateTime?
+  actualClockInDateTime    DateTime?
+  actualClockOutDateTime   DateTime?
+  scheduledMinutes         Int?
+  actualMinutes            Int?
+  lateMinutes              Int                     @default(0)
+  earlyDepartureMinutes    Int                     @default(0)
+  overtimeMinutes          Int                     @default(0)
+  status                   AttendanceStatus
+  reviewStatus             AttendanceReviewStatus  @default(UNREVIEWED)
+  source                   AttendanceSource
+  openSessionKey           String?
+  notes                    String?
+  approvedByUserId         String?
+  approvedAt               DateTime?
+  createdAt                DateTime                @default(now())
+  updatedAt                temporal.updatedAt()
+
+  organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  staff        StaffProfile     @relation(fields: [staffId], references: [id])
+  roster       Roster?          @relation(fields: [rosterId], references: [id], onDelete: SetNull)
+  assignment   ShiftAssignment? @relation(fields: [assignmentId], references: [id], onDelete: SetNull)
+  approvedBy   User?            @relation("AttendanceApprovedBy", fields: [approvedByUserId], references: [id])
+  events       AttendanceEvent[]
+  exceptions   AttendanceException[]
+
+  @@unique([organizationId, staffId, openSessionKey], map: "attendanceRecord_open_session_key")
+  @@check(expression: "\"lateMinutes\" >= 0 AND \"earlyDepartureMinutes\" >= 0 AND \"overtimeMinutes\" >= 0", name: "attendanceRecord_minutes_non_negative")
+  @@check(expression: "\"actualClockOutDateTime\" IS NULL OR \"actualClockInDateTime\" IS NULL OR \"actualClockInDateTime\" < \"actualClockOutDateTime\"", name: "attendanceRecord_clock_order")
+  @@check(expression: "(\"status\" = 'OPEN' AND \"openSessionKey\" = 'OPEN') OR (\"status\" <> 'OPEN' AND \"openSessionKey\" IS NULL)", name: "attendanceRecord_open_session_state")
+  @@index([organizationId], map: "attendanceRecord_org_idx")
+  @@index([organizationId, attendanceDate], map: "attendanceRecord_org_date_idx")
+  @@index([organizationId, staffId, attendanceDate], map: "attendanceRecord_org_staff_date_idx")
+  @@index([organizationId, status], map: "attendanceRecord_org_status_idx")
+  @@index([assignmentId], map: "attendanceRecord_assignment_idx")
+  @@index([rosterId], map: "attendanceRecord_roster_idx")
+  @@rls
+}
+
+model AttendanceEvent {
+  id                  String              @id @default(uuid())
+  organizationId      String
+  attendanceRecordId  String
+  staffId             String
+  type                AttendanceEventType
+  occurredAt          DateTime
+  source              AttendanceSource
+  actorUserId         String?
+  punchKey            String?
+  metadata            String?
+  createdAt           DateTime            @default(now())
+
+  organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  record       AttendanceRecord @relation(fields: [attendanceRecordId], references: [id], onDelete: Restrict)
+  staff        StaffProfile     @relation(fields: [staffId], references: [id])
+  actor        User?            @relation("AttendanceEventActor", fields: [actorUserId], references: [id])
+
+  @@unique([attendanceRecordId, punchKey], map: "attendanceEvent_punch_key")
+  @@check(expression: "(\"type\" IN ('CLOCK_IN', 'CLOCK_OUT', 'VOID') AND \"punchKey\" = \"type\") OR (\"type\" NOT IN ('CLOCK_IN', 'CLOCK_OUT', 'VOID') AND \"punchKey\" IS NULL)", name: "attendanceEvent_punch_key_state")
+  @@index([organizationId], map: "attendanceEvent_org_idx")
+  @@index([attendanceRecordId], map: "attendanceEvent_record_idx")
+  @@index([organizationId, staffId], map: "attendanceEvent_org_staff_idx")
+  @@rls
+}
+
+model AttendanceException {
+  id                  String                       @id @default(uuid())
+  organizationId      String
+  attendanceRecordId  String
+  staffId             String
+  type                AttendanceExceptionType
+  severity            AttendanceExceptionSeverity
+  status              AttendanceExceptionStatus    @default(OPEN)
+  detectedAt          DateTime
+  resolvedAt          DateTime?
+  resolvedByUserId    String?
+  notes               String?
+  metadata            String?
+  createdAt           DateTime                     @default(now())
+  updatedAt           temporal.updatedAt()
+
+  organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  record       AttendanceRecord @relation(fields: [attendanceRecordId], references: [id], onDelete: Restrict)
+  staff        StaffProfile     @relation(fields: [staffId], references: [id])
+  resolvedBy   User?            @relation("AttendanceExceptionResolvedBy", fields: [resolvedByUserId], references: [id])
+
+  @@index([organizationId], map: "attendanceException_org_idx")
+  @@index([attendanceRecordId], map: "attendanceException_record_idx")
+  @@index([organizationId, staffId], map: "attendanceException_org_staff_idx")
+  @@index([organizationId, status], map: "attendanceException_org_status_idx")
+  @@index([organizationId, type], map: "attendanceException_org_type_idx")
   @@rls
 }
 

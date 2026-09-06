@@ -30,7 +30,7 @@ export const staffAppErrorMessages: Record<StaffAppErrorCode, string> = {
   STAFF_NOT_LINKED:
     "Your account is not yet linked to a staff profile. Please contact your Rostera administrator.",
   STAFF_TERMINATED: "This staff profile is no longer active, so new requests cannot be submitted.",
-  STAFF_NOT_ACTIVE: "Only active staff can submit leave or swap requests.",
+  STAFF_NOT_ACTIVE: "Only active staff can submit leave, swap, or attendance requests.",
   NOT_FOUND: "That record was not found.",
   FAILED: "Unable to complete this action. Please try again.",
 }
