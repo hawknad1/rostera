@@ -1,0 +1,1124 @@
+[
+  {
+    "id": "table.roster",
+    "label": "Create table \"roster\"",
+    "summary": "Creates table \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"roster\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"roster\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"roster\"",
+        "sql": "CREATE TABLE \"public\".\"roster\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdByUserId\" text NOT NULL,\n  \"departmentId\" text NOT NULL,\n  \"endDate\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"organizationId\" text NOT NULL,\n  \"startDate\" text NOT NULL,\n  \"status\" text DEFAULT 'DRAFT' NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"roster_status_check_19635beb\" CHECK (\"status\" IN ('DRAFT', 'IN_REVIEW', 'PUBLISHED', 'AMENDED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"roster\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"roster\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.shiftAssignment",
+    "label": "Create table \"shiftAssignment\"",
+    "summary": "Creates table \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"shiftAssignment\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"shiftAssignment\"",
+        "sql": "CREATE TABLE \"public\".\"shiftAssignment\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"date\" text NOT NULL,\n  \"departmentId\" text NOT NULL,\n  \"endDateTime\" timestamptz NOT NULL,\n  \"id\" text NOT NULL,\n  \"isOvernight\" bool NOT NULL,\n  \"organizationId\" text NOT NULL,\n  \"professionId\" text NOT NULL,\n  \"rosterId\" text NOT NULL,\n  \"shiftEndTime\" text NOT NULL,\n  \"shiftStartTime\" text NOT NULL,\n  \"shiftTypeId\" text NOT NULL,\n  \"staffId\" text NOT NULL,\n  \"startDateTime\" timestamptz NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"shiftAssignment\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.shiftAssignment.shiftAssignment_combo_key",
+    "label": "Add unique constraint on \"shiftAssignment\" (rosterId, staffId, shiftTypeId, date)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "shiftAssignment_combo_key",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"shiftAssignment_combo_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_combo_key",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"shiftAssignment_combo_key\"",
+        "sql": "ALTER TABLE \"public\".\"shiftAssignment\" ADD CONSTRAINT \"shiftAssignment_combo_key\" UNIQUE (\"rosterId\", \"staffId\", \"shiftTypeId\", \"date\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"shiftAssignment_combo_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_combo_key",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.roster.roster_createdByUserId_idx_93e8a540",
+    "label": "Create index \"roster_createdByUserId_idx_93e8a540\" on \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "roster_createdByUserId_idx_93e8a540",
+        "table": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"roster_createdByUserId_idx_93e8a540\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"roster_createdByUserId_idx_93e8a540\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"roster_createdByUserId_idx_93e8a540\"",
+        "sql": "CREATE INDEX \"roster_createdByUserId_idx_93e8a540\" ON \"public\".\"roster\" (\"createdByUserId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"roster_createdByUserId_idx_93e8a540\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"roster_createdByUserId_idx_93e8a540\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.roster.roster_departmentId_idx_8e261ed8",
+    "label": "Create index \"roster_departmentId_idx_8e261ed8\" on \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "roster_departmentId_idx_8e261ed8",
+        "table": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"roster_departmentId_idx_8e261ed8\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"roster_departmentId_idx_8e261ed8\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"roster_departmentId_idx_8e261ed8\"",
+        "sql": "CREATE INDEX \"roster_departmentId_idx_8e261ed8\" ON \"public\".\"roster\" (\"departmentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"roster_departmentId_idx_8e261ed8\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"roster_departmentId_idx_8e261ed8\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.roster.roster_organizationId_departmentId_idx_425ca78f",
+    "label": "Create index \"roster_organizationId_departmentId_idx_425ca78f\" on \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "roster_organizationId_departmentId_idx_425ca78f",
+        "table": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"roster_organizationId_departmentId_idx_425ca78f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"roster_organizationId_departmentId_idx_425ca78f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"roster_organizationId_departmentId_idx_425ca78f\"",
+        "sql": "CREATE INDEX \"roster_organizationId_departmentId_idx_425ca78f\" ON \"public\".\"roster\" (\"organizationId\", \"departmentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"roster_organizationId_departmentId_idx_425ca78f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"roster_organizationId_departmentId_idx_425ca78f\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.roster.roster_organizationId_idx_2e17ef41",
+    "label": "Create index \"roster_organizationId_idx_2e17ef41\" on \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "roster_organizationId_idx_2e17ef41",
+        "table": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"roster_organizationId_idx_2e17ef41\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"roster_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"roster_organizationId_idx_2e17ef41\"",
+        "sql": "CREATE INDEX \"roster_organizationId_idx_2e17ef41\" ON \"public\".\"roster\" (\"organizationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"roster_organizationId_idx_2e17ef41\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"roster_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.roster.roster_organizationId_startDate_endDate_idx_b7b01d99",
+    "label": "Create index \"roster_organizationId_startDate_endDate_idx_b7b01d99\" on \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "roster_organizationId_startDate_endDate_idx_b7b01d99",
+        "table": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"roster_organizationId_startDate_endDate_idx_b7b01d99\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"roster_organizationId_startDate_endDate_idx_b7b01d99\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"roster_organizationId_startDate_endDate_idx_b7b01d99\"",
+        "sql": "CREATE INDEX \"roster_organizationId_startDate_endDate_idx_b7b01d99\" ON \"public\".\"roster\" (\"organizationId\", \"startDate\", \"endDate\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"roster_organizationId_startDate_endDate_idx_b7b01d99\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"roster_organizationId_startDate_endDate_idx_b7b01d99\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftAssignment.shiftAssignment_departmentId_idx_8e261ed8",
+    "label": "Create index \"shiftAssignment_departmentId_idx_8e261ed8\" on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftAssignment_departmentId_idx_8e261ed8",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftAssignment_departmentId_idx_8e261ed8\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_departmentId_idx_8e261ed8\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftAssignment_departmentId_idx_8e261ed8\"",
+        "sql": "CREATE INDEX \"shiftAssignment_departmentId_idx_8e261ed8\" ON \"public\".\"shiftAssignment\" (\"departmentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftAssignment_departmentId_idx_8e261ed8\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_departmentId_idx_8e261ed8\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftAssignment.shiftAssignment_organizationId_idx_2e17ef41",
+    "label": "Create index \"shiftAssignment_organizationId_idx_2e17ef41\" on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftAssignment_organizationId_idx_2e17ef41",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftAssignment_organizationId_idx_2e17ef41\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftAssignment_organizationId_idx_2e17ef41\"",
+        "sql": "CREATE INDEX \"shiftAssignment_organizationId_idx_2e17ef41\" ON \"public\".\"shiftAssignment\" (\"organizationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftAssignment_organizationId_idx_2e17ef41\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftAssignment.shiftAssignment_professionId_idx_3000e629",
+    "label": "Create index \"shiftAssignment_professionId_idx_3000e629\" on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftAssignment_professionId_idx_3000e629",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftAssignment_professionId_idx_3000e629\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_professionId_idx_3000e629\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftAssignment_professionId_idx_3000e629\"",
+        "sql": "CREATE INDEX \"shiftAssignment_professionId_idx_3000e629\" ON \"public\".\"shiftAssignment\" (\"professionId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftAssignment_professionId_idx_3000e629\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_professionId_idx_3000e629\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftAssignment.shiftAssignment_rosterId_date_idx_df8a9a1f",
+    "label": "Create index \"shiftAssignment_rosterId_date_idx_df8a9a1f\" on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftAssignment_rosterId_date_idx_df8a9a1f",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftAssignment_rosterId_date_idx_df8a9a1f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_rosterId_date_idx_df8a9a1f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftAssignment_rosterId_date_idx_df8a9a1f\"",
+        "sql": "CREATE INDEX \"shiftAssignment_rosterId_date_idx_df8a9a1f\" ON \"public\".\"shiftAssignment\" (\"rosterId\", \"date\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftAssignment_rosterId_date_idx_df8a9a1f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_rosterId_date_idx_df8a9a1f\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftAssignment.shiftAssignment_rosterId_idx_ca029c6b",
+    "label": "Create index \"shiftAssignment_rosterId_idx_ca029c6b\" on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftAssignment_rosterId_idx_ca029c6b",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftAssignment_rosterId_idx_ca029c6b\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_rosterId_idx_ca029c6b\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftAssignment_rosterId_idx_ca029c6b\"",
+        "sql": "CREATE INDEX \"shiftAssignment_rosterId_idx_ca029c6b\" ON \"public\".\"shiftAssignment\" (\"rosterId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftAssignment_rosterId_idx_ca029c6b\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_rosterId_idx_ca029c6b\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftAssignment.shiftAssignment_shiftTypeId_date_idx_9329ed49",
+    "label": "Create index \"shiftAssignment_shiftTypeId_date_idx_9329ed49\" on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftAssignment_shiftTypeId_date_idx_9329ed49",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftAssignment_shiftTypeId_date_idx_9329ed49\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_shiftTypeId_date_idx_9329ed49\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftAssignment_shiftTypeId_date_idx_9329ed49\"",
+        "sql": "CREATE INDEX \"shiftAssignment_shiftTypeId_date_idx_9329ed49\" ON \"public\".\"shiftAssignment\" (\"shiftTypeId\", \"date\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftAssignment_shiftTypeId_date_idx_9329ed49\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_shiftTypeId_date_idx_9329ed49\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftAssignment.shiftAssignment_shiftTypeId_idx_d85655a9",
+    "label": "Create index \"shiftAssignment_shiftTypeId_idx_d85655a9\" on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftAssignment_shiftTypeId_idx_d85655a9",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftAssignment_shiftTypeId_idx_d85655a9\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_shiftTypeId_idx_d85655a9\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftAssignment_shiftTypeId_idx_d85655a9\"",
+        "sql": "CREATE INDEX \"shiftAssignment_shiftTypeId_idx_d85655a9\" ON \"public\".\"shiftAssignment\" (\"shiftTypeId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftAssignment_shiftTypeId_idx_d85655a9\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_shiftTypeId_idx_d85655a9\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftAssignment.shiftAssignment_staffId_date_idx_02db3481",
+    "label": "Create index \"shiftAssignment_staffId_date_idx_02db3481\" on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftAssignment_staffId_date_idx_02db3481",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftAssignment_staffId_date_idx_02db3481\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_staffId_date_idx_02db3481\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftAssignment_staffId_date_idx_02db3481\"",
+        "sql": "CREATE INDEX \"shiftAssignment_staffId_date_idx_02db3481\" ON \"public\".\"shiftAssignment\" (\"staffId\", \"date\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftAssignment_staffId_date_idx_02db3481\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_staffId_date_idx_02db3481\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftAssignment.shiftAssignment_staffId_idx_ce92c64e",
+    "label": "Create index \"shiftAssignment_staffId_idx_ce92c64e\" on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftAssignment_staffId_idx_ce92c64e",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftAssignment_staffId_idx_ce92c64e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_staffId_idx_ce92c64e\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftAssignment_staffId_idx_ce92c64e\"",
+        "sql": "CREATE INDEX \"shiftAssignment_staffId_idx_ce92c64e\" ON \"public\".\"shiftAssignment\" (\"staffId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftAssignment_staffId_idx_ce92c64e\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_staffId_idx_ce92c64e\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.roster.roster_organizationId_fkey",
+    "label": "Add foreign key \"roster_organizationId_fkey\" on \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "roster_organizationId_fkey",
+        "table": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"roster_organizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "roster_organizationId_fkey",
+          "public",
+          "\"public\".\"roster\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"roster_organizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"roster\"\nADD CONSTRAINT \"roster_organizationId_fkey\"\nFOREIGN KEY (\"organizationId\")\nREFERENCES \"public\".\"organization\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"roster_organizationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "roster_organizationId_fkey",
+          "public",
+          "\"public\".\"roster\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.roster.roster_departmentId_fkey",
+    "label": "Add foreign key \"roster_departmentId_fkey\" on \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "roster_departmentId_fkey",
+        "table": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"roster_departmentId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "roster_departmentId_fkey",
+          "public",
+          "\"public\".\"roster\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"roster_departmentId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"roster\"\nADD CONSTRAINT \"roster_departmentId_fkey\"\nFOREIGN KEY (\"departmentId\")\nREFERENCES \"public\".\"department\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"roster_departmentId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "roster_departmentId_fkey",
+          "public",
+          "\"public\".\"roster\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.roster.roster_createdByUserId_fkey",
+    "label": "Add foreign key \"roster_createdByUserId_fkey\" on \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "roster_createdByUserId_fkey",
+        "table": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"roster_createdByUserId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "roster_createdByUserId_fkey",
+          "public",
+          "\"public\".\"roster\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"roster_createdByUserId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"roster\"\nADD CONSTRAINT \"roster_createdByUserId_fkey\"\nFOREIGN KEY (\"createdByUserId\")\nREFERENCES \"public\".\"user\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"roster_createdByUserId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "roster_createdByUserId_fkey",
+          "public",
+          "\"public\".\"roster\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.shiftAssignment.shiftAssignment_organizationId_fkey",
+    "label": "Add foreign key \"shiftAssignment_organizationId_fkey\" on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "shiftAssignment_organizationId_fkey",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"shiftAssignment_organizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_organizationId_fkey",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"shiftAssignment_organizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"shiftAssignment\"\nADD CONSTRAINT \"shiftAssignment_organizationId_fkey\"\nFOREIGN KEY (\"organizationId\")\nREFERENCES \"public\".\"organization\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"shiftAssignment_organizationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_organizationId_fkey",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.shiftAssignment.shiftAssignment_rosterId_fkey",
+    "label": "Add foreign key \"shiftAssignment_rosterId_fkey\" on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "shiftAssignment_rosterId_fkey",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"shiftAssignment_rosterId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_rosterId_fkey",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"shiftAssignment_rosterId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"shiftAssignment\"\nADD CONSTRAINT \"shiftAssignment_rosterId_fkey\"\nFOREIGN KEY (\"rosterId\")\nREFERENCES \"public\".\"roster\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"shiftAssignment_rosterId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_rosterId_fkey",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.shiftAssignment.shiftAssignment_departmentId_fkey",
+    "label": "Add foreign key \"shiftAssignment_departmentId_fkey\" on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "shiftAssignment_departmentId_fkey",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"shiftAssignment_departmentId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_departmentId_fkey",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"shiftAssignment_departmentId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"shiftAssignment\"\nADD CONSTRAINT \"shiftAssignment_departmentId_fkey\"\nFOREIGN KEY (\"departmentId\")\nREFERENCES \"public\".\"department\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"shiftAssignment_departmentId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_departmentId_fkey",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.shiftAssignment.shiftAssignment_staffId_fkey",
+    "label": "Add foreign key \"shiftAssignment_staffId_fkey\" on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "shiftAssignment_staffId_fkey",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"shiftAssignment_staffId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_staffId_fkey",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"shiftAssignment_staffId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"shiftAssignment\"\nADD CONSTRAINT \"shiftAssignment_staffId_fkey\"\nFOREIGN KEY (\"staffId\")\nREFERENCES \"public\".\"staffProfile\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"shiftAssignment_staffId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_staffId_fkey",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.shiftAssignment.shiftAssignment_shiftTypeId_fkey",
+    "label": "Add foreign key \"shiftAssignment_shiftTypeId_fkey\" on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "shiftAssignment_shiftTypeId_fkey",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"shiftAssignment_shiftTypeId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_shiftTypeId_fkey",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"shiftAssignment_shiftTypeId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"shiftAssignment\"\nADD CONSTRAINT \"shiftAssignment_shiftTypeId_fkey\"\nFOREIGN KEY (\"shiftTypeId\")\nREFERENCES \"public\".\"shiftType\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"shiftAssignment_shiftTypeId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_shiftTypeId_fkey",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.shiftAssignment.shiftAssignment_professionId_fkey",
+    "label": "Add foreign key \"shiftAssignment_professionId_fkey\" on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "shiftAssignment_professionId_fkey",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"shiftAssignment_professionId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_professionId_fkey",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"shiftAssignment_professionId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"shiftAssignment\"\nADD CONSTRAINT \"shiftAssignment_professionId_fkey\"\nFOREIGN KEY (\"professionId\")\nREFERENCES \"public\".\"profession\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"shiftAssignment_professionId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_professionId_fkey",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.roster",
+    "label": "Enable row-level security on \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"roster\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "roster"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"roster\"",
+        "sql": "ALTER TABLE \"public\".\"roster\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"roster\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "roster"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.shiftAssignment",
+    "label": "Enable row-level security on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"shiftAssignment\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "shiftAssignment"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"shiftAssignment\"",
+        "sql": "ALTER TABLE \"public\".\"shiftAssignment\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"shiftAssignment\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "shiftAssignment"
+        ]
+      }
+    ]
+  }
+]

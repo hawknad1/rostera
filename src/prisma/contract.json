@@ -16,6 +16,10 @@
       "model": "OrganizationMember",
       "namespace": "public"
     },
+    "organizationSchedulingPolicy": {
+      "model": "OrganizationSchedulingPolicy",
+      "namespace": "public"
+    },
     "permission": {
       "model": "Permission",
       "namespace": "public"
@@ -32,8 +36,24 @@
       "model": "RolePermission",
       "namespace": "public"
     },
+    "roster": {
+      "model": "Roster",
+      "namespace": "public"
+    },
+    "shiftAssignment": {
+      "model": "ShiftAssignment",
+      "namespace": "public"
+    },
+    "shiftType": {
+      "model": "ShiftType",
+      "namespace": "public"
+    },
     "staffProfile": {
       "model": "StaffProfile",
+      "namespace": "public"
+    },
+    "staffingRequirement": {
+      "model": "StaffingRequirement",
       "namespace": "public"
     },
     "user": {
@@ -128,6 +148,27 @@
                 "value": "ARCHIVED"
               }
             ]
+          },
+          "RosterStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "DRAFT",
+                "value": "DRAFT"
+              },
+              {
+                "name": "IN_REVIEW",
+                "value": "IN_REVIEW"
+              },
+              {
+                "name": "PUBLISHED",
+                "value": "PUBLISHED"
+              },
+              {
+                "name": "AMENDED",
+                "value": "AMENDED"
+              }
+            ]
           }
         },
         "models": {
@@ -184,6 +225,21 @@
               }
             },
             "relations": {
+              "headStaff": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "headStaffId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StaffProfile",
+                  "namespace": "public"
+                }
+              },
               "organization": {
                 "cardinality": "N:1",
                 "on": {
@@ -199,6 +255,36 @@
                   "namespace": "public"
                 }
               },
+              "rosters": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "departmentId"
+                  ]
+                },
+                "to": {
+                  "model": "Roster",
+                  "namespace": "public"
+                }
+              },
+              "shiftAssignments": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "departmentId"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftAssignment",
+                  "namespace": "public"
+                }
+              },
               "staff": {
                 "cardinality": "1:N",
                 "on": {
@@ -211,6 +297,21 @@
                 },
                 "to": {
                   "model": "StaffProfile",
+                  "namespace": "public"
+                }
+              },
+              "staffingRequirements": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "departmentId"
+                  ]
+                },
+                "to": {
+                  "model": "StaffingRequirement",
                   "namespace": "public"
                 }
               }
@@ -411,6 +512,66 @@
                   "namespace": "public"
                 }
               },
+              "rosters": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "Roster",
+                  "namespace": "public"
+                }
+              },
+              "schedulingPolicy": {
+                "cardinality": "1:1",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "OrganizationSchedulingPolicy",
+                  "namespace": "public"
+                }
+              },
+              "shiftAssignments": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftAssignment",
+                  "namespace": "public"
+                }
+              },
+              "shiftTypes": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftType",
+                  "namespace": "public"
+                }
+              },
               "staff": {
                 "cardinality": "1:N",
                 "on": {
@@ -423,6 +584,21 @@
                 },
                 "to": {
                   "model": "StaffProfile",
+                  "namespace": "public"
+                }
+              },
+              "staffingRequirements": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "StaffingRequirement",
                   "namespace": "public"
                 }
               }
@@ -609,6 +785,123 @@
               "table": "organizationMember"
             }
           },
+          "OrganizationSchedulingPolicy": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "maximumConsecutiveDays": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "maximumNightShiftsPerWeek": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "maximumWeekendShifts": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "maximumWeeklyMinutes": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "minimumRestMinutes": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "organization": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "maximumConsecutiveDays": {
+                  "column": "maximumConsecutiveDays"
+                },
+                "maximumNightShiftsPerWeek": {
+                  "column": "maximumNightShiftsPerWeek"
+                },
+                "maximumWeekendShifts": {
+                  "column": "maximumWeekendShifts"
+                },
+                "maximumWeeklyMinutes": {
+                  "column": "maximumWeeklyMinutes"
+                },
+                "minimumRestMinutes": {
+                  "column": "minimumRestMinutes"
+                },
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "organizationSchedulingPolicy"
+            }
+          },
           "Permission": {
             "fields": {
               "description": {
@@ -734,6 +1027,21 @@
                   "namespace": "public"
                 }
               },
+              "shiftAssignments": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "professionId"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftAssignment",
+                  "namespace": "public"
+                }
+              },
               "staff": {
                 "cardinality": "1:N",
                 "on": {
@@ -746,6 +1054,21 @@
                 },
                 "to": {
                   "model": "StaffProfile",
+                  "namespace": "public"
+                }
+              },
+              "staffingRequirements": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "professionId"
+                  ]
+                },
+                "to": {
+                  "model": "StaffingRequirement",
                   "namespace": "public"
                 }
               }
@@ -957,6 +1280,593 @@
               "table": "rolePermission"
             }
           },
+          "Roster": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdByUserId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "departmentId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "endDate": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "startDate": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "RosterStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "assignments": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "rosterId"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftAssignment",
+                  "namespace": "public"
+                }
+              },
+              "createdBy": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "createdByUserId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              },
+              "department": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "departmentId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Department",
+                  "namespace": "public"
+                }
+              },
+              "organization": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "createdByUserId": {
+                  "column": "createdByUserId"
+                },
+                "departmentId": {
+                  "column": "departmentId"
+                },
+                "endDate": {
+                  "column": "endDate"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "startDate": {
+                  "column": "startDate"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "roster"
+            }
+          },
+          "ShiftAssignment": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "date": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "departmentId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "endDateTime": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "isOvernight": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "professionId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "rosterId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "shiftEndTime": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "shiftStartTime": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "shiftTypeId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "staffId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "startDateTime": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "department": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "departmentId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Department",
+                  "namespace": "public"
+                }
+              },
+              "organization": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              },
+              "profession": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "professionId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Profession",
+                  "namespace": "public"
+                }
+              },
+              "roster": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "rosterId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Roster",
+                  "namespace": "public"
+                }
+              },
+              "shiftType": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "shiftTypeId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftType",
+                  "namespace": "public"
+                }
+              },
+              "staff": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "staffId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StaffProfile",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "date": {
+                  "column": "date"
+                },
+                "departmentId": {
+                  "column": "departmentId"
+                },
+                "endDateTime": {
+                  "column": "endDateTime"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "isOvernight": {
+                  "column": "isOvernight"
+                },
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "professionId": {
+                  "column": "professionId"
+                },
+                "rosterId": {
+                  "column": "rosterId"
+                },
+                "shiftEndTime": {
+                  "column": "shiftEndTime"
+                },
+                "shiftStartTime": {
+                  "column": "shiftStartTime"
+                },
+                "shiftTypeId": {
+                  "column": "shiftTypeId"
+                },
+                "staffId": {
+                  "column": "staffId"
+                },
+                "startDateTime": {
+                  "column": "startDateTime"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "shiftAssignment"
+            }
+          },
+          "ShiftType": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "description": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "endTime": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "isActive": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "isOvernight": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "startTime": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "organization": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              },
+              "shiftAssignments": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "shiftTypeId"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftAssignment",
+                  "namespace": "public"
+                }
+              },
+              "staffingRequirements": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "shiftTypeId"
+                  ]
+                },
+                "to": {
+                  "model": "StaffingRequirement",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "description": {
+                  "column": "description"
+                },
+                "endTime": {
+                  "column": "endTime"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "isActive": {
+                  "column": "isActive"
+                },
+                "isOvernight": {
+                  "column": "isOvernight"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "startTime": {
+                  "column": "startTime"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "shiftType"
+            }
+          },
           "StaffProfile": {
             "fields": {
               "createdAt": {
@@ -1107,6 +2017,21 @@
                   "namespace": "public"
                 }
               },
+              "headedDepartment": {
+                "cardinality": "1:1",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "headStaffId"
+                  ]
+                },
+                "to": {
+                  "model": "Department",
+                  "namespace": "public"
+                }
+              },
               "organization": {
                 "cardinality": "N:1",
                 "on": {
@@ -1134,6 +2059,21 @@
                 },
                 "to": {
                   "model": "Profession",
+                  "namespace": "public"
+                }
+              },
+              "shiftAssignments": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "staffId"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftAssignment",
                   "namespace": "public"
                 }
               },
@@ -1211,6 +2151,158 @@
               "table": "staffProfile"
             }
           },
+          "StaffingRequirement": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "departmentId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "professionId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "requiredCount": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "shiftTypeId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "department": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "departmentId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Department",
+                  "namespace": "public"
+                }
+              },
+              "organization": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              },
+              "profession": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "professionId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Profession",
+                  "namespace": "public"
+                }
+              },
+              "shiftType": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "shiftTypeId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "ShiftType",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "departmentId": {
+                  "column": "departmentId"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "professionId": {
+                  "column": "professionId"
+                },
+                "requiredCount": {
+                  "column": "requiredCount"
+                },
+                "shiftTypeId": {
+                  "column": "shiftTypeId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "staffingRequirement"
+            }
+          },
           "User": {
             "fields": {
               "authProviderId": {
@@ -1257,6 +2349,21 @@
               }
             },
             "relations": {
+              "createdRosters": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "createdByUserId"
+                  ]
+                },
+                "to": {
+                  "model": "Roster",
+                  "namespace": "public"
+                }
+              },
               "memberships": {
                 "cardinality": "1:N",
                 "on": {
@@ -1272,8 +2379,8 @@
                   "namespace": "public"
                 }
               },
-              "staffProfile": {
-                "cardinality": "1:1",
+              "staffProfiles": {
+                "cardinality": "1:N",
                 "on": {
                   "localFields": [
                     "id"
@@ -1321,6 +2428,78 @@
     "namespaces": {
       "public": {
         "entries": {
+          "rls": {
+            "department": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "department"
+            },
+            "organization": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "organization"
+            },
+            "organizationMember": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "organizationMember"
+            },
+            "organizationSchedulingPolicy": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "organizationSchedulingPolicy"
+            },
+            "permission": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "permission"
+            },
+            "profession": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "profession"
+            },
+            "role": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "role"
+            },
+            "rolePermission": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "rolePermission"
+            },
+            "roster": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "roster"
+            },
+            "shiftAssignment": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "shiftAssignment"
+            },
+            "shiftType": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "shiftType"
+            },
+            "staffProfile": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "staffProfile"
+            },
+            "staffingRequirement": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "staffingRequirement"
+            },
+            "user": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "user"
+            }
+          },
           "table": {
             "department": {
               "columns": {
@@ -1381,6 +2560,23 @@
                     "namespaceId": "public",
                     "tableName": "organization"
                   }
+                },
+                {
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "headStaffId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "department"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "staffProfile"
+                  }
                 }
               ],
               "indexes": [
@@ -1399,6 +2595,11 @@
                 ]
               },
               "uniques": [
+                {
+                  "columns": [
+                    "headStaffId"
+                  ]
+                },
                 {
                   "columns": [
                     "organizationId",
@@ -1675,6 +2876,91 @@
                 }
               ]
             },
+            "organizationSchedulingPolicy": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "maximumConsecutiveDays": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "maximumNightShiftsPerWeek": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "maximumWeekendShifts": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "maximumWeeklyMinutes": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "minimumRestMinutes": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organizationSchedulingPolicy"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organization"
+                  }
+                }
+              ],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "organizationId"
+                  ]
+                }
+              ]
+            },
             "permission": {
               "columns": {
                 "description": {
@@ -1945,6 +3231,570 @@
               },
               "uniques": []
             },
+            "roster": {
+              "checks": [
+                {
+                  "expression": "\"status\" IN ('DRAFT', 'IN_REVIEW', 'PUBLISHED', 'AMENDED')",
+                  "name": "roster_status_check_19635beb",
+                  "prefix": "roster_status_check"
+                }
+              ],
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "createdByUserId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "departmentId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "endDate": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "startDate": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "DRAFT"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "RosterStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "roster"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organization"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "departmentId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "roster"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "department"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "createdByUserId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "roster"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "createdByUserId"
+                  ],
+                  "name": "roster_createdByUserId_idx_93e8a540",
+                  "prefix": "roster_createdByUserId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "departmentId"
+                  ],
+                  "name": "roster_departmentId_idx_8e261ed8",
+                  "prefix": "roster_departmentId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "departmentId"
+                  ],
+                  "name": "roster_organizationId_departmentId_idx_425ca78f",
+                  "prefix": "roster_organizationId_departmentId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId"
+                  ],
+                  "name": "roster_organizationId_idx_2e17ef41",
+                  "prefix": "roster_organizationId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "startDate",
+                    "endDate"
+                  ],
+                  "name": "roster_organizationId_startDate_endDate_idx_b7b01d99",
+                  "prefix": "roster_organizationId_startDate_endDate_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "shiftAssignment": {
+              "checks": [
+                {
+                  "expression": "\"startDateTime\" < \"endDateTime\"",
+                  "name": "shiftAssignment_window_order_78701f4f",
+                  "prefix": "shiftAssignment_window_order"
+                }
+              ],
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "date": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "departmentId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "endDateTime": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "isOvernight": {
+                  "codecId": "pg/bool@1",
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "professionId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "rosterId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "shiftEndTime": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "shiftStartTime": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "shiftTypeId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "staffId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "startDateTime": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftAssignment"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organization"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "rosterId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftAssignment"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "roster"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "departmentId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftAssignment"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "department"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "staffId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftAssignment"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "staffProfile"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "shiftTypeId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftAssignment"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftType"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "professionId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftAssignment"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "profession"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "departmentId"
+                  ],
+                  "name": "shiftAssignment_departmentId_idx_8e261ed8",
+                  "prefix": "shiftAssignment_departmentId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId"
+                  ],
+                  "name": "shiftAssignment_organizationId_idx_2e17ef41",
+                  "prefix": "shiftAssignment_organizationId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "professionId"
+                  ],
+                  "name": "shiftAssignment_professionId_idx_3000e629",
+                  "prefix": "shiftAssignment_professionId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "rosterId",
+                    "date"
+                  ],
+                  "name": "shiftAssignment_rosterId_date_idx_df8a9a1f",
+                  "prefix": "shiftAssignment_rosterId_date_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "rosterId"
+                  ],
+                  "name": "shiftAssignment_rosterId_idx_ca029c6b",
+                  "prefix": "shiftAssignment_rosterId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "shiftTypeId",
+                    "date"
+                  ],
+                  "name": "shiftAssignment_shiftTypeId_date_idx_9329ed49",
+                  "prefix": "shiftAssignment_shiftTypeId_date_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "shiftTypeId"
+                  ],
+                  "name": "shiftAssignment_shiftTypeId_idx_d85655a9",
+                  "prefix": "shiftAssignment_shiftTypeId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "staffId",
+                    "date"
+                  ],
+                  "name": "shiftAssignment_staffId_date_idx_02db3481",
+                  "prefix": "shiftAssignment_staffId_date_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "staffId"
+                  ],
+                  "name": "shiftAssignment_staffId_idx_ce92c64e",
+                  "prefix": "shiftAssignment_staffId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "rosterId",
+                    "staffId",
+                    "shiftTypeId",
+                    "date"
+                  ],
+                  "name": "shiftAssignment_combo_key"
+                }
+              ]
+            },
+            "shiftType": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "description": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "endTime": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "isActive": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "isOvernight": {
+                  "codecId": "pg/bool@1",
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "startTime": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftType"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organization"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "organizationId"
+                  ],
+                  "name": "shiftType_organizationId_idx_2e17ef41",
+                  "prefix": "shiftType_organizationId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "organizationId",
+                    "name"
+                  ]
+                }
+              ]
+            },
             "staffProfile": {
               "checks": [
                 {
@@ -2160,6 +4010,14 @@
                   "name": "staffProfile_professionId_idx_3000e629",
                   "prefix": "staffProfile_professionId_idx",
                   "unique": false
+                },
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "staffProfile_userId_idx_a489d58a",
+                  "prefix": "staffProfile_userId_idx",
+                  "unique": false
                 }
               ],
               "primaryKey": {
@@ -2170,14 +4028,180 @@
               "uniques": [
                 {
                   "columns": [
-                    "userId"
+                    "organizationId",
+                    "staffNumber"
                   ]
                 },
                 {
                   "columns": [
                     "organizationId",
-                    "staffNumber"
+                    "userId"
                   ]
+                }
+              ]
+            },
+            "staffingRequirement": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "departmentId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "professionId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "requiredCount": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "shiftTypeId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "staffingRequirement"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organization"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "departmentId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "staffingRequirement"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "department"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "shiftTypeId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "staffingRequirement"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "shiftType"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "professionId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "staffingRequirement"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "profession"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "departmentId"
+                  ],
+                  "name": "staffingRequirement_departmentId_idx_8e261ed8",
+                  "prefix": "staffingRequirement_departmentId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId"
+                  ],
+                  "name": "staffingRequirement_organizationId_idx_2e17ef41",
+                  "prefix": "staffingRequirement_organizationId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "professionId"
+                  ],
+                  "name": "staffingRequirement_professionId_idx_3000e629",
+                  "prefix": "staffingRequirement_professionId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "shiftTypeId"
+                  ],
+                  "name": "staffingRequirement_shiftTypeId_idx_d85655a9",
+                  "prefix": "staffingRequirement_shiftTypeId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "organizationId",
+                    "departmentId",
+                    "shiftTypeId",
+                    "professionId"
+                  ],
+                  "name": "staffingRequirement_combo_key"
                 }
               ]
             },
@@ -2270,6 +4294,15 @@
                 "SUSPENDED",
                 "ARCHIVED"
               ]
+            },
+            "RosterStatus": {
+              "kind": "valueSet",
+              "values": [
+                "DRAFT",
+                "IN_REVIEW",
+                "PUBLISHED",
+                "AMENDED"
+              ]
             }
           }
         },
@@ -2277,10 +4310,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "51b66858ee4c4a5ed828c2c344497014ed744e2bb494414bb0f79afd986ab319"
+    "storageHash": "98b17e1d9e257d081aa70fd73d38c2038132d65970fe4574c73a8a4696e38c0c"
   },
   "execution": {
-    "executionHash": "392bddfd4bd6faf2a9c39a6c24c56c945e201bade0d73bd7a98b3fb0ba4ef18a",
+    "executionHash": "894e4c896f347fd9a5e351f7a60ae4175674257fdcf78e170b29b2a84e780c7a",
     "mutations": {
       "defaults": [
         {
@@ -2369,6 +4402,32 @@
           "ref": {
             "column": "id",
             "namespace": "public",
+            "table": "organizationSchedulingPolicy"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "organizationSchedulingPolicy"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
             "table": "permission"
           }
         },
@@ -2422,6 +4481,110 @@
             "column": "updatedAt",
             "namespace": "public",
             "table": "role"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "roster"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "roster"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "shiftAssignment"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "shiftAssignment"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "shiftType"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "shiftType"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "staffingRequirement"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "staffingRequirement"
           }
         },
         {

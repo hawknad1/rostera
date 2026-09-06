@@ -1,0 +1,53 @@
+"use server"
+
+import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
+
+import { getAuthUser } from "@/lib/auth/get-auth-user"
+import { ProfessionError } from "@/modules/professions/errors"
+import { createProfessionInputSchema } from "@/modules/professions/schemas/profession"
+import { createOrganizationProfession } from "@/modules/professions/services/professions"
+
+export type ProfessionActionState = {
+  ok: false
+  error: string
+} | null
+
+export async function createProfessionAction(
+  _previousState: ProfessionActionState,
+  formData: FormData,
+): Promise<ProfessionActionState> {
+  const authUser = await getAuthUser()
+
+  if (!authUser) {
+    redirect("/login")
+  }
+
+  const parsed = createProfessionInputSchema.safeParse(Object.fromEntries(formData.entries()))
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: parsed.error.issues[0]?.message ?? "Please check the profession details.",
+    }
+  }
+
+  try {
+    await createOrganizationProfession(parsed.data)
+    revalidatePath("/professions")
+    return null
+  } catch (error) {
+    if (error instanceof ProfessionError) {
+      if (error.code === "UNAUTHENTICATED") {
+        redirect("/login")
+      }
+
+      return { ok: false, error: error.message }
+    }
+
+    return {
+      ok: false,
+      error: "Unable to create the profession. Please try again.",
+    }
+  }
+}

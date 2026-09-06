@@ -1,0 +1,476 @@
+[
+  {
+    "id": "dropConstraint.staffProfile.staffProfile_userId_key",
+    "label": "Drop constraint \"staffProfile_userId_key\" on \"staffProfile\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "staffProfile_userId_key",
+        "table": "staffProfile"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"staffProfile_userId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "staffProfile_userId_key",
+          "public",
+          "\"public\".\"staffProfile\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"staffProfile_userId_key\"",
+        "sql": "ALTER TABLE \"public\".\"staffProfile\" DROP CONSTRAINT \"staffProfile_userId_key\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"staffProfile_userId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "staffProfile_userId_key",
+          "public",
+          "\"public\".\"staffProfile\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.staffProfile.staffProfile_organizationId_userId_key",
+    "label": "Add unique constraint on \"staffProfile\" (organizationId, userId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "staffProfile_organizationId_userId_key",
+        "table": "staffProfile"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"staffProfile_organizationId_userId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "staffProfile_organizationId_userId_key",
+          "public",
+          "\"public\".\"staffProfile\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"staffProfile_organizationId_userId_key\"",
+        "sql": "ALTER TABLE \"public\".\"staffProfile\" ADD CONSTRAINT \"staffProfile_organizationId_userId_key\" UNIQUE (\"organizationId\", \"userId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"staffProfile_organizationId_userId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "staffProfile_organizationId_userId_key",
+          "public",
+          "\"public\".\"staffProfile\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.staffProfile.staffProfile_userId_idx_a489d58a",
+    "label": "Create index \"staffProfile_userId_idx_a489d58a\" on \"staffProfile\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "staffProfile_userId_idx_a489d58a",
+        "table": "staffProfile"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"staffProfile_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"staffProfile_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"staffProfile_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"staffProfile_userId_idx_a489d58a\" ON \"public\".\"staffProfile\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"staffProfile_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"staffProfile_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.department",
+    "label": "Enable row-level security on \"department\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "department"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"department\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "department"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"department\"",
+        "sql": "ALTER TABLE \"public\".\"department\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"department\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "department"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.organization",
+    "label": "Enable row-level security on \"organization\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "organization"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"organization\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "organization"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"organization\"",
+        "sql": "ALTER TABLE \"public\".\"organization\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"organization\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "organization"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.organizationMember",
+    "label": "Enable row-level security on \"organizationMember\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "organizationMember"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"organizationMember\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "organizationMember"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"organizationMember\"",
+        "sql": "ALTER TABLE \"public\".\"organizationMember\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"organizationMember\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "organizationMember"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.permission",
+    "label": "Enable row-level security on \"permission\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "permission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"permission\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "permission"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"permission\"",
+        "sql": "ALTER TABLE \"public\".\"permission\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"permission\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "permission"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.profession",
+    "label": "Enable row-level security on \"profession\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "profession"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"profession\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "profession"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"profession\"",
+        "sql": "ALTER TABLE \"public\".\"profession\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"profession\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "profession"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.role",
+    "label": "Enable row-level security on \"role\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "role"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"role\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "role"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"role\"",
+        "sql": "ALTER TABLE \"public\".\"role\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"role\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "role"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.rolePermission",
+    "label": "Enable row-level security on \"rolePermission\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "rolePermission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"rolePermission\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "rolePermission"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"rolePermission\"",
+        "sql": "ALTER TABLE \"public\".\"rolePermission\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"rolePermission\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "rolePermission"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.staffProfile",
+    "label": "Enable row-level security on \"staffProfile\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "staffProfile"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"staffProfile\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "staffProfile"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"staffProfile\"",
+        "sql": "ALTER TABLE \"public\".\"staffProfile\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"staffProfile\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "staffProfile"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.user",
+    "label": "Enable row-level security on \"user\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"user\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "user"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"user\"",
+        "sql": "ALTER TABLE \"public\".\"user\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"user\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "user"
+        ]
+      }
+    ]
+  }
+]

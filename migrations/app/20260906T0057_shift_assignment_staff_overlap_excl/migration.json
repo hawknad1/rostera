@@ -1,0 +1,10 @@
+{
+  "from": "aedb13f369679a2cb0300b54f92f0d88b46199498ed84491108241b61cddb498",
+  "to": "8d89ae4b904c4ca01f78a560e804520bc34f9bd3535d1c107c119df9f724daf9",
+  "providedInvariants": [
+    "rostera:btree_gist",
+    "rostera:shiftAssignment_staff_time_excl"
+  ],
+  "createdAt": "2026-09-06T00:57:16.419Z",
+  "migrationHash": "a2755532cb919a3265dad005b77d96b2a5c889d5398ed38f1114a044fb782876"
+}

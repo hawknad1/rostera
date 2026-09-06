@@ -26,6 +26,13 @@ enum EmploymentType {
   CASUAL
 }
 
+enum RosterStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  AMENDED
+}
+
 model Organization {
   id        String   @id @default(uuid())
   name      String
@@ -43,11 +50,18 @@ model Organization {
   createdAt DateTime @default(now())
   updatedAt temporal.updatedAt()
 
-  members   OrganizationMember[]
-  departments Department[]
-  professions Profession[]
-  staff     StaffProfile[]
-  roles     Role[]
+  members              OrganizationMember[]
+  departments          Department[]
+  professions          Profession[]
+  staff                StaffProfile[]
+  roles                Role[]
+  shiftTypes           ShiftType[]
+  staffingRequirements StaffingRequirement[]
+  rosters              Roster[]
+  shiftAssignments     ShiftAssignment[]
+  schedulingPolicy     OrganizationSchedulingPolicy?
+
+  @@rls
 }
 
 model User {
@@ -61,7 +75,10 @@ model User {
   updatedAt      temporal.updatedAt()
 
   memberships    OrganizationMember[]
-  staffProfile   StaffProfile?
+  staffProfiles  StaffProfile[]
+  createdRosters Roster[]
+
+  @@rls
 }
 
 model OrganizationMember {
@@ -83,6 +100,7 @@ model OrganizationMember {
   @@unique([organizationId, userId])
   @@index([organizationId])
   @@index([userId])
+  @@rls
 }
 
 model Role {
@@ -101,6 +119,7 @@ model Role {
 
   @@unique([organizationId, name])
   @@index([organizationId])
+  @@rls
 }
 
 model Permission {
@@ -109,6 +128,8 @@ model Permission {
   description String?
 
   roles       RolePermission[]
+
+  @@rls
 }
 
 model RolePermission {
@@ -119,6 +140,7 @@ model RolePermission {
   permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
   @@id([roleId, permissionId])
+  @@rls
 }
 
 model Department {
@@ -128,16 +150,21 @@ model Department {
   name           String
   description    String?
 
-  headStaffId    String?
+  headStaffId    String?  @unique
 
   createdAt      DateTime @default(now())
   updatedAt      temporal.updatedAt()
 
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  staff          StaffProfile[]
+  organization         Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  staff                StaffProfile[] @relation("DepartmentStaff")
+  headStaff            StaffProfile?  @relation("DepartmentHead", fields: [headStaffId], references: [id], onDelete: SetNull)
+  staffingRequirements StaffingRequirement[]
+  rosters              Roster[]
+  shiftAssignments     ShiftAssignment[]
 
   @@unique([organizationId, name])
   @@index([organizationId])
+  @@rls
 }
 
 model Profession {
@@ -151,17 +178,20 @@ model Profession {
   createdAt      DateTime @default(now())
   updatedAt      temporal.updatedAt()
 
-  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  staff          StaffProfile[]
+  organization         Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  staff                StaffProfile[]
+  staffingRequirements StaffingRequirement[]
+  shiftAssignments     ShiftAssignment[]
 
   @@index([organizationId])
+  @@rls
 }
 
 model StaffProfile {
   id               String   @id @default(uuid())
 
   organizationId   String
-  userId           String?  @unique
+  userId           String?
 
   staffNumber      String
 
@@ -187,10 +217,133 @@ model StaffProfile {
   organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   user             User? @relation(fields: [userId], references: [id])
   profession       Profession @relation(fields: [professionId], references: [id])
-  department       Department @relation(fields: [departmentId], references: [id])
+  department       Department @relation("DepartmentStaff", fields: [departmentId], references: [id])
+  headedDepartment Department? @relation("DepartmentHead")
+  shiftAssignments ShiftAssignment[]
 
   @@unique([organizationId, staffNumber])
+  @@unique([organizationId, userId])
   @@index([organizationId])
   @@index([departmentId])
   @@index([professionId])
+  @@rls
+}
+
+model ShiftType {
+  id             String   @id @default(uuid())
+
+  organizationId String
+  name           String
+  description    String?
+  startTime      String
+  endTime        String
+  isOvernight    Boolean
+  isActive       Boolean  @default(true)
+
+  createdAt      DateTime @default(now())
+  updatedAt      temporal.updatedAt()
+
+  organization         Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  staffingRequirements StaffingRequirement[]
+  shiftAssignments     ShiftAssignment[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@rls
+}
+
+model StaffingRequirement {
+  id             String   @id @default(uuid())
+
+  organizationId String
+  departmentId   String
+  shiftTypeId    String
+  professionId   String
+  requiredCount  Int
+
+  createdAt      DateTime @default(now())
+  updatedAt      temporal.updatedAt()
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  department   Department   @relation(fields: [departmentId], references: [id])
+  shiftType    ShiftType    @relation(fields: [shiftTypeId], references: [id])
+  profession   Profession   @relation(fields: [professionId], references: [id])
+
+  @@unique([organizationId, departmentId, shiftTypeId, professionId], map: "staffingRequirement_combo_key")
+  @@index([organizationId])
+  @@index([departmentId])
+  @@rls
+}
+
+model Roster {
+  id              String       @id @default(uuid())
+  organizationId  String
+  departmentId    String
+  name            String
+  startDate       String
+  endDate         String
+  status          RosterStatus @default(DRAFT)
+  createdByUserId String
+  createdAt       DateTime     @default(now())
+  updatedAt       temporal.updatedAt()
+
+  organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  department   Department       @relation(fields: [departmentId], references: [id])
+  createdBy    User             @relation(fields: [createdByUserId], references: [id])
+  assignments  ShiftAssignment[]
+
+  @@index([organizationId])
+  @@index([organizationId, departmentId])
+  @@index([organizationId, startDate, endDate])
+  @@rls
+}
+
+model ShiftAssignment {
+  id             String   @id @default(uuid())
+  organizationId String
+  rosterId       String
+  departmentId   String
+  staffId        String
+  shiftTypeId    String
+  professionId   String
+  date           String
+  shiftStartTime String
+  shiftEndTime   String
+  isOvernight    Boolean
+  startDateTime  DateTime
+  endDateTime    DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      temporal.updatedAt()
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  roster       Roster       @relation(fields: [rosterId], references: [id], onDelete: Cascade)
+  department   Department   @relation(fields: [departmentId], references: [id])
+  staff        StaffProfile @relation(fields: [staffId], references: [id])
+  shiftType    ShiftType    @relation(fields: [shiftTypeId], references: [id])
+  profession   Profession   @relation(fields: [professionId], references: [id])
+
+  @@unique([rosterId, staffId, shiftTypeId, date], map: "shiftAssignment_combo_key")
+  @@check(expression: "\"startDateTime\" < \"endDateTime\"", name: "shiftAssignment_window_order")
+  @@index([organizationId])
+  @@index([rosterId])
+  @@index([rosterId, date])
+  @@index([staffId, date])
+  @@index([shiftTypeId, date])
+  @@rls
+}
+
+model OrganizationSchedulingPolicy {
+  id                          String   @id @default(uuid())
+  organizationId              String   @unique
+  minimumRestMinutes          Int?
+  maximumWeeklyMinutes        Int?
+  maximumConsecutiveDays      Int?
+  maximumNightShiftsPerWeek   Int?
+  maximumWeekendShifts        Int?
+  createdAt                   DateTime @default(now())
+  updatedAt                   temporal.updatedAt()
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@rls
 }

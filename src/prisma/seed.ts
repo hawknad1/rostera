@@ -1,3 +1,4 @@
+import { ensureDefaultSchedulingPolicy } from "@/modules/organizations/services/ensure-scheduling-policy"
 import { db } from "./db"
 
 const DEMO_SLUG = "rostera-demo-hospital"
@@ -67,6 +68,8 @@ async function main() {
       })
     }
   }
+
+  await ensureDefaultSchedulingPolicy(db.orm, organization.id)
 
   console.log("Rostera seed completed.")
 }

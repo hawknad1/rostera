@@ -1,0 +1,647 @@
+[
+  {
+    "id": "table.shiftType",
+    "label": "Create table \"shiftType\"",
+    "summary": "Creates table \"shiftType\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "shiftType"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"shiftType\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftType\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"shiftType\"",
+        "sql": "CREATE TABLE \"public\".\"shiftType\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"description\" text,\n  \"endTime\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"isActive\" bool DEFAULT true NOT NULL,\n  \"isOvernight\" bool NOT NULL,\n  \"name\" text NOT NULL,\n  \"organizationId\" text NOT NULL,\n  \"startTime\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"shiftType\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftType\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.staffingRequirement",
+    "label": "Create table \"staffingRequirement\"",
+    "summary": "Creates table \"staffingRequirement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "staffingRequirement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"staffingRequirement\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"staffingRequirement\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"staffingRequirement\"",
+        "sql": "CREATE TABLE \"public\".\"staffingRequirement\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"departmentId\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"organizationId\" text NOT NULL,\n  \"professionId\" text NOT NULL,\n  \"requiredCount\" int4 NOT NULL,\n  \"shiftTypeId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"staffingRequirement\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"staffingRequirement\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.shiftType.shiftType_organizationId_name_key",
+    "label": "Add unique constraint on \"shiftType\" (organizationId, name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "shiftType_organizationId_name_key",
+        "table": "shiftType"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"shiftType_organizationId_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftType_organizationId_name_key",
+          "public",
+          "\"public\".\"shiftType\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"shiftType_organizationId_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"shiftType\" ADD CONSTRAINT \"shiftType_organizationId_name_key\" UNIQUE (\"organizationId\", \"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"shiftType_organizationId_name_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftType_organizationId_name_key",
+          "public",
+          "\"public\".\"shiftType\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.staffingRequirement.staffingRequirement_combo_key",
+    "label": "Add unique constraint on \"staffingRequirement\" (organizationId, departmentId, shiftTypeId, professionId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "staffingRequirement_combo_key",
+        "table": "staffingRequirement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"staffingRequirement_combo_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "staffingRequirement_combo_key",
+          "public",
+          "\"public\".\"staffingRequirement\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"staffingRequirement_combo_key\"",
+        "sql": "ALTER TABLE \"public\".\"staffingRequirement\" ADD CONSTRAINT \"staffingRequirement_combo_key\" UNIQUE (\"organizationId\", \"departmentId\", \"shiftTypeId\", \"professionId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"staffingRequirement_combo_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "staffingRequirement_combo_key",
+          "public",
+          "\"public\".\"staffingRequirement\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftType.shiftType_organizationId_idx_2e17ef41",
+    "label": "Create index \"shiftType_organizationId_idx_2e17ef41\" on \"shiftType\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftType_organizationId_idx_2e17ef41",
+        "table": "shiftType"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftType_organizationId_idx_2e17ef41\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftType_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftType_organizationId_idx_2e17ef41\"",
+        "sql": "CREATE INDEX \"shiftType_organizationId_idx_2e17ef41\" ON \"public\".\"shiftType\" (\"organizationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftType_organizationId_idx_2e17ef41\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftType_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.staffingRequirement.staffingRequirement_departmentId_idx_8e261ed8",
+    "label": "Create index \"staffingRequirement_departmentId_idx_8e261ed8\" on \"staffingRequirement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "staffingRequirement_departmentId_idx_8e261ed8",
+        "table": "staffingRequirement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"staffingRequirement_departmentId_idx_8e261ed8\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"staffingRequirement_departmentId_idx_8e261ed8\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"staffingRequirement_departmentId_idx_8e261ed8\"",
+        "sql": "CREATE INDEX \"staffingRequirement_departmentId_idx_8e261ed8\" ON \"public\".\"staffingRequirement\" (\"departmentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"staffingRequirement_departmentId_idx_8e261ed8\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"staffingRequirement_departmentId_idx_8e261ed8\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.staffingRequirement.staffingRequirement_organizationId_idx_2e17ef41",
+    "label": "Create index \"staffingRequirement_organizationId_idx_2e17ef41\" on \"staffingRequirement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "staffingRequirement_organizationId_idx_2e17ef41",
+        "table": "staffingRequirement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"staffingRequirement_organizationId_idx_2e17ef41\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"staffingRequirement_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"staffingRequirement_organizationId_idx_2e17ef41\"",
+        "sql": "CREATE INDEX \"staffingRequirement_organizationId_idx_2e17ef41\" ON \"public\".\"staffingRequirement\" (\"organizationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"staffingRequirement_organizationId_idx_2e17ef41\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"staffingRequirement_organizationId_idx_2e17ef41\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.staffingRequirement.staffingRequirement_professionId_idx_3000e629",
+    "label": "Create index \"staffingRequirement_professionId_idx_3000e629\" on \"staffingRequirement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "staffingRequirement_professionId_idx_3000e629",
+        "table": "staffingRequirement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"staffingRequirement_professionId_idx_3000e629\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"staffingRequirement_professionId_idx_3000e629\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"staffingRequirement_professionId_idx_3000e629\"",
+        "sql": "CREATE INDEX \"staffingRequirement_professionId_idx_3000e629\" ON \"public\".\"staffingRequirement\" (\"professionId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"staffingRequirement_professionId_idx_3000e629\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"staffingRequirement_professionId_idx_3000e629\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.staffingRequirement.staffingRequirement_shiftTypeId_idx_d85655a9",
+    "label": "Create index \"staffingRequirement_shiftTypeId_idx_d85655a9\" on \"staffingRequirement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "staffingRequirement_shiftTypeId_idx_d85655a9",
+        "table": "staffingRequirement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"staffingRequirement_shiftTypeId_idx_d85655a9\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"staffingRequirement_shiftTypeId_idx_d85655a9\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"staffingRequirement_shiftTypeId_idx_d85655a9\"",
+        "sql": "CREATE INDEX \"staffingRequirement_shiftTypeId_idx_d85655a9\" ON \"public\".\"staffingRequirement\" (\"shiftTypeId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"staffingRequirement_shiftTypeId_idx_d85655a9\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"staffingRequirement_shiftTypeId_idx_d85655a9\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.shiftType.shiftType_organizationId_fkey",
+    "label": "Add foreign key \"shiftType_organizationId_fkey\" on \"shiftType\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "shiftType_organizationId_fkey",
+        "table": "shiftType"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"shiftType_organizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftType_organizationId_fkey",
+          "public",
+          "\"public\".\"shiftType\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"shiftType_organizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"shiftType\"\nADD CONSTRAINT \"shiftType_organizationId_fkey\"\nFOREIGN KEY (\"organizationId\")\nREFERENCES \"public\".\"organization\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"shiftType_organizationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftType_organizationId_fkey",
+          "public",
+          "\"public\".\"shiftType\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.staffingRequirement.staffingRequirement_organizationId_fkey",
+    "label": "Add foreign key \"staffingRequirement_organizationId_fkey\" on \"staffingRequirement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "staffingRequirement_organizationId_fkey",
+        "table": "staffingRequirement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"staffingRequirement_organizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "staffingRequirement_organizationId_fkey",
+          "public",
+          "\"public\".\"staffingRequirement\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"staffingRequirement_organizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"staffingRequirement\"\nADD CONSTRAINT \"staffingRequirement_organizationId_fkey\"\nFOREIGN KEY (\"organizationId\")\nREFERENCES \"public\".\"organization\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"staffingRequirement_organizationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "staffingRequirement_organizationId_fkey",
+          "public",
+          "\"public\".\"staffingRequirement\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.staffingRequirement.staffingRequirement_departmentId_fkey",
+    "label": "Add foreign key \"staffingRequirement_departmentId_fkey\" on \"staffingRequirement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "staffingRequirement_departmentId_fkey",
+        "table": "staffingRequirement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"staffingRequirement_departmentId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "staffingRequirement_departmentId_fkey",
+          "public",
+          "\"public\".\"staffingRequirement\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"staffingRequirement_departmentId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"staffingRequirement\"\nADD CONSTRAINT \"staffingRequirement_departmentId_fkey\"\nFOREIGN KEY (\"departmentId\")\nREFERENCES \"public\".\"department\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"staffingRequirement_departmentId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "staffingRequirement_departmentId_fkey",
+          "public",
+          "\"public\".\"staffingRequirement\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.staffingRequirement.staffingRequirement_shiftTypeId_fkey",
+    "label": "Add foreign key \"staffingRequirement_shiftTypeId_fkey\" on \"staffingRequirement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "staffingRequirement_shiftTypeId_fkey",
+        "table": "staffingRequirement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"staffingRequirement_shiftTypeId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "staffingRequirement_shiftTypeId_fkey",
+          "public",
+          "\"public\".\"staffingRequirement\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"staffingRequirement_shiftTypeId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"staffingRequirement\"\nADD CONSTRAINT \"staffingRequirement_shiftTypeId_fkey\"\nFOREIGN KEY (\"shiftTypeId\")\nREFERENCES \"public\".\"shiftType\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"staffingRequirement_shiftTypeId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "staffingRequirement_shiftTypeId_fkey",
+          "public",
+          "\"public\".\"staffingRequirement\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.staffingRequirement.staffingRequirement_professionId_fkey",
+    "label": "Add foreign key \"staffingRequirement_professionId_fkey\" on \"staffingRequirement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "staffingRequirement_professionId_fkey",
+        "table": "staffingRequirement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"staffingRequirement_professionId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "staffingRequirement_professionId_fkey",
+          "public",
+          "\"public\".\"staffingRequirement\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"staffingRequirement_professionId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"staffingRequirement\"\nADD CONSTRAINT \"staffingRequirement_professionId_fkey\"\nFOREIGN KEY (\"professionId\")\nREFERENCES \"public\".\"profession\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"staffingRequirement_professionId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "staffingRequirement_professionId_fkey",
+          "public",
+          "\"public\".\"staffingRequirement\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.shiftType",
+    "label": "Enable row-level security on \"shiftType\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "shiftType"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"shiftType\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "shiftType"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"shiftType\"",
+        "sql": "ALTER TABLE \"public\".\"shiftType\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"shiftType\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "shiftType"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.staffingRequirement",
+    "label": "Enable row-level security on \"staffingRequirement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "staffingRequirement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"staffingRequirement\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "staffingRequirement"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"staffingRequirement\"",
+        "sql": "ALTER TABLE \"public\".\"staffingRequirement\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"staffingRequirement\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "staffingRequirement"
+        ]
+      }
+    ]
+  }
+]
