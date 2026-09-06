@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 
+import { hasAdminSurfaceAccess } from "@/lib/auth/admin-surface"
 import { getAuthUser } from "@/lib/auth/get-auth-user"
 import { getCurrentMembership } from "@/lib/auth/get-current-membership"
 import { hasPermission } from "@/lib/auth/has-permission"
@@ -30,7 +31,53 @@ export default async function DashboardLayout({
 
   await ensureDefaultRoleGrants(db.orm, membership.organizationId)
   await ensureDefaultSchedulingPolicy(db.orm, membership.organizationId)
-  const canViewAudit = await hasPermission(membership, permissions.auditView)
+
+  if (!(await hasAdminSurfaceAccess(membership))) {
+    redirect("/forbidden")
+  }
+  const [
+    canManageRosters,
+    canManageStaff,
+    canManageShifts,
+    canManageDepartments,
+    canReviewLeave,
+    canReviewSwaps,
+    canViewSettings,
+    canViewAudit,
+  ] = await Promise.all([
+    Promise.all([
+      hasPermission(membership, permissions.rosterCreate),
+      hasPermission(membership, permissions.rosterEdit),
+      hasPermission(membership, permissions.rosterReview),
+      hasPermission(membership, permissions.rosterPublish),
+      hasPermission(membership, permissions.rosterAmend),
+    ]).then((flags) => flags.some(Boolean)),
+    Promise.all([
+      hasPermission(membership, permissions.staffCreate),
+      hasPermission(membership, permissions.staffEdit),
+      hasPermission(membership, permissions.staffDeactivate),
+    ]).then((flags) => flags.some(Boolean)),
+    Promise.all([
+      hasPermission(membership, permissions.shiftCreate),
+      hasPermission(membership, permissions.shiftEdit),
+      hasPermission(membership, permissions.shiftDeactivate),
+    ]).then((flags) => flags.some(Boolean)),
+    Promise.all([
+      hasPermission(membership, permissions.departmentCreate),
+      hasPermission(membership, permissions.departmentEdit),
+      hasPermission(membership, permissions.departmentDelete),
+    ]).then((flags) => flags.some(Boolean)),
+    Promise.all([
+      hasPermission(membership, permissions.leaveApprove),
+      hasPermission(membership, permissions.leaveReject),
+    ]).then((flags) => flags.some(Boolean)),
+    Promise.all([
+      hasPermission(membership, permissions.shiftSwapApprove),
+      hasPermission(membership, permissions.shiftSwapReject),
+    ]).then((flags) => flags.some(Boolean)),
+    hasPermission(membership, permissions.settingsView),
+    hasPermission(membership, permissions.auditView),
+  ])
 
   return (
     <div className="flex min-h-full flex-col">
@@ -48,52 +95,74 @@ export default async function DashboardLayout({
             </Link>
             <Link
               className="text-foreground underline-offset-4 hover:underline"
-              href="/rosters"
+              href="/me"
             >
-              Rosters
+              My work
             </Link>
-            <Link
-              className="text-foreground underline-offset-4 hover:underline"
-              href="/staff"
-            >
-              Staff
-            </Link>
-            <Link
-              className="text-foreground underline-offset-4 hover:underline"
-              href="/shifts"
-            >
-              Shifts
-            </Link>
-            <Link
-              className="text-foreground underline-offset-4 hover:underline"
-              href="/leave"
-            >
-              Leave
-            </Link>
-            <Link
-              className="text-foreground underline-offset-4 hover:underline"
-              href="/shift-swaps"
-            >
-              Swaps
-            </Link>
-            <Link
-              className="text-foreground underline-offset-4 hover:underline"
-              href="/departments"
-            >
-              Departments
-            </Link>
-            <Link
-              className="text-foreground underline-offset-4 hover:underline"
-              href="/professions"
-            >
-              Professions
-            </Link>
-            <Link
-              className="text-foreground underline-offset-4 hover:underline"
-              href="/settings"
-            >
-              Settings
-            </Link>
+            {canManageRosters ? (
+              <Link
+                className="text-foreground underline-offset-4 hover:underline"
+                href="/rosters"
+              >
+                Rosters
+              </Link>
+            ) : null}
+            {canManageStaff ? (
+              <Link
+                className="text-foreground underline-offset-4 hover:underline"
+                href="/staff"
+              >
+                Staff
+              </Link>
+            ) : null}
+            {canManageShifts ? (
+              <Link
+                className="text-foreground underline-offset-4 hover:underline"
+                href="/shifts"
+              >
+                Shifts
+              </Link>
+            ) : null}
+            {canReviewLeave ? (
+              <Link
+                className="text-foreground underline-offset-4 hover:underline"
+                href="/leave"
+              >
+                Leave
+              </Link>
+            ) : null}
+            {canReviewSwaps ? (
+              <Link
+                className="text-foreground underline-offset-4 hover:underline"
+                href="/shift-swaps"
+              >
+                Swaps
+              </Link>
+            ) : null}
+            {canManageDepartments ? (
+              <Link
+                className="text-foreground underline-offset-4 hover:underline"
+                href="/departments"
+              >
+                Departments
+              </Link>
+            ) : null}
+            {canManageDepartments ? (
+              <Link
+                className="text-foreground underline-offset-4 hover:underline"
+                href="/professions"
+              >
+                Professions
+              </Link>
+            ) : null}
+            {canViewSettings ? (
+              <Link
+                className="text-foreground underline-offset-4 hover:underline"
+                href="/settings"
+              >
+                Settings
+              </Link>
+            ) : null}
             {canViewAudit ? (
               <Link
                 className="text-foreground underline-offset-4 hover:underline"

@@ -76,6 +76,30 @@ export function selectOperationalRosters<T extends { id: unknown; seriesId?: unk
   return selected
 }
 
+/** Staff-facing selection: current PUBLISHED version per series. Draft/IN_REVIEW never win. */
+export function selectCurrentPublishedRosters<
+  T extends { id: unknown; seriesId?: unknown; status: string; versionNumber?: unknown },
+>(rosters: T[]) {
+  const bySeries = new Map<string, T[]>()
+
+  for (const roster of rosters) {
+    const seriesId = rosterSeriesId(roster)
+    const current = bySeries.get(seriesId) ?? []
+    current.push(roster)
+    bySeries.set(seriesId, current)
+  }
+
+  const selected: T[] = []
+  for (const versions of bySeries.values()) {
+    const next = currentPublishedVersion(versions)
+    if (next) {
+      selected.push(next)
+    }
+  }
+
+  return selected
+}
+
 export function schedulingActiveRosterIds(rosters: RosterVersionRow[]) {
   const bySeries = new Map<string, RosterVersionRow[]>()
 

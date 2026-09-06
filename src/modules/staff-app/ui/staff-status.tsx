@@ -1,0 +1,20 @@
+export function UnlinkedStaffState() {
+  return (
+    <section className="flex flex-col gap-2">
+      <h1 className="text-xl font-semibold tracking-tight">Account not linked</h1>
+      <p className="text-sm text-muted-foreground">
+        Your account is not yet linked to a staff profile.
+      </p>
+      <p className="text-sm text-muted-foreground">Please contact your Rostera administrator.</p>
+    </section>
+  )
+}
+
+export function TerminatedStaffNotice() {
+  return (
+    <p className="text-sm text-muted-foreground" role="status">
+      This staff profile is terminated. You can view historical information, but you cannot submit
+      new leave or swap requests.
+    </p>
+  )
+}

@@ -35,7 +35,7 @@ src/modules/notifications/
 └── ARCHITECTURE.md
 ```
 
-There is no public `POST /api/notifications`. Clients cannot supply `recipientUserId`, `organizationId`, `title`, or `body`.
+Staff self-service at `/me` uses `staffNotificationHref` so leave, swap, and roster notifications open the staff PWA, not admin pages. Admin `/notifications` continues to use `notificationHref`.
 
 ## Data model
 
