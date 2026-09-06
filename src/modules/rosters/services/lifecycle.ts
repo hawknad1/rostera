@@ -4,6 +4,8 @@ import { hasPermission } from "@/lib/auth/has-permission"
 import { getCurrentMembership } from "@/lib/auth/get-current-membership"
 import type { Permission } from "@/lib/permissions/permissions"
 import { permissions } from "@/lib/permissions/permissions"
+import { quoteAuditName } from "@/modules/audit/copy"
+import { recordUserAudit } from "@/modules/audit/services/record"
 import { RosterError, rosterError } from "@/modules/rosters/errors"
 import { rosterStatusChangeAuditPoint } from "@/modules/rosters/services/audit"
 import { evaluateRosterValidation } from "@/modules/rosters/services/validation"
@@ -120,6 +122,17 @@ export async function submitRosterForReview(rosterId: string) {
         occurredAt: Temporal.Now.instant(),
       })
 
+      await recordUserAudit(tx, membership, {
+        action: "ROSTER_SUBMITTED_FOR_REVIEW",
+        entityType: "ROSTER",
+        entityId: String(updated.id),
+        summary: `Submitted roster ${quoteAuditName(String(updated.name))} for review.`,
+        metadata: {
+          before: { status: previousStatus },
+          after: { status: "IN_REVIEW" },
+        },
+      })
+
       await enqueueDomainNotification(tx, {
         type: "ROSTER_SUBMITTED_FOR_REVIEW",
         organizationId,
@@ -184,6 +197,17 @@ export async function returnRosterToDraft(rosterId: string) {
         previousStatus,
         newStatus: "DRAFT",
         occurredAt: Temporal.Now.instant(),
+      })
+
+      await recordUserAudit(tx, membership, {
+        action: "ROSTER_RETURNED_TO_DRAFT",
+        entityType: "ROSTER",
+        entityId: String(updated.id),
+        summary: `Returned roster ${quoteAuditName(String(updated.name))} to draft.`,
+        metadata: {
+          before: { status: previousStatus },
+          after: { status: "DRAFT" },
+        },
       })
 
       await enqueueDomainNotification(tx, {
@@ -263,6 +287,17 @@ export async function publishRoster(rosterId: string) {
         occurredAt: Temporal.Now.instant(),
       })
 
+      await recordUserAudit(tx, membership, {
+        action: "ROSTER_PUBLISHED",
+        entityType: "ROSTER",
+        entityId: String(updated.id),
+        summary: `Published roster ${quoteAuditName(String(updated.name))}.`,
+        metadata: {
+          before: { status: previousStatus },
+          after: { status: "PUBLISHED" },
+        },
+      })
+
       await enqueueDomainNotification(tx, {
         type: "ROSTER_PUBLISHED",
         organizationId,
@@ -323,6 +358,21 @@ export async function deleteRoster(rosterId: string) {
       if (!deleted) {
         throw rosterError("ROSTER_NOT_FOUND")
       }
+
+      await recordUserAudit(tx, membership, {
+        action: "ROSTER_DELETED",
+        entityType: "ROSTER",
+        entityId: String(deleted.id),
+        summary: `Deleted roster ${quoteAuditName(String(deleted.name))}.`,
+        metadata: {
+          before: {
+            name: deleted.name,
+            status: deleted.status,
+            startDate: deleted.startDate,
+            endDate: deleted.endDate,
+          },
+        },
+      })
 
       return deleted
     })

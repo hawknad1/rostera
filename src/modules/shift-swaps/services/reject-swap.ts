@@ -15,6 +15,7 @@ import {
   enqueueDomainNotification,
   processDomainNotification,
 } from "@/modules/notifications/services/emit"
+import { recordUserAudit } from "@/modules/audit/services/record"
 import { db } from "@/prisma/db"
 
 export async function rejectSwap(input: RejectSwapInput) {
@@ -55,6 +56,17 @@ export async function rejectSwap(input: RejectSwapInput) {
         requesterStaffId: String(existing.requesterStaffId),
         targetStaffId: String(existing.targetStaffId),
         requesterName: "A colleague",
+      })
+
+      await recordUserAudit(tx, membership, {
+        action: "SHIFT_SWAP_REJECTED",
+        entityType: "SHIFT_SWAP",
+        entityId: String(rejected.id),
+        summary: "Rejected a shift swap request.",
+        metadata: {
+          before: { status: "PENDING" },
+          after: { status: "REJECTED" },
+        },
       })
 
       return rejected

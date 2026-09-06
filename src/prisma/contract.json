@@ -4,6 +4,10 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
+    "auditEvent": {
+      "model": "AuditEvent",
+      "namespace": "public"
+    },
     "department": {
       "model": "Department",
       "namespace": "public"
@@ -81,6 +85,237 @@
     "namespaces": {
       "public": {
         "enum": {
+          "AuditAction": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "ROSTER_CREATED",
+                "value": "ROSTER_CREATED"
+              },
+              {
+                "name": "ROSTER_UPDATED",
+                "value": "ROSTER_UPDATED"
+              },
+              {
+                "name": "ROSTER_SUBMITTED_FOR_REVIEW",
+                "value": "ROSTER_SUBMITTED_FOR_REVIEW"
+              },
+              {
+                "name": "ROSTER_RETURNED_TO_DRAFT",
+                "value": "ROSTER_RETURNED_TO_DRAFT"
+              },
+              {
+                "name": "ROSTER_PUBLISHED",
+                "value": "ROSTER_PUBLISHED"
+              },
+              {
+                "name": "ROSTER_DELETED",
+                "value": "ROSTER_DELETED"
+              },
+              {
+                "name": "ASSIGNMENT_CREATED",
+                "value": "ASSIGNMENT_CREATED"
+              },
+              {
+                "name": "ASSIGNMENT_DELETED",
+                "value": "ASSIGNMENT_DELETED"
+              },
+              {
+                "name": "LEAVE_CREATED",
+                "value": "LEAVE_CREATED"
+              },
+              {
+                "name": "LEAVE_APPROVED",
+                "value": "LEAVE_APPROVED"
+              },
+              {
+                "name": "LEAVE_REJECTED",
+                "value": "LEAVE_REJECTED"
+              },
+              {
+                "name": "LEAVE_CANCELLED",
+                "value": "LEAVE_CANCELLED"
+              },
+              {
+                "name": "SHIFT_SWAP_REQUESTED",
+                "value": "SHIFT_SWAP_REQUESTED"
+              },
+              {
+                "name": "SHIFT_SWAP_COMPLETED",
+                "value": "SHIFT_SWAP_COMPLETED"
+              },
+              {
+                "name": "SHIFT_SWAP_REJECTED",
+                "value": "SHIFT_SWAP_REJECTED"
+              },
+              {
+                "name": "SHIFT_SWAP_CANCELLED",
+                "value": "SHIFT_SWAP_CANCELLED"
+              },
+              {
+                "name": "STAFF_CREATED",
+                "value": "STAFF_CREATED"
+              },
+              {
+                "name": "STAFF_UPDATED",
+                "value": "STAFF_UPDATED"
+              },
+              {
+                "name": "STAFF_DEACTIVATED",
+                "value": "STAFF_DEACTIVATED"
+              },
+              {
+                "name": "DEPARTMENT_CREATED",
+                "value": "DEPARTMENT_CREATED"
+              },
+              {
+                "name": "DEPARTMENT_UPDATED",
+                "value": "DEPARTMENT_UPDATED"
+              },
+              {
+                "name": "DEPARTMENT_DELETED",
+                "value": "DEPARTMENT_DELETED"
+              },
+              {
+                "name": "DEPARTMENT_HEAD_ASSIGNED",
+                "value": "DEPARTMENT_HEAD_ASSIGNED"
+              },
+              {
+                "name": "DEPARTMENT_HEAD_REMOVED",
+                "value": "DEPARTMENT_HEAD_REMOVED"
+              },
+              {
+                "name": "PROFESSION_CREATED",
+                "value": "PROFESSION_CREATED"
+              },
+              {
+                "name": "PROFESSION_UPDATED",
+                "value": "PROFESSION_UPDATED"
+              },
+              {
+                "name": "PROFESSION_DEACTIVATED",
+                "value": "PROFESSION_DEACTIVATED"
+              },
+              {
+                "name": "SHIFT_TYPE_CREATED",
+                "value": "SHIFT_TYPE_CREATED"
+              },
+              {
+                "name": "SHIFT_TYPE_UPDATED",
+                "value": "SHIFT_TYPE_UPDATED"
+              },
+              {
+                "name": "SHIFT_TYPE_DEACTIVATED",
+                "value": "SHIFT_TYPE_DEACTIVATED"
+              },
+              {
+                "name": "STAFFING_REQUIREMENT_CREATED",
+                "value": "STAFFING_REQUIREMENT_CREATED"
+              },
+              {
+                "name": "STAFFING_REQUIREMENT_UPDATED",
+                "value": "STAFFING_REQUIREMENT_UPDATED"
+              },
+              {
+                "name": "STAFFING_REQUIREMENT_DELETED",
+                "value": "STAFFING_REQUIREMENT_DELETED"
+              },
+              {
+                "name": "SCHEDULING_POLICY_UPDATED",
+                "value": "SCHEDULING_POLICY_UPDATED"
+              },
+              {
+                "name": "USER_INVITED",
+                "value": "USER_INVITED"
+              },
+              {
+                "name": "USER_UPDATED",
+                "value": "USER_UPDATED"
+              },
+              {
+                "name": "USER_DEACTIVATED",
+                "value": "USER_DEACTIVATED"
+              },
+              {
+                "name": "MEMBERSHIP_ROLE_CHANGED",
+                "value": "MEMBERSHIP_ROLE_CHANGED"
+              },
+              {
+                "name": "MEMBERSHIP_ACTIVATED",
+                "value": "MEMBERSHIP_ACTIVATED"
+              },
+              {
+                "name": "MEMBERSHIP_DEACTIVATED",
+                "value": "MEMBERSHIP_DEACTIVATED"
+              }
+            ]
+          },
+          "AuditActorType": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "USER",
+                "value": "USER"
+              },
+              {
+                "name": "SYSTEM",
+                "value": "SYSTEM"
+              }
+            ]
+          },
+          "AuditEntityType": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "ROSTER",
+                "value": "ROSTER"
+              },
+              {
+                "name": "ASSIGNMENT",
+                "value": "ASSIGNMENT"
+              },
+              {
+                "name": "LEAVE_REQUEST",
+                "value": "LEAVE_REQUEST"
+              },
+              {
+                "name": "SHIFT_SWAP",
+                "value": "SHIFT_SWAP"
+              },
+              {
+                "name": "STAFF",
+                "value": "STAFF"
+              },
+              {
+                "name": "DEPARTMENT",
+                "value": "DEPARTMENT"
+              },
+              {
+                "name": "PROFESSION",
+                "value": "PROFESSION"
+              },
+              {
+                "name": "SHIFT_TYPE",
+                "value": "SHIFT_TYPE"
+              },
+              {
+                "name": "STAFFING_REQUIREMENT",
+                "value": "STAFFING_REQUIREMENT"
+              },
+              {
+                "name": "SCHEDULING_POLICY",
+                "value": "SCHEDULING_POLICY"
+              },
+              {
+                "name": "USER",
+                "value": "USER"
+              },
+              {
+                "name": "MEMBERSHIP",
+                "value": "MEMBERSHIP"
+              }
+            ]
+          },
           "EmploymentStatus": {
             "codecId": "pg/text@1",
             "members": [
@@ -354,6 +589,231 @@
           }
         },
         "models": {
+          "AuditEvent": {
+            "fields": {
+              "action": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "AuditAction",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "actorMembershipId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "actorType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "AuditActorType",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "actorUserId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "entityId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "entityType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "AuditEntityType",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "eventId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "ipAddress": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "metadata": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "requestId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "summary": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "userAgent": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "actorMembership": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "actorMembershipId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "OrganizationMember",
+                  "namespace": "public"
+                }
+              },
+              "actorUser": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "actorUserId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              },
+              "organization": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "action": {
+                  "column": "action"
+                },
+                "actorMembershipId": {
+                  "column": "actorMembershipId"
+                },
+                "actorType": {
+                  "column": "actorType"
+                },
+                "actorUserId": {
+                  "column": "actorUserId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "entityId": {
+                  "column": "entityId"
+                },
+                "entityType": {
+                  "column": "entityType"
+                },
+                "eventId": {
+                  "column": "eventId"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "ipAddress": {
+                  "column": "ipAddress"
+                },
+                "metadata": {
+                  "column": "metadata"
+                },
+                "organizationId": {
+                  "column": "organizationId"
+                },
+                "requestId": {
+                  "column": "requestId"
+                },
+                "summary": {
+                  "column": "summary"
+                },
+                "userAgent": {
+                  "column": "userAgent"
+                }
+              },
+              "namespaceId": "public",
+              "table": "auditEvent"
+            }
+          },
           "Department": {
             "fields": {
               "createdAt": {
@@ -1181,6 +1641,21 @@
               }
             },
             "relations": {
+              "auditEvents": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "AuditEvent",
+                  "namespace": "public"
+                }
+              },
               "departments": {
                 "cardinality": "1:N",
                 "on": {
@@ -1500,6 +1975,21 @@
               }
             },
             "relations": {
+              "auditEvents": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "actorMembershipId"
+                  ]
+                },
+                "to": {
+                  "model": "AuditEvent",
+                  "namespace": "public"
+                }
+              },
               "organization": {
                 "cardinality": "N:1",
                 "on": {
@@ -3536,6 +4026,21 @@
               }
             },
             "relations": {
+              "auditEvents": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "actorUserId"
+                  ]
+                },
+                "to": {
+                  "model": "AuditEvent",
+                  "namespace": "public"
+                }
+              },
               "createdRosters": {
                 "cardinality": "1:N",
                 "on": {
@@ -3691,6 +4196,11 @@
       "public": {
         "entries": {
           "rls": {
+            "auditEvent": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "auditEvent"
+            },
             "department": {
               "kind": "rls",
               "namespaceId": "public",
@@ -3783,6 +4293,253 @@
             }
           },
           "table": {
+            "auditEvent": {
+              "checks": [
+                {
+                  "expression": "\"action\" IN ('ROSTER_CREATED', 'ROSTER_UPDATED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_PUBLISHED', 'ROSTER_DELETED', 'ASSIGNMENT_CREATED', 'ASSIGNMENT_DELETED', 'LEAVE_CREATED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'STAFF_CREATED', 'STAFF_UPDATED', 'STAFF_DEACTIVATED', 'DEPARTMENT_CREATED', 'DEPARTMENT_UPDATED', 'DEPARTMENT_DELETED', 'DEPARTMENT_HEAD_ASSIGNED', 'DEPARTMENT_HEAD_REMOVED', 'PROFESSION_CREATED', 'PROFESSION_UPDATED', 'PROFESSION_DEACTIVATED', 'SHIFT_TYPE_CREATED', 'SHIFT_TYPE_UPDATED', 'SHIFT_TYPE_DEACTIVATED', 'STAFFING_REQUIREMENT_CREATED', 'STAFFING_REQUIREMENT_UPDATED', 'STAFFING_REQUIREMENT_DELETED', 'SCHEDULING_POLICY_UPDATED', 'USER_INVITED', 'USER_UPDATED', 'USER_DEACTIVATED', 'MEMBERSHIP_ROLE_CHANGED', 'MEMBERSHIP_ACTIVATED', 'MEMBERSHIP_DEACTIVATED')",
+                  "name": "auditEvent_action_check_156c0448",
+                  "prefix": "auditEvent_action_check"
+                },
+                {
+                  "expression": "\"actorType\" IN ('USER', 'SYSTEM')",
+                  "name": "auditEvent_actorType_check_22fc4720",
+                  "prefix": "auditEvent_actorType_check"
+                },
+                {
+                  "expression": "\"entityType\" IN ('ROSTER', 'ASSIGNMENT', 'LEAVE_REQUEST', 'SHIFT_SWAP', 'STAFF', 'DEPARTMENT', 'PROFESSION', 'SHIFT_TYPE', 'STAFFING_REQUIREMENT', 'SCHEDULING_POLICY', 'USER', 'MEMBERSHIP')",
+                  "name": "auditEvent_entityType_check_1d250f14",
+                  "prefix": "auditEvent_entityType_check"
+                }
+              ],
+              "columns": {
+                "action": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "AuditAction",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "actorMembershipId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "actorType": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "AuditActorType",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "actorUserId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "entityId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "entityType": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "AuditEntityType",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "eventId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "ipAddress": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "metadata": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "organizationId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "requestId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "summary": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "userAgent": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "auditEvent"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organization"
+                  }
+                },
+                {
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "actorUserId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "auditEvent"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                },
+                {
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "actorMembershipId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "auditEvent"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organizationMember"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "actorMembershipId"
+                  ],
+                  "name": "auditEvent_actorMembershipId_idx_993b1bc0",
+                  "prefix": "auditEvent_actorMembershipId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "actorUserId"
+                  ],
+                  "name": "auditEvent_actorUserId_idx_96dac96c",
+                  "prefix": "auditEvent_actorUserId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "action",
+                    "createdAt"
+                  ],
+                  "name": "auditEvent_org_action_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "actorUserId",
+                    "createdAt"
+                  ],
+                  "name": "auditEvent_org_actor_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "createdAt"
+                  ],
+                  "name": "auditEvent_org_created_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId",
+                    "entityType",
+                    "entityId",
+                    "createdAt"
+                  ],
+                  "name": "auditEvent_org_entity_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "organizationId"
+                  ],
+                  "name": "auditEvent_organizationId_idx_2e17ef41",
+                  "prefix": "auditEvent_organizationId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "organizationId",
+                    "eventId"
+                  ],
+                  "name": "auditEvent_event_key"
+                }
+              ]
+            },
             "department": {
               "columns": {
                 "createdAt": {
@@ -6452,6 +7209,75 @@
             }
           },
           "valueSet": {
+            "AuditAction": {
+              "kind": "valueSet",
+              "values": [
+                "ROSTER_CREATED",
+                "ROSTER_UPDATED",
+                "ROSTER_SUBMITTED_FOR_REVIEW",
+                "ROSTER_RETURNED_TO_DRAFT",
+                "ROSTER_PUBLISHED",
+                "ROSTER_DELETED",
+                "ASSIGNMENT_CREATED",
+                "ASSIGNMENT_DELETED",
+                "LEAVE_CREATED",
+                "LEAVE_APPROVED",
+                "LEAVE_REJECTED",
+                "LEAVE_CANCELLED",
+                "SHIFT_SWAP_REQUESTED",
+                "SHIFT_SWAP_COMPLETED",
+                "SHIFT_SWAP_REJECTED",
+                "SHIFT_SWAP_CANCELLED",
+                "STAFF_CREATED",
+                "STAFF_UPDATED",
+                "STAFF_DEACTIVATED",
+                "DEPARTMENT_CREATED",
+                "DEPARTMENT_UPDATED",
+                "DEPARTMENT_DELETED",
+                "DEPARTMENT_HEAD_ASSIGNED",
+                "DEPARTMENT_HEAD_REMOVED",
+                "PROFESSION_CREATED",
+                "PROFESSION_UPDATED",
+                "PROFESSION_DEACTIVATED",
+                "SHIFT_TYPE_CREATED",
+                "SHIFT_TYPE_UPDATED",
+                "SHIFT_TYPE_DEACTIVATED",
+                "STAFFING_REQUIREMENT_CREATED",
+                "STAFFING_REQUIREMENT_UPDATED",
+                "STAFFING_REQUIREMENT_DELETED",
+                "SCHEDULING_POLICY_UPDATED",
+                "USER_INVITED",
+                "USER_UPDATED",
+                "USER_DEACTIVATED",
+                "MEMBERSHIP_ROLE_CHANGED",
+                "MEMBERSHIP_ACTIVATED",
+                "MEMBERSHIP_DEACTIVATED"
+              ]
+            },
+            "AuditActorType": {
+              "kind": "valueSet",
+              "values": [
+                "USER",
+                "SYSTEM"
+              ]
+            },
+            "AuditEntityType": {
+              "kind": "valueSet",
+              "values": [
+                "ROSTER",
+                "ASSIGNMENT",
+                "LEAVE_REQUEST",
+                "SHIFT_SWAP",
+                "STAFF",
+                "DEPARTMENT",
+                "PROFESSION",
+                "SHIFT_TYPE",
+                "STAFFING_REQUIREMENT",
+                "SCHEDULING_POLICY",
+                "USER",
+                "MEMBERSHIP"
+              ]
+            },
             "EmploymentStatus": {
               "kind": "valueSet",
               "values": [
@@ -6567,12 +7393,23 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "6da9f8a46f4f5ab5f926ae10bd6a9828921d4412f4d8fc8ff3a921bb4ee82531"
+    "storageHash": "fef1e66b6a7d3c74e3c219dcb1b7e0a70df733b87d2a1e21432d78f077f7bb64"
   },
   "execution": {
-    "executionHash": "bcf221424226ec4c3a8adef453d13780e7f8a1f9d573739d1a914a97382217ed",
+    "executionHash": "d21bcd6e57bbeb8d26ee2d6293f2aff93a2ddedfea402e011450656a063083d3",
     "mutations": {
       "defaults": [
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "auditEvent"
+          }
+        },
         {
           "onCreate": {
             "id": "uuidv4",

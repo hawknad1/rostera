@@ -13,6 +13,7 @@ import {
   enqueueDomainNotification,
   processDomainNotification,
 } from "@/modules/notifications/services/emit"
+import { recordUserAudit } from "@/modules/audit/services/record"
 import { db } from "@/prisma/db"
 
 export async function cancelSwap(swapId: string) {
@@ -56,6 +57,17 @@ export async function cancelSwap(swapId: string) {
         requesterStaffId: String(existing.requesterStaffId),
         targetStaffId: String(existing.targetStaffId),
         requesterName: "A colleague",
+      })
+
+      await recordUserAudit(tx, membership, {
+        action: "SHIFT_SWAP_CANCELLED",
+        entityType: "SHIFT_SWAP",
+        entityId: String(cancelled.id),
+        summary: "Cancelled a shift swap request.",
+        metadata: {
+          before: { status: "PENDING" },
+          after: { status: "CANCELLED" },
+        },
       })
 
       return cancelled

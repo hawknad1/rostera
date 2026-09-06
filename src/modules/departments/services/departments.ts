@@ -4,12 +4,16 @@ import type { Permission } from "@/lib/permissions/permissions"
 import { permissions } from "@/lib/permissions/permissions"
 import { isUniqueConstraintViolation } from "@/lib/db/unique-constraint"
 import { DepartmentError } from "@/modules/departments/errors"
+import { quoteAuditName } from "@/modules/audit/copy"
+import { recordUserAudit } from "@/modules/audit/services/record"
 import type {
   CreateDepartmentInput,
   DepartmentIdInput,
   UpdateDepartmentInput,
 } from "@/modules/departments/schemas/department"
 import { db } from "@/prisma/db"
+
+type TxClient = { orm: typeof db.orm }
 
 async function requireDepartmentAccess(permission: Permission) {
   const membership = await getCurrentMembership()
@@ -70,10 +74,24 @@ export async function createDepartment(input: CreateDepartmentInput) {
   const { name, description } = input
 
   try {
-    return await db.orm.public.Department.create({
-      organizationId: membership.organizationId,
-      name,
-      ...(description ? { description } : {}),
+    return await db.transaction(async (tx: TxClient) => {
+      const created = await tx.orm.public.Department.create({
+        organizationId: membership.organizationId,
+        name,
+        ...(description ? { description } : {}),
+      })
+
+      await recordUserAudit(tx, membership, {
+        action: "DEPARTMENT_CREATED",
+        entityType: "DEPARTMENT",
+        entityId: String(created.id),
+        summary: `Created department ${quoteAuditName(String(created.name))}.`,
+        metadata: {
+          after: { name: created.name, description: created.description ?? null },
+        },
+      })
+
+      return created
     })
   } catch (error) {
     if (isUniqueConstraintViolation(error)) {
@@ -96,19 +114,33 @@ export async function updateDepartment(input: UpdateDepartmentInput) {
   }
 
   try {
-    const updated = await db.orm.public.Department.where({
-      id: existing.id,
-      organizationId: membership.organizationId,
-    }).update({
-      name: input.name,
-      description: input.description ?? null,
+    return await db.transaction(async (tx: TxClient) => {
+      const updated = await tx.orm.public.Department.where({
+        id: existing.id,
+        organizationId: membership.organizationId,
+      }).update({
+        name: input.name,
+        description: input.description ?? null,
+      })
+
+      if (!updated) {
+        throw new DepartmentError("NOT_FOUND", "Department not found.")
+      }
+
+      await recordUserAudit(tx, membership, {
+        action: "DEPARTMENT_UPDATED",
+        entityType: "DEPARTMENT",
+        entityId: String(updated.id),
+        summary: `Updated department ${quoteAuditName(String(updated.name))}.`,
+        metadata: {
+          changedFields: ["name", "description"],
+          before: { name: existing.name, description: existing.description ?? null },
+          after: { name: updated.name, description: updated.description ?? null },
+        },
+      })
+
+      return updated
     })
-
-    if (!updated) {
-      throw new DepartmentError("NOT_FOUND", "Department not found.")
-    }
-
-    return updated
   } catch (error) {
     if (error instanceof DepartmentError) {
       throw error
@@ -169,14 +201,26 @@ export async function deleteDepartment(input: DepartmentIdInput) {
     )
   }
 
-  const deleted = await db.orm.public.Department.where({
-    id: existing.id,
-    organizationId: membership.organizationId,
-  }).delete()
+  return db.transaction(async (tx: TxClient) => {
+    const deleted = await tx.orm.public.Department.where({
+      id: existing.id,
+      organizationId: membership.organizationId,
+    }).delete()
 
-  if (!deleted) {
-    throw new DepartmentError("NOT_FOUND", "Department not found.")
-  }
+    if (!deleted) {
+      throw new DepartmentError("NOT_FOUND", "Department not found.")
+    }
 
-  return deleted
+    await recordUserAudit(tx, membership, {
+      action: "DEPARTMENT_DELETED",
+      entityType: "DEPARTMENT",
+      entityId: String(deleted.id),
+      summary: `Deleted department ${quoteAuditName(String(deleted.name))}.`,
+      metadata: {
+        before: { name: deleted.name, description: deleted.description ?? null },
+      },
+    })
+
+    return deleted
+  })
 }

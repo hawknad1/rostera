@@ -14,9 +14,11 @@ import {
 import { toSchedulingConfig } from "@/modules/scheduling/policy/to-scheduling-config"
 import { schedulingPolicyValuesSchema } from "@/modules/scheduling/schemas/scheduling-policy"
 import type { SchedulingPolicyValues } from "@/modules/scheduling/types/scheduling-policy"
+import { recordUserAudit } from "@/modules/audit/services/record"
 import { db } from "@/prisma/db"
 
 type PublicOrm = typeof db.orm
+type TxClient = { orm: typeof db.orm }
 
 export { ensureDefaultSchedulingPolicy } from "@/modules/organizations/services/ensure-scheduling-policy"
 export type { OrganizationSchedulingPolicyRecord } from "@/modules/organizations/services/ensure-scheduling-policy"
@@ -79,17 +81,49 @@ export async function updateSchedulingPolicy(input: SchedulingPolicyValues) {
   }
 
   try {
-    const current = await ensureDefaultSchedulingPolicy(db.orm, organizationId)
-    const updated = await db.orm.public.OrganizationSchedulingPolicy.where({
-      id: current.id,
-      organizationId,
-    }).update(parsed.data)
+    return await db.transaction(async (tx: TxClient) => {
+      const current = await ensureDefaultSchedulingPolicy(tx.orm, organizationId)
+      const updated = await tx.orm.public.OrganizationSchedulingPolicy.where({
+        id: current.id,
+        organizationId,
+      }).update(parsed.data)
 
-    if (!updated) {
-      throw schedulingPolicyError("FAILED")
-    }
+      if (!updated) {
+        throw schedulingPolicyError("FAILED")
+      }
 
-    return toSchedulingPolicyRecord(updated)
+      await recordUserAudit(tx, membership, {
+        action: "SCHEDULING_POLICY_UPDATED",
+        entityType: "SCHEDULING_POLICY",
+        entityId: String(updated.id),
+        summary: "Updated scheduling policy.",
+        metadata: {
+          changedFields: [
+            "minimumRestMinutes",
+            "maximumWeeklyMinutes",
+            "maximumConsecutiveDays",
+            "maximumNightShiftsPerWeek",
+            "maximumWeekendShifts",
+          ],
+          before: {
+            minimumRestMinutes: current.minimumRestMinutes,
+            maximumWeeklyMinutes: current.maximumWeeklyMinutes,
+            maximumConsecutiveDays: current.maximumConsecutiveDays,
+            maximumNightShiftsPerWeek: current.maximumNightShiftsPerWeek,
+            maximumWeekendShifts: current.maximumWeekendShifts,
+          },
+          after: {
+            minimumRestMinutes: updated.minimumRestMinutes,
+            maximumWeeklyMinutes: updated.maximumWeeklyMinutes,
+            maximumConsecutiveDays: updated.maximumConsecutiveDays,
+            maximumNightShiftsPerWeek: updated.maximumNightShiftsPerWeek,
+            maximumWeekendShifts: updated.maximumWeekendShifts,
+          },
+        },
+      })
+
+      return toSchedulingPolicyRecord(updated)
+    })
   } catch (error) {
     if (error instanceof SchedulingPolicyError) {
       throw error

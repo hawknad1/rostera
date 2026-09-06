@@ -85,6 +85,69 @@ enum NotificationOutboxStatus {
   FAILED
 }
 
+enum AuditActorType {
+  USER
+  SYSTEM
+}
+
+enum AuditAction {
+  ROSTER_CREATED
+  ROSTER_UPDATED
+  ROSTER_SUBMITTED_FOR_REVIEW
+  ROSTER_RETURNED_TO_DRAFT
+  ROSTER_PUBLISHED
+  ROSTER_DELETED
+  ASSIGNMENT_CREATED
+  ASSIGNMENT_DELETED
+  LEAVE_CREATED
+  LEAVE_APPROVED
+  LEAVE_REJECTED
+  LEAVE_CANCELLED
+  SHIFT_SWAP_REQUESTED
+  SHIFT_SWAP_COMPLETED
+  SHIFT_SWAP_REJECTED
+  SHIFT_SWAP_CANCELLED
+  STAFF_CREATED
+  STAFF_UPDATED
+  STAFF_DEACTIVATED
+  DEPARTMENT_CREATED
+  DEPARTMENT_UPDATED
+  DEPARTMENT_DELETED
+  DEPARTMENT_HEAD_ASSIGNED
+  DEPARTMENT_HEAD_REMOVED
+  PROFESSION_CREATED
+  PROFESSION_UPDATED
+  PROFESSION_DEACTIVATED
+  SHIFT_TYPE_CREATED
+  SHIFT_TYPE_UPDATED
+  SHIFT_TYPE_DEACTIVATED
+  STAFFING_REQUIREMENT_CREATED
+  STAFFING_REQUIREMENT_UPDATED
+  STAFFING_REQUIREMENT_DELETED
+  SCHEDULING_POLICY_UPDATED
+  USER_INVITED
+  USER_UPDATED
+  USER_DEACTIVATED
+  MEMBERSHIP_ROLE_CHANGED
+  MEMBERSHIP_ACTIVATED
+  MEMBERSHIP_DEACTIVATED
+}
+
+enum AuditEntityType {
+  ROSTER
+  ASSIGNMENT
+  LEAVE_REQUEST
+  SHIFT_SWAP
+  STAFF
+  DEPARTMENT
+  PROFESSION
+  SHIFT_TYPE
+  STAFFING_REQUIREMENT
+  SCHEDULING_POLICY
+  USER
+  MEMBERSHIP
+}
+
 model Organization {
   id        String   @id @default(uuid())
   name      String
@@ -116,6 +179,7 @@ model Organization {
   shiftSwapRequests    ShiftSwapRequest[]
   notifications        Notification[]
   notificationOutbox   NotificationOutbox[]
+  auditEvents          AuditEvent[]
 
   @@rls
 }
@@ -138,6 +202,7 @@ model User {
   requestedShiftSwaps    ShiftSwapRequest[] @relation("ShiftSwapRequestedBy")
   reviewedShiftSwaps     ShiftSwapRequest[] @relation("ShiftSwapReviewedBy")
   notifications          Notification[]
+  auditEvents            AuditEvent[]
 
   @@rls
 }
@@ -157,6 +222,7 @@ model OrganizationMember {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   role           Role         @relation(fields: [roleId], references: [id])
+  auditEvents    AuditEvent[]
 
   @@unique([organizationId, userId])
   @@index([organizationId])
@@ -523,5 +589,34 @@ model NotificationOutbox {
 
   @@unique([organizationId, eventType, eventId], map: "notificationOutbox_event_key")
   @@index([organizationId, status, availableAt], map: "notificationOutbox_pickup_idx")
+  @@rls
+}
+
+model AuditEvent {
+  id                 String          @id @default(uuid())
+  organizationId     String
+  actorType          AuditActorType
+  actorUserId        String?
+  actorMembershipId  String?
+  action             AuditAction
+  entityType         AuditEntityType
+  entityId           String
+  eventId            String
+  summary            String
+  metadata           String?
+  requestId          String?
+  ipAddress          String?
+  userAgent          String?
+  createdAt          DateTime        @default(now())
+
+  organization    Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  actorUser       User?               @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+  actorMembership OrganizationMember? @relation(fields: [actorMembershipId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, eventId], map: "auditEvent_event_key")
+  @@index([organizationId, createdAt], map: "auditEvent_org_created_idx")
+  @@index([organizationId, action, createdAt], map: "auditEvent_org_action_idx")
+  @@index([organizationId, entityType, entityId, createdAt], map: "auditEvent_org_entity_idx")
+  @@index([organizationId, actorUserId, createdAt], map: "auditEvent_org_actor_idx")
   @@rls
 }

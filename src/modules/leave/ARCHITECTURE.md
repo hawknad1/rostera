@@ -111,7 +111,9 @@ Approving leave does **not** delete or edit assignments.
 
 ## Audit
 
-[`leaveAuditPoint`](services/audit.ts) is called for `LEAVE_REQUESTED`, `LEAVE_APPROVED`, `LEAVE_REJECTED`, and `LEAVE_CANCELLED`. It does not persist. Payload: `organizationId`, `leaveId`, `staffId`, `actorUserId`, `previousStatus`, `newStatus`, `occurredAt`.
+Leave mutations persist an `AuditEvent` in the same transaction as the leave write (`LEAVE_CREATED`, `LEAVE_APPROVED`, `LEAVE_REJECTED`, `LEAVE_CANCELLED`). Audit failure rolls back the leave change. See [`audit/ARCHITECTURE.md`](../audit/ARCHITECTURE.md).
+
+[`leaveAuditPoint`](services/audit.ts) remains a no-op compatibility hook from Phase 3H.
 
 ## Notifications
 

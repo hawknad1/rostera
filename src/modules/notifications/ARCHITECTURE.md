@@ -224,4 +224,4 @@ Dashboard header bell (desktop and the same staff header) shows unread count and
 
 ## Phase 3K
 
-Keep this outbox and intent model. Do not introduce a second event bus. A later worker/cron can drain `PENDING` outbox rows. External channels should implement `NotificationChannel` and consume the same intents.
+Notifications stay an eventual outbox. Audit events are a separate transactional accountability record and must not be written through this processor. See [`audit/ARCHITECTURE.md`](../audit/ARCHITECTURE.md).

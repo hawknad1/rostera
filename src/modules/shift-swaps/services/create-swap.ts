@@ -24,6 +24,7 @@ import {
   enqueueDomainNotification,
   processDomainNotification,
 } from "@/modules/notifications/services/emit"
+import { recordUserAudit } from "@/modules/audit/services/record"
 import { formatStaffName } from "@/modules/staff/labels"
 import { db } from "@/prisma/db"
 
@@ -127,6 +128,22 @@ export async function createSwap(input: CreateSwapInput) {
           middleName: requester.middleName == null ? null : String(requester.middleName),
           lastName: String(requester.lastName),
         }),
+      })
+
+      await recordUserAudit(tx, membership, {
+        action: "SHIFT_SWAP_REQUESTED",
+        entityType: "SHIFT_SWAP",
+        entityId: String(created.id),
+        summary: "Requested a shift swap between two assignments.",
+        metadata: {
+          after: {
+            sourceAssignmentId: created.sourceAssignmentId,
+            targetAssignmentId: created.targetAssignmentId,
+            requesterStaffId: created.requesterStaffId,
+            targetStaffId: created.targetStaffId,
+            status: "PENDING",
+          },
+        },
       })
 
       return created

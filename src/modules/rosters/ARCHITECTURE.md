@@ -79,7 +79,9 @@ Versioning, cloning, and amending a published roster are deferred. This phase on
 
 ## Audit
 
-[`rosterStatusChangeAuditPoint`](services/audit.ts) is called after a successful status change with `rosterId`, `organizationId`, `actorUserId`, `previousStatus`, `newStatus`, and `occurredAt`. It does not persist. A future audit module should record that payload.
+Roster create/update/submit/return/publish/delete persist `AuditEvent` rows in the same transaction as the roster write. Assignment create/delete do the same. Audit failure rolls back the business change. See [`audit/ARCHITECTURE.md`](../audit/ARCHITECTURE.md).
+
+[`rosterStatusChangeAuditPoint`](services/audit.ts) remains a no-op compatibility hook from earlier phases.
 
 ## Notifications
 

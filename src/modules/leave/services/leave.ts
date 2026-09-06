@@ -17,6 +17,7 @@ import { isLeaveError, leaveError } from "@/modules/leave/errors"
 import { leaveAuditPoint } from "@/modules/leave/services/audit"
 import type { CreateLeaveInput } from "@/modules/leave/schemas/leave"
 import { leaveTypes, type LeaveType } from "@/modules/leave/schemas/leave"
+import { recordUserAudit } from "@/modules/audit/services/record"
 import { leaveTypePhrase } from "@/modules/notifications/copy"
 import {
   enqueueDomainNotification,
@@ -451,6 +452,22 @@ export async function createLeave(input: CreateLeaveInput) {
         occurredAt: Temporal.Now.instant(),
       })
 
+      await recordUserAudit(tx, membership, {
+        action: "LEAVE_CREATED",
+        entityType: "LEAVE_REQUEST",
+        entityId: String(createdLeave.id),
+        summary: `Created ${leaveTypePhrase(input.leaveType)} leave request.`,
+        metadata: {
+          after: {
+            staffId: staff.id,
+            leaveType: input.leaveType,
+            startDate,
+            endDate,
+            status: "PENDING",
+          },
+        },
+      })
+
       await enqueueDomainNotification(tx, {
         type: "LEAVE_REQUESTED",
         organizationId,
@@ -544,6 +561,17 @@ export async function approveLeave(leaveId: string) {
         occurredAt: Temporal.Now.instant(),
       })
 
+      await recordUserAudit(tx, membership, {
+        action: "LEAVE_APPROVED",
+        entityType: "LEAVE_REQUEST",
+        entityId: String(approved.id),
+        summary: `Approved ${leaveTypePhrase(asLeaveType(String(existing.leaveType)))} leave.`,
+        metadata: {
+          before: { status: "PENDING" },
+          after: { status: "APPROVED" },
+        },
+      })
+
       await enqueueDomainNotification(tx, {
         type: "LEAVE_APPROVED",
         organizationId,
@@ -623,6 +651,17 @@ export async function rejectLeave(leaveId: string) {
         previousStatus: "PENDING",
         newStatus: "REJECTED",
         occurredAt: Temporal.Now.instant(),
+      })
+
+      await recordUserAudit(tx, membership, {
+        action: "LEAVE_REJECTED",
+        entityType: "LEAVE_REQUEST",
+        entityId: String(rejected.id),
+        summary: `Rejected ${leaveTypePhrase(asLeaveType(String(existing.leaveType)))} leave.`,
+        metadata: {
+          before: { status: "PENDING" },
+          after: { status: "REJECTED" },
+        },
       })
 
       await enqueueDomainNotification(tx, {
@@ -730,6 +769,17 @@ export async function cancelLeave(leaveId: string) {
         previousStatus: status,
         newStatus: "CANCELLED",
         occurredAt: Temporal.Now.instant(),
+      })
+
+      await recordUserAudit(tx, membership, {
+        action: "LEAVE_CANCELLED",
+        entityType: "LEAVE_REQUEST",
+        entityId: String(updated.id),
+        summary: `Cancelled ${leaveTypePhrase(asLeaveType(String(existing.leaveType)))} leave.`,
+        metadata: {
+          before: { status },
+          after: { status: "CANCELLED" },
+        },
       })
 
       const staff = await tx.orm.public.StaffProfile.where({
