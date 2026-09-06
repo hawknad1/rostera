@@ -1,0 +1,748 @@
+[
+  {
+    "id": "dropCheckConstraint.auditEvent.auditEvent_action_check_156c0448",
+    "label": "Drop check constraint \"auditEvent_action_check_156c0448\" on \"auditEvent\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "auditEvent_action_check_156c0448",
+        "table": "auditEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"auditEvent_action_check_156c0448\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_action_check_156c0448",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"auditEvent_action_check_156c0448\"",
+        "sql": "ALTER TABLE \"public\".\"auditEvent\" DROP CONSTRAINT \"auditEvent_action_check_156c0448\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"auditEvent_action_check_156c0448\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_action_check_156c0448",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.notification.notification_type_check_c9ddaf51",
+    "label": "Drop check constraint \"notification_type_check_c9ddaf51\" on \"notification\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notification_type_check_c9ddaf51",
+        "table": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notification_type_check_c9ddaf51\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_type_check_c9ddaf51",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"notification_type_check_c9ddaf51\"",
+        "sql": "ALTER TABLE \"public\".\"notification\" DROP CONSTRAINT \"notification_type_check_c9ddaf51\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notification_type_check_c9ddaf51\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_type_check_c9ddaf51",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.notificationOutbox.notificationOutbox_eventType_check_e92a4b3e",
+    "label": "Drop check constraint \"notificationOutbox_eventType_check_e92a4b3e\" on \"notificationOutbox\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notificationOutbox_eventType_check_e92a4b3e",
+        "table": "notificationOutbox"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notificationOutbox_eventType_check_e92a4b3e\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationOutbox_eventType_check_e92a4b3e",
+          "public",
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"notificationOutbox_eventType_check_e92a4b3e\"",
+        "sql": "ALTER TABLE \"public\".\"notificationOutbox\" DROP CONSTRAINT \"notificationOutbox_eventType_check_e92a4b3e\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notificationOutbox_eventType_check_e92a4b3e\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationOutbox_eventType_check_e92a4b3e",
+          "public",
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.roster.amendmentReason",
+    "label": "Add column \"amendmentReason\" to \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "amendmentReason",
+        "table": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"amendmentReason\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "roster",
+          "amendmentReason"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"amendmentReason\"",
+        "sql": "ALTER TABLE \"public\".\"roster\" ADD COLUMN \"amendmentReason\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"amendmentReason\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "roster",
+          "amendmentReason"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.roster.parentRosterId",
+    "label": "Add column \"parentRosterId\" to \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "parentRosterId",
+        "table": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"parentRosterId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "roster",
+          "parentRosterId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"parentRosterId\"",
+        "sql": "ALTER TABLE \"public\".\"roster\" ADD COLUMN \"parentRosterId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"parentRosterId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "roster",
+          "parentRosterId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.roster.versionNumber",
+    "label": "Add column \"versionNumber\" to \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "versionNumber",
+        "table": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"versionNumber\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "roster",
+          "versionNumber"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"versionNumber\"",
+        "sql": "ALTER TABLE \"public\".\"roster\" ADD COLUMN \"versionNumber\" int4 DEFAULT 1 NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"versionNumber\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "roster",
+          "versionNumber"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.shiftAssignment.copiedFromAssignmentId",
+    "label": "Add column \"copiedFromAssignmentId\" to \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "copiedFromAssignmentId",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"copiedFromAssignmentId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "shiftAssignment",
+          "copiedFromAssignmentId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"copiedFromAssignmentId\"",
+        "sql": "ALTER TABLE \"public\".\"shiftAssignment\" ADD COLUMN \"copiedFromAssignmentId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"copiedFromAssignmentId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "shiftAssignment",
+          "copiedFromAssignmentId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.roster.seriesId",
+    "label": "Add column \"seriesId\" to \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "seriesId",
+        "table": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"seriesId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "roster",
+          "seriesId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"seriesId\"",
+        "sql": "ALTER TABLE \"public\".\"roster\" ADD COLUMN \"seriesId\" text DEFAULT (gen_random_uuid()) NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"seriesId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "roster",
+          "seriesId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.auditEvent.auditEvent_action_check_8d257f60",
+    "label": "Add check constraint \"auditEvent_action_check_8d257f60\" on \"auditEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "auditEvent_action_check_8d257f60",
+        "table": "auditEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"auditEvent_action_check_8d257f60\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_action_check_8d257f60",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"auditEvent_action_check_8d257f60\"",
+        "sql": "ALTER TABLE \"public\".\"auditEvent\" ADD CONSTRAINT \"auditEvent_action_check_8d257f60\" CHECK (\"action\" IN ('ROSTER_CREATED', 'ROSTER_UPDATED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_PUBLISHED', 'ROSTER_AMENDMENT_CREATED', 'ROSTER_DELETED', 'ASSIGNMENT_CREATED', 'ASSIGNMENT_DELETED', 'LEAVE_CREATED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'STAFF_CREATED', 'STAFF_UPDATED', 'STAFF_DEACTIVATED', 'DEPARTMENT_CREATED', 'DEPARTMENT_UPDATED', 'DEPARTMENT_DELETED', 'DEPARTMENT_HEAD_ASSIGNED', 'DEPARTMENT_HEAD_REMOVED', 'PROFESSION_CREATED', 'PROFESSION_UPDATED', 'PROFESSION_DEACTIVATED', 'SHIFT_TYPE_CREATED', 'SHIFT_TYPE_UPDATED', 'SHIFT_TYPE_DEACTIVATED', 'STAFFING_REQUIREMENT_CREATED', 'STAFFING_REQUIREMENT_UPDATED', 'STAFFING_REQUIREMENT_DELETED', 'SCHEDULING_POLICY_UPDATED', 'USER_INVITED', 'USER_UPDATED', 'USER_DEACTIVATED', 'MEMBERSHIP_ROLE_CHANGED', 'MEMBERSHIP_ACTIVATED', 'MEMBERSHIP_DEACTIVATED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"auditEvent_action_check_8d257f60\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auditEvent_action_check_8d257f60",
+          "public",
+          "\"public\".\"auditEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.notification.notification_type_check_cdb06ba8",
+    "label": "Add check constraint \"notification_type_check_cdb06ba8\" on \"notification\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notification_type_check_cdb06ba8",
+        "table": "notification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notification_type_check_cdb06ba8\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_type_check_cdb06ba8",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"notification_type_check_cdb06ba8\"",
+        "sql": "ALTER TABLE \"public\".\"notification\" ADD CONSTRAINT \"notification_type_check_cdb06ba8\" CHECK (\"type\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notification_type_check_cdb06ba8\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notification_type_check_cdb06ba8",
+          "public",
+          "\"public\".\"notification\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.notificationOutbox.notificationOutbox_eventType_check_485b977b",
+    "label": "Add check constraint \"notificationOutbox_eventType_check_485b977b\" on \"notificationOutbox\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "notificationOutbox_eventType_check_485b977b",
+        "table": "notificationOutbox"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"notificationOutbox_eventType_check_485b977b\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationOutbox_eventType_check_485b977b",
+          "public",
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"notificationOutbox_eventType_check_485b977b\"",
+        "sql": "ALTER TABLE \"public\".\"notificationOutbox\" ADD CONSTRAINT \"notificationOutbox_eventType_check_485b977b\" CHECK (\"eventType\" IN ('LEAVE_REQUESTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_CANCELLED', 'SHIFT_SWAP_REQUESTED', 'SHIFT_SWAP_COMPLETED', 'SHIFT_SWAP_REJECTED', 'SHIFT_SWAP_CANCELLED', 'ROSTER_SUBMITTED_FOR_REVIEW', 'ROSTER_PUBLISHED', 'ROSTER_RETURNED_TO_DRAFT', 'ROSTER_AMENDMENT_CREATED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"notificationOutbox_eventType_check_485b977b\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "notificationOutbox_eventType_check_485b977b",
+          "public",
+          "\"public\".\"notificationOutbox\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.roster.roster_version_number_c9127633",
+    "label": "Add check constraint \"roster_version_number_c9127633\" on \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "roster_version_number_c9127633",
+        "table": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"roster_version_number_c9127633\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "roster_version_number_c9127633",
+          "public",
+          "\"public\".\"roster\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"roster_version_number_c9127633\"",
+        "sql": "ALTER TABLE \"public\".\"roster\" ADD CONSTRAINT \"roster_version_number_c9127633\" CHECK (\"versionNumber\" >= 1)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"roster_version_number_c9127633\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "roster_version_number_c9127633",
+          "public",
+          "\"public\".\"roster\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.roster.roster_series_version_key",
+    "label": "Add unique constraint on \"roster\" (organizationId, seriesId, versionNumber)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "roster_series_version_key",
+        "table": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"roster_series_version_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "roster_series_version_key",
+          "public",
+          "\"public\".\"roster\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"roster_series_version_key\"",
+        "sql": "ALTER TABLE \"public\".\"roster\" ADD CONSTRAINT \"roster_series_version_key\" UNIQUE (\"organizationId\", \"seriesId\", \"versionNumber\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"roster_series_version_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "roster_series_version_key",
+          "public",
+          "\"public\".\"roster\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.roster.roster_organizationId_seriesId_idx_7543e97d",
+    "label": "Create index \"roster_organizationId_seriesId_idx_7543e97d\" on \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "roster_organizationId_seriesId_idx_7543e97d",
+        "table": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"roster_organizationId_seriesId_idx_7543e97d\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"roster_organizationId_seriesId_idx_7543e97d\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"roster_organizationId_seriesId_idx_7543e97d\"",
+        "sql": "CREATE INDEX \"roster_organizationId_seriesId_idx_7543e97d\" ON \"public\".\"roster\" (\"organizationId\", \"seriesId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"roster_organizationId_seriesId_idx_7543e97d\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"roster_organizationId_seriesId_idx_7543e97d\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.roster.roster_parentRosterId_idx_849936b5",
+    "label": "Create index \"roster_parentRosterId_idx_849936b5\" on \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "roster_parentRosterId_idx_849936b5",
+        "table": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"roster_parentRosterId_idx_849936b5\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"roster_parentRosterId_idx_849936b5\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"roster_parentRosterId_idx_849936b5\"",
+        "sql": "CREATE INDEX \"roster_parentRosterId_idx_849936b5\" ON \"public\".\"roster\" (\"parentRosterId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"roster_parentRosterId_idx_849936b5\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"roster_parentRosterId_idx_849936b5\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.shiftAssignment.shiftAssignment_copiedFromAssignmentId_idx_bbc1c558",
+    "label": "Create index \"shiftAssignment_copiedFromAssignmentId_idx_bbc1c558\" on \"shiftAssignment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "shiftAssignment_copiedFromAssignmentId_idx_bbc1c558",
+        "table": "shiftAssignment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"shiftAssignment_copiedFromAssignmentId_idx_bbc1c558\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_copiedFromAssignmentId_idx_bbc1c558\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"shiftAssignment_copiedFromAssignmentId_idx_bbc1c558\"",
+        "sql": "CREATE INDEX \"shiftAssignment_copiedFromAssignmentId_idx_bbc1c558\" ON \"public\".\"shiftAssignment\" (\"copiedFromAssignmentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"shiftAssignment_copiedFromAssignmentId_idx_bbc1c558\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"shiftAssignment_copiedFromAssignmentId_idx_bbc1c558\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.roster.roster_parentRosterId_fkey",
+    "label": "Add foreign key \"roster_parentRosterId_fkey\" on \"roster\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "roster_parentRosterId_fkey",
+        "table": "roster"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"roster_parentRosterId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "roster_parentRosterId_fkey",
+          "public",
+          "\"public\".\"roster\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"roster_parentRosterId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"roster\"\nADD CONSTRAINT \"roster_parentRosterId_fkey\"\nFOREIGN KEY (\"parentRosterId\")\nREFERENCES \"public\".\"roster\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"roster_parentRosterId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "roster_parentRosterId_fkey",
+          "public",
+          "\"public\".\"roster\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "exclusion.shiftAssignment.shiftAssignment_staff_roster_time_excl",
+    "label": "Scope assignment overlap exclusion to a single roster so historical versions can coexist",
+    "operationClass": "additive",
+    "invariantId": "rostera:shiftAssignment_staff_roster_time_excl",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"shiftAssignment_staff_roster_time_excl\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_staff_roster_time_excl",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop organization-wide staff time exclusion if present",
+        "sql": "ALTER TABLE \"public\".\"shiftAssignment\" DROP CONSTRAINT IF EXISTS \"shiftAssignment_staff_time_excl\""
+      },
+      {
+        "description": "add roster-scoped staff time exclusion",
+        "sql": "ALTER TABLE \"public\".\"shiftAssignment\" ADD CONSTRAINT \"shiftAssignment_staff_roster_time_excl\" EXCLUDE USING gist (\"staffId\" WITH =, \"rosterId\" WITH =, tstzrange(\"startDateTime\", \"endDateTime\", '[)') WITH &&)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"shiftAssignment_staff_roster_time_excl\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "shiftAssignment_staff_roster_time_excl",
+          "public",
+          "\"public\".\"shiftAssignment\""
+        ]
+      }
+    ]
+  }
+]

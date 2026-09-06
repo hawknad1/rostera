@@ -13,9 +13,12 @@ import { validateRoster } from "@/modules/rosters/services/validation"
 import { getSwapCapabilities } from "@/modules/shift-swaps/services/swaps"
 import { AddAssignmentForm } from "@/modules/rosters/ui/add-assignment-form"
 import { EditRosterForm } from "@/modules/rosters/ui/edit-roster-form"
+import { RosterAmendmentBanner } from "@/modules/rosters/ui/roster-amendment-banner"
 import { RosterLifecycleActions } from "@/modules/rosters/ui/roster-lifecycle-actions"
 import { RosterSchedule } from "@/modules/rosters/ui/roster-schedule"
 import { RosterValidationSummary } from "@/modules/rosters/ui/roster-validation-summary"
+import { RosterVersionCompare } from "@/modules/rosters/ui/roster-version-compare"
+import { RosterVersionHistory } from "@/modules/rosters/ui/roster-version-history"
 
 export default async function RosterDetailPage({
   params,
@@ -33,10 +36,11 @@ export default async function RosterDetailPage({
     throw error
   }
 
-  const [canEdit, canReview, canPublish] = await Promise.all([
+  const [canEdit, canReview, canPublish, canAmend] = await Promise.all([
     hasPermission(membership, permissions.rosterEdit),
     hasPermission(membership, permissions.rosterReview),
     hasPermission(membership, permissions.rosterPublish),
+    hasPermission(membership, permissions.rosterAmend),
   ])
   const canRequestSwap = await hasPermission(membership, permissions.shiftSwapRequest)
   const swapCapabilities = canRequestSwap ? await getSwapCapabilities() : null
@@ -63,9 +67,10 @@ export default async function RosterDetailPage({
         </Link>
         <h1 className="text-2xl font-semibold tracking-tight">{roster.name}</h1>
         <p className="text-sm text-muted-foreground">
-          {roster.departmentName} · {roster.dateRangeLabel} · {rosterStatusLabels[roster.status]} ·{" "}
-          {roster.assignmentCount} {roster.assignmentCount === 1 ? "assignment" : "assignments"} ·{" "}
-          {roster.coverageLabel}
+          {roster.departmentName} · {roster.dateRangeLabel} · {rosterStatusLabels[roster.status]} ·
+          Version {roster.versionNumber}
+          {roster.isAmendment ? " amendment" : ""} · {roster.assignmentCount}{" "}
+          {roster.assignmentCount === 1 ? "assignment" : "assignments"} · {roster.coverageLabel}
         </p>
         {validation ? (
           <p className="text-sm text-muted-foreground">
@@ -78,10 +83,22 @@ export default async function RosterDetailPage({
         ) : null}
       </div>
 
+      <RosterAmendmentBanner
+        createdAt={roster.createdAt}
+        createdByLabel={roster.createdByLabel}
+        parentVersionNumber={roster.parentVersionNumber}
+        reason={roster.amendmentReason}
+        status={roster.status as RosterStatus}
+        versionNumber={roster.versionNumber}
+      />
+
       <RosterLifecycleActions
+        activeAmendmentId={roster.activeAmendmentId}
+        canAmend={canAmend}
         canEdit={canEdit}
         canPublish={canPublish}
         canReview={canReview}
+        isCurrentPublished={roster.isCurrentPublished}
         rosterId={roster.id}
         status={roster.status as RosterStatus}
       />
@@ -139,6 +156,10 @@ export default async function RosterDetailPage({
           />
         </section>
       ) : null}
+
+      {roster.comparison ? <RosterVersionCompare comparison={roster.comparison} /> : null}
+
+      <RosterVersionHistory versions={roster.versions} />
     </main>
   )
 }

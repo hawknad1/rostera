@@ -137,7 +137,8 @@ async function resolveRecipientUserIds(orm: PublicOrm, event: DomainNotification
       ])
       return uniqueIds([requesterUserId, targetUserId])
     }
-    case "ROSTER_SUBMITTED_FOR_REVIEW": {
+    case "ROSTER_SUBMITTED_FOR_REVIEW":
+    case "ROSTER_AMENDMENT_CREATED": {
       const [departmentHeadId, managerIds] = await Promise.all([
         departmentHeadUserId(orm, event.organizationId, event.departmentId),
         activeMembersWithRoleNames(

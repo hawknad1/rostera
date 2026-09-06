@@ -29,6 +29,11 @@ export const rosterErrorCodes = [
   "ROSTER_NOT_PUBLISHABLE",
   "ROSTER_HAS_BLOCKING_CONFLICTS",
   "ROSTER_ALREADY_PUBLISHED",
+  "ROSTER_NOT_PUBLISHED",
+  "NOT_CURRENT_PUBLISHED_VERSION",
+  "AMENDMENT_ALREADY_EXISTS",
+  "INVALID_AMENDMENT_REASON",
+  "AMENDMENT_NOT_COMPARABLE",
   "FAILED",
 ] as const
 
@@ -79,6 +84,12 @@ export const rosterErrorMessages: Record<RosterErrorCode, string> = {
   ROSTER_NOT_PUBLISHABLE: "This roster cannot be published.",
   ROSTER_HAS_BLOCKING_CONFLICTS: "This roster cannot proceed because it has blocking conflicts.",
   ROSTER_ALREADY_PUBLISHED: "This roster has already been published and cannot be changed.",
+  ROSTER_NOT_PUBLISHED: "Only a published roster can be amended.",
+  NOT_CURRENT_PUBLISHED_VERSION:
+    "Only the current published version of this roster can be amended or used as the publish source.",
+  AMENDMENT_ALREADY_EXISTS: "An unpublished amendment already exists for this roster.",
+  INVALID_AMENDMENT_REASON: "Enter a short reason for this amendment.",
+  AMENDMENT_NOT_COMPARABLE: "This roster version cannot be compared with a previous version.",
   FAILED: "Unable to complete this roster action. Please try again.",
 }
 

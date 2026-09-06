@@ -10,6 +10,7 @@ export const notificationTypes = [
   "ROSTER_SUBMITTED_FOR_REVIEW",
   "ROSTER_PUBLISHED",
   "ROSTER_RETURNED_TO_DRAFT",
+  "ROSTER_AMENDMENT_CREATED",
 ] as const
 
 export type NotificationType = (typeof notificationTypes)[number]
@@ -73,7 +74,7 @@ export type DomainNotificationEvent =
       targetStaffId: string
     }
   | {
-      type: "ROSTER_SUBMITTED_FOR_REVIEW" | "ROSTER_RETURNED_TO_DRAFT"
+      type: "ROSTER_SUBMITTED_FOR_REVIEW" | "ROSTER_RETURNED_TO_DRAFT" | "ROSTER_AMENDMENT_CREATED"
       organizationId: string
       eventId: string
       actorUserId: string
@@ -81,6 +82,9 @@ export type DomainNotificationEvent =
       departmentId: string
       createdByUserId: string
       rosterName: string
+      versionNumber?: number
+      sourceVersion?: number
+      reason?: string
     }
   | {
       type: "ROSTER_PUBLISHED"

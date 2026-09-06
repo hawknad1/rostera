@@ -107,7 +107,7 @@ Leave is compared to `assignment.date`, not the Instant window.
 Approving leave does **not** delete or edit assignments.
 
 - DRAFT / IN_REVIEW: validation reports `LEAVE_CONFLICT`; the manager can change the assignment.
-- PUBLISHED: the roster stays immutable. Leave approval/cancellation never rewrites published assignments or status. Operational amendment/versioning is deferred (Phase 3L-style).
+- PUBLISHED: the roster stays immutable. Leave approval/cancellation never rewrites published assignments or status. Repair is an authorized roster amendment (new draft version), not a mutation of the published row.
 
 ## Audit
 
@@ -130,7 +130,7 @@ Shift swaps load approved leave for both staff members via [`loadApprovedLeaveFo
 ## Follow-up
 
 - Concurrent overlapping leave can race; a Postgres gist exclusion was not added because text date columns cannot use an IMMUTABLE `daterange` expression in this Prisma 8 contract.
-- Approving leave never removes existing assignments, including published ones. Operational repair belongs in a later amendment/versioning workflow.
+- Approving leave never removes existing assignments, including published ones. Operational repair is the Phase 3L amendment workflow.
 - HR/department-head created leave still starts `PENDING` and must be approved before it blocks scheduling.
 - Leave types are a fixed enum, not organization-configurable.
 - `leave.create` was granted to HR and DEPARTMENT_HEAD so they can create leave on behalf of staff. `ensureDefaultRoleGrants` backfills existing orgs.

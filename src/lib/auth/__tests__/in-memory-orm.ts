@@ -216,6 +216,20 @@ function assertUnique(tables: Record<ModelName, Row[]>, model: ModelName, row: R
     }
   }
 
+  if (model === "Roster") {
+    if (
+      tables.Roster.some(
+        (existing) =>
+          existing !== row &&
+          existing.organizationId === row.organizationId &&
+          existing.seriesId === row.seriesId &&
+          existing.versionNumber === row.versionNumber,
+      )
+    ) {
+      throw uniqueViolation("roster", "series_version")
+    }
+  }
+
   if (model === "ShiftAssignment") {
     if (
       tables.ShiftAssignment.some(
@@ -321,6 +335,7 @@ function assertNoStaffTimeOverlap(tables: Record<ModelName, Row[]>, model: Model
     (existing) =>
       existing !== row &&
       existing.staffId === row.staffId &&
+      existing.rosterId === row.rosterId &&
       intervalsOverlap(
         toInstant(existing.startDateTime),
         toInstant(existing.endDateTime),
@@ -387,6 +402,14 @@ function withCreateDefaults(model: ModelName, data: Row): Row {
 
   if (model === "Roster") {
     row.status ??= "DRAFT"
+    row.seriesId ??= crypto.randomUUID()
+    row.versionNumber ??= 1
+    row.parentRosterId ??= null
+    row.amendmentReason ??= null
+  }
+
+  if (model === "ShiftAssignment") {
+    row.copiedFromAssignmentId ??= null
   }
 
   if (model === "LeaveRequest") {
@@ -725,8 +748,9 @@ export function createInMemoryPrisma() {
     tables,
     queries,
     insert(model: ModelName, row: Row) {
-      tables[model].push(row)
-      return row
+      const next = withCreateDefaults(model, row)
+      tables[model].push(next)
+      return next
     },
     failNextCreate(model: ModelName, error?: unknown) {
       failCreates.push({ model, error })

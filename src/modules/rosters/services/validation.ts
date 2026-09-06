@@ -4,6 +4,7 @@ import type { Permission } from "@/lib/permissions/permissions"
 import { permissions } from "@/lib/permissions/permissions"
 import { rosterError } from "@/modules/rosters/errors"
 import { calculateCoverage } from "@/modules/rosters/services/coverage"
+import { isSchedulingPeerAssignment } from "@/modules/rosters/services/versions"
 import type { RosterValidationResult } from "@/modules/rosters/types/validation"
 import { loadApprovedLeaveForRoster } from "@/modules/leave/services/scheduling-leave"
 import { buildSchedulingContext } from "@/modules/scheduling/engine/buildSchedulingContext"
@@ -20,6 +21,7 @@ type RosterRow = {
   departmentId: string
   startDate: string
   endDate: string
+  seriesId?: unknown
 }
 
 async function requireRosterAccess(permission: Permission) {
@@ -100,7 +102,7 @@ export async function evaluateRosterValidation(
   const organizationId = input.organizationId
   const roster = input.roster
 
-  const [assignments, staff, requirements, shiftTypes] = await Promise.all([
+  const [assignments, staff, requirements, shiftTypes, rosters] = await Promise.all([
     orm.public.ShiftAssignment.where({ organizationId }).all(),
     orm.public.StaffProfile.where({ organizationId }).all(),
     orm.public.StaffingRequirement.where({
@@ -108,6 +110,7 @@ export async function evaluateRosterValidation(
       departmentId: roster.departmentId,
     }).all(),
     orm.public.ShiftType.where({ organizationId }).all(),
+    orm.public.Roster.where({ organizationId }).all(),
   ])
 
   const tenantAssignments = assignments.filter(
@@ -129,7 +132,8 @@ export async function evaluateRosterValidation(
   const rosterStaffIds = new Set(rosterAssignments.map((assignment) => assignment.staffId))
   const relevantAssignments = tenantAssignments.filter(
     (assignment) =>
-      assignment.rosterId === roster.id || rosterStaffIds.has(assignment.staffId),
+      rosterStaffIds.has(assignment.staffId) &&
+      isSchedulingPeerAssignment(assignment, roster, rosters),
   )
   const relevantStaff = tenantStaff.filter(
     (member) => rosterStaffIds.has(member.id) && member.professionId,

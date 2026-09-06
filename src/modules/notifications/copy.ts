@@ -92,5 +92,10 @@ export function notificationCopy(event: DomainNotificationEvent): { title: strin
         title: "Roster returned to draft",
         body: `${event.rosterName} has been returned to draft.`,
       }
+    case "ROSTER_AMENDMENT_CREATED":
+      return {
+        title: "Roster amendment created",
+        body: `${event.rosterName} version ${event.versionNumber} has been created as a draft amendment.`,
+      }
   }
 }

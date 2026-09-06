@@ -15,6 +15,8 @@ export type RosterListItem = {
   endDate: string
   dateRangeLabel: string
   status: RosterStatus
+  versionNumber?: number
+  isAmendment?: boolean
   assignmentCount: number
   coverageLabel: string
 }
@@ -116,7 +118,9 @@ export function RosterList({
                 <p className="font-medium">{roster.name}</p>
                 <p className="text-sm text-muted-foreground">
                   {roster.departmentName} · {roster.dateRangeLabel} ·{" "}
-                  {rosterStatusLabels[roster.status]} · {roster.assignmentCount}{" "}
+                  {rosterStatusLabels[roster.status]}
+                  {roster.versionNumber ? ` · v${roster.versionNumber}` : ""}
+                  {roster.isAmendment ? " amendment" : ""} · {roster.assignmentCount}{" "}
                   {roster.assignmentCount === 1 ? "assignment" : "assignments"} ·{" "}
                   {roster.coverageLabel}
                 </p>

@@ -70,6 +70,7 @@ enum NotificationType {
   ROSTER_SUBMITTED_FOR_REVIEW
   ROSTER_PUBLISHED
   ROSTER_RETURNED_TO_DRAFT
+  ROSTER_AMENDMENT_CREATED
 }
 
 enum NotificationEntityType {
@@ -96,6 +97,7 @@ enum AuditAction {
   ROSTER_SUBMITTED_FOR_REVIEW
   ROSTER_RETURNED_TO_DRAFT
   ROSTER_PUBLISHED
+  ROSTER_AMENDMENT_CREATED
   ROSTER_DELETED
   ASSIGNMENT_CREATED
   ASSIGNMENT_DELETED
@@ -406,45 +408,56 @@ model StaffingRequirement {
 }
 
 model Roster {
-  id              String       @id @default(uuid())
-  organizationId  String
-  departmentId    String
-  name            String
-  startDate       String
-  endDate         String
-  status          RosterStatus @default(DRAFT)
-  createdByUserId String
-  createdAt       DateTime     @default(now())
-  updatedAt       temporal.updatedAt()
+  id               String       @id @default(uuid())
+  organizationId   String
+  departmentId     String
+  name             String
+  startDate        String
+  endDate          String
+  status           RosterStatus @default(DRAFT)
+  seriesId         String       @default(uuid())
+  versionNumber    Int          @default(1)
+  parentRosterId   String?
+  amendmentReason  String?
+  createdByUserId  String
+  createdAt        DateTime     @default(now())
+  updatedAt        temporal.updatedAt()
 
-  organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  department   Department       @relation(fields: [departmentId], references: [id])
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  department   Department        @relation(fields: [departmentId], references: [id])
   createdBy    User              @relation(fields: [createdByUserId], references: [id])
+  parentRoster Roster?           @relation("RosterVersionParent", fields: [parentRosterId], references: [id])
+  childVersions Roster[]         @relation("RosterVersionParent")
   assignments  ShiftAssignment[]
   shiftSwaps   ShiftSwapRequest[]
 
+  @@unique([organizationId, seriesId, versionNumber], map: "roster_series_version_key")
+  @@check(expression: "\"versionNumber\" >= 1", name: "roster_version_number")
   @@index([organizationId])
   @@index([organizationId, departmentId])
   @@index([organizationId, startDate, endDate])
+  @@index([organizationId, seriesId])
+  @@index([parentRosterId])
   @@rls
 }
 
 model ShiftAssignment {
-  id             String   @id @default(uuid())
-  organizationId String
-  rosterId       String
-  departmentId   String
-  staffId        String
-  shiftTypeId    String
-  professionId   String
-  date           String
-  shiftStartTime String
-  shiftEndTime   String
-  isOvernight    Boolean
-  startDateTime  DateTime
-  endDateTime    DateTime
-  createdAt      DateTime @default(now())
-  updatedAt      temporal.updatedAt()
+  id                      String   @id @default(uuid())
+  organizationId          String
+  rosterId                String
+  departmentId            String
+  staffId                 String
+  shiftTypeId             String
+  professionId            String
+  date                    String
+  shiftStartTime          String
+  shiftEndTime            String
+  isOvernight             Boolean
+  startDateTime           DateTime
+  endDateTime             DateTime
+  copiedFromAssignmentId  String?
+  createdAt               DateTime @default(now())
+  updatedAt               temporal.updatedAt()
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   roster       Roster       @relation(fields: [rosterId], references: [id], onDelete: Cascade)
@@ -462,6 +475,7 @@ model ShiftAssignment {
   @@index([rosterId, date])
   @@index([staffId, date])
   @@index([shiftTypeId, date])
+  @@index([copiedFromAssignmentId])
   @@rls
 }
 

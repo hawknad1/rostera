@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { memory } from "@/lib/auth/__tests__/in-memory-orm"
 import { permissions } from "@/lib/permissions/permissions"
 import { createAssignment } from "@/modules/rosters/services/assignments"
+import { createRosterAmendment } from "@/modules/rosters/services/amendments"
 import {
   publishRoster,
   returnRosterToDraft,
@@ -51,6 +52,7 @@ function grantManager(roleId: string) {
   grant(roleId, "perm-roster-edit")
   grant(roleId, "perm-roster-review")
   grant(roleId, "perm-roster-publish")
+  grant(roleId, "perm-roster-amend")
 }
 
 function seed() {
@@ -59,6 +61,7 @@ function seed() {
   memory.insert("Permission", { id: "perm-roster-edit", key: permissions.rosterEdit })
   memory.insert("Permission", { id: "perm-roster-review", key: permissions.rosterReview })
   memory.insert("Permission", { id: "perm-roster-publish", key: permissions.rosterPublish })
+  memory.insert("Permission", { id: "perm-roster-amend", key: permissions.rosterAmend })
 
   memory.insert("Organization", {
     id: ORG_A,
@@ -236,6 +239,46 @@ describe("roster notifications", () => {
     expect(
       memory.tables.Notification.filter((row) => row.type === "ROSTER_PUBLISHED"),
     ).toHaveLength(0)
+  })
+
+  it("notifies other roster managers when an amendment is created, not for each copied assignment", async () => {
+    const roster = await createPublishedReadyRoster()
+    await submitRosterForReview(roster.id)
+    await publishRoster(roster.id)
+    memory.tables.Notification.length = 0
+    memory.tables.NotificationOutbox.length = 0
+
+    const amendment = await createRosterAmendment({
+      rosterId: roster.id,
+      reason: "Emergency staffing adjustment",
+    })
+
+    const created = memory.tables.Notification.filter(
+      (row) => row.type === "ROSTER_AMENDMENT_CREATED",
+    )
+    expect(created.map((row) => row.recipientUserId)).toEqual([USER_REVIEWER])
+    expect(created).toHaveLength(1)
+    expect(created[0]?.entityId).toBe(amendment.id)
+    expect(
+      memory.tables.NotificationOutbox.filter((row) => row.eventType === "ROSTER_AMENDMENT_CREATED"),
+    ).toHaveLength(1)
+  })
+
+  it("notifies assigned linked staff once when an amendment is published", async () => {
+    const roster = await createPublishedReadyRoster()
+    await submitRosterForReview(roster.id)
+    await publishRoster(roster.id)
+    const amendment = await createRosterAmendment({
+      rosterId: roster.id,
+      reason: "Emergency staffing adjustment",
+    })
+    memory.tables.Notification.length = 0
+    await submitRosterForReview(amendment.id)
+    await publishRoster(amendment.id)
+
+    const published = memory.tables.Notification.filter((row) => row.type === "ROSTER_PUBLISHED")
+    expect(published.map((row) => row.recipientUserId)).toEqual([USER_STAFF])
+    expect(published).toHaveLength(1)
   })
 
   it("does not leak roster access across organizations via a notification id", async () => {

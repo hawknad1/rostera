@@ -10,6 +10,12 @@ import { RosterError, rosterError } from "@/modules/rosters/errors"
 import { rosterStatusChangeAuditPoint } from "@/modules/rosters/services/audit"
 import { evaluateRosterValidation } from "@/modules/rosters/services/validation"
 import {
+  currentPublishedVersion,
+  parentVersion,
+  rosterSeriesId,
+  rosterVersionNumber,
+} from "@/modules/rosters/services/versions"
+import {
   assertRosterTransition,
   isRosterStatus,
 } from "@/modules/rosters/validation/status-transition"
@@ -256,6 +262,24 @@ export async function publishRoster(rosterId: string) {
       const previousStatus = asRosterStatus(roster.status)
       assertRosterTransition(previousStatus, "PUBLISHED")
 
+      if (rosterVersionNumber(roster) > 1) {
+        const versions = await tx.orm.public.Roster.where({
+          organizationId,
+          seriesId: rosterSeriesId(roster),
+        }).all()
+        const parent = parentVersion(roster, versions)
+        const currentPublished = currentPublishedVersion(versions)
+
+        if (
+          !parent ||
+          parent.status !== "PUBLISHED" ||
+          !currentPublished ||
+          String(currentPublished.id) !== String(parent.id)
+        ) {
+          throw rosterError("NOT_CURRENT_PUBLISHED_VERSION")
+        }
+      }
+
       const validation = await evaluateRosterValidation(tx.orm, {
         organizationId,
         timeZone,
@@ -295,6 +319,9 @@ export async function publishRoster(rosterId: string) {
         metadata: {
           before: { status: previousStatus },
           after: { status: "PUBLISHED" },
+          version: rosterVersionNumber(updated),
+          previousVersion:
+            rosterVersionNumber(updated) > 1 ? rosterVersionNumber(updated) - 1 : undefined,
         },
       })
 
@@ -370,6 +397,8 @@ export async function deleteRoster(rosterId: string) {
             status: deleted.status,
             startDate: deleted.startDate,
             endDate: deleted.endDate,
+            versionNumber: rosterVersionNumber(deleted),
+            seriesId: rosterSeriesId(deleted),
           },
         },
       })

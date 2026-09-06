@@ -82,6 +82,7 @@ SHIFT_SWAP_CANCELLED
 ROSTER_SUBMITTED_FOR_REVIEW
 ROSTER_PUBLISHED
 ROSTER_RETURNED_TO_DRAFT
+ROSTER_AMENDMENT_CREATED
 ```
 
 Arbitrary client strings are rejected.
@@ -94,7 +95,7 @@ Event identity is the domain row id. Retries reuse the same id.
 | --- | --- |
 | Leave requested / approved / rejected / cancelled | `leaveRequest.id` |
 | Shift swap requested / completed / rejected / cancelled | `shiftSwapRequest.id` |
-| Roster submitted / published / returned to draft | `roster.id` |
+| Roster submitted / published / returned to draft / amendment created | `roster.id` |
 
 Leave approval and leave request are different `type` values with the same `eventId`. That is intentional.
 
@@ -168,6 +169,7 @@ Recipients are resolved server-side. The actor is never notified of their own ac
 | `SHIFT_SWAP_REJECTED` | Linked user of the requester |
 | `SHIFT_SWAP_CANCELLED` | Linked user of the target staff |
 | `ROSTER_SUBMITTED_FOR_REVIEW` | Department head of the roster's department, if linked; plus active members whose **role name** is `ROSTER_MANAGER` |
+| `ROSTER_AMENDMENT_CREATED` | Same audience as submit-for-review |
 | `ROSTER_PUBLISHED` | Distinct assigned staff on that roster with linked users |
 | `ROSTER_RETURNED_TO_DRAFT` | `roster.createdByUserId` if still an active member |
 

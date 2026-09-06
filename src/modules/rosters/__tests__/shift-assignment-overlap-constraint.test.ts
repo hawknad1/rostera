@@ -23,7 +23,7 @@ describeDb("shift assignment overlap exclusion in PostgreSQL", () => {
        JOIN pg_class t ON t.oid = c.conrelid
        JOIN pg_namespace n ON n.oid = t.relnamespace
        WHERE c.conname = $1 AND t.relname = $2 AND n.nspname = $3`,
-      ["shiftAssignment_staff_time_excl", "shiftAssignment", "public"],
+      ["shiftAssignment_staff_roster_time_excl", "shiftAssignment", "public"],
     )
 
     constraintDefinition = constraint.rows[0]?.definition ?? ""
@@ -41,6 +41,7 @@ describeDb("shift assignment overlap exclusion in PostgreSQL", () => {
     expect(extension.rowCount).toBe(1)
     expect(constraintDefinition).toContain("EXCLUDE USING gist")
     expect(constraintDefinition).toContain("staffId")
+    expect(constraintDefinition).toContain("rosterId")
     expect(constraintDefinition).toContain("tstzrange")
     expect(constraintDefinition).toContain("[)")
   })
@@ -52,59 +53,67 @@ describeDb("shift assignment overlap exclusion in PostgreSQL", () => {
       CREATE TEMP TABLE overlap_probe (
         id text PRIMARY KEY,
         "staffId" text NOT NULL,
+        "rosterId" text NOT NULL,
         "startDateTime" timestamptz NOT NULL,
         "endDateTime" timestamptz NOT NULL,
         EXCLUDE USING gist (
           "staffId" WITH =,
+          "rosterId" WITH =,
           tstzrange("startDateTime", "endDateTime", '[)') WITH &&
         )
       )
     `)
 
     await client.query(
-      `INSERT INTO overlap_probe (id, "staffId", "startDateTime", "endDateTime")
-       VALUES ($1, $2, $3, $4)`,
-      ["day", "staff-a", "2026-09-03T08:00:00Z", "2026-09-03T16:00:00Z"],
+      `INSERT INTO overlap_probe (id, "staffId", "rosterId", "startDateTime", "endDateTime")
+       VALUES ($1, $2, $3, $4, $5)`,
+      ["day", "staff-a", "roster-1", "2026-09-03T08:00:00Z", "2026-09-03T16:00:00Z"],
     )
 
     await expect(
       client.query(
-        `INSERT INTO overlap_probe (id, "staffId", "startDateTime", "endDateTime")
-         VALUES ($1, $2, $3, $4)`,
-        ["overlap", "staff-a", "2026-09-03T15:59:00Z", "2026-09-03T22:00:00Z"],
+        `INSERT INTO overlap_probe (id, "staffId", "rosterId", "startDateTime", "endDateTime")
+         VALUES ($1, $2, $3, $4, $5)`,
+        ["overlap", "staff-a", "roster-1", "2026-09-03T15:59:00Z", "2026-09-03T22:00:00Z"],
       ),
     ).rejects.toMatchObject({ code: "23P01" })
 
     await client.query(
-      `INSERT INTO overlap_probe (id, "staffId", "startDateTime", "endDateTime")
-       VALUES ($1, $2, $3, $4)`,
-      ["adjacent", "staff-a", "2026-09-03T16:00:00Z", "2026-09-04T00:00:00Z"],
+      `INSERT INTO overlap_probe (id, "staffId", "rosterId", "startDateTime", "endDateTime")
+       VALUES ($1, $2, $3, $4, $5)`,
+      ["other-roster", "staff-a", "roster-2", "2026-09-03T08:00:00Z", "2026-09-03T16:00:00Z"],
     )
 
     await client.query(
-      `INSERT INTO overlap_probe (id, "staffId", "startDateTime", "endDateTime")
-       VALUES ($1, $2, $3, $4)`,
-      ["night", "staff-b", "2026-09-03T22:00:00Z", "2026-09-04T06:00:00Z"],
+      `INSERT INTO overlap_probe (id, "staffId", "rosterId", "startDateTime", "endDateTime")
+       VALUES ($1, $2, $3, $4, $5)`,
+      ["adjacent", "staff-a", "roster-1", "2026-09-03T16:00:00Z", "2026-09-04T00:00:00Z"],
+    )
+
+    await client.query(
+      `INSERT INTO overlap_probe (id, "staffId", "rosterId", "startDateTime", "endDateTime")
+       VALUES ($1, $2, $3, $4, $5)`,
+      ["night", "staff-b", "roster-1", "2026-09-03T22:00:00Z", "2026-09-04T06:00:00Z"],
     )
 
     await expect(
       client.query(
-        `INSERT INTO overlap_probe (id, "staffId", "startDateTime", "endDateTime")
-         VALUES ($1, $2, $3, $4)`,
-        ["overnight-overlap", "staff-b", "2026-09-04T05:00:00Z", "2026-09-04T13:00:00Z"],
+        `INSERT INTO overlap_probe (id, "staffId", "rosterId", "startDateTime", "endDateTime")
+         VALUES ($1, $2, $3, $4, $5)`,
+        ["overnight-overlap", "staff-b", "roster-1", "2026-09-04T05:00:00Z", "2026-09-04T13:00:00Z"],
       ),
     ).rejects.toMatchObject({ code: "23P01" })
 
     await client.query(
-      `INSERT INTO overlap_probe (id, "staffId", "startDateTime", "endDateTime")
-       VALUES ($1, $2, $3, $4)`,
-      ["next-day", "staff-b", "2026-09-04T08:00:00Z", "2026-09-04T16:00:00Z"],
+      `INSERT INTO overlap_probe (id, "staffId", "rosterId", "startDateTime", "endDateTime")
+       VALUES ($1, $2, $3, $4, $5)`,
+      ["next-day", "staff-b", "roster-1", "2026-09-04T08:00:00Z", "2026-09-04T16:00:00Z"],
     )
 
     await client.query(
-      `INSERT INTO overlap_probe (id, "staffId", "startDateTime", "endDateTime")
-       VALUES ($1, $2, $3, $4)`,
-      ["other-staff", "staff-c", "2026-09-03T08:00:00Z", "2026-09-03T16:00:00Z"],
+      `INSERT INTO overlap_probe (id, "staffId", "rosterId", "startDateTime", "endDateTime")
+       VALUES ($1, $2, $3, $4, $5)`,
+      ["other-staff", "staff-c", "roster-1", "2026-09-03T08:00:00Z", "2026-09-03T16:00:00Z"],
     )
   })
 })

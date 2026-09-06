@@ -1,0 +1,9 @@
+{
+  "from": "fef1e66b6a7d3c74e3c219dcb1b7e0a70df733b87d2a1e21432d78f077f7bb64",
+  "to": "fcba91f26e69889279d2d7944c315129c8195829dc6cce65f16b2b54e49e6b89",
+  "providedInvariants": [
+    "rostera:shiftAssignment_staff_roster_time_excl"
+  ],
+  "createdAt": "2026-09-06T13:56:23.341Z",
+  "migrationHash": "674d578c9d0c861dcacc40c2c9a0eee52919e8ba3a03820bb470ce1673f7c4aa"
+}

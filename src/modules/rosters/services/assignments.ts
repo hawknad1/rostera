@@ -26,6 +26,7 @@ import type {
   SchedulingConflictCode,
 } from "@/modules/scheduling/types/scheduling-conflict"
 import { schedulingConfigForOrganization } from "@/modules/organizations/services/scheduling-policy"
+import { isSchedulingPeerAssignment } from "@/modules/rosters/services/versions"
 import { db } from "@/prisma/db"
 
 type PublicOrm = typeof db.orm
@@ -214,12 +215,18 @@ export async function createAssignment(
 
       assertShiftTypeAssignable(shiftType)
 
-      const existing = await tx.orm.public.ShiftAssignment.where({
-        organizationId,
-        staffId: staff.id,
-      }).all()
+      const existing = (
+        await tx.orm.public.ShiftAssignment.where({
+          organizationId,
+          staffId: staff.id,
+        }).all()
+      )
+      const orgRosters = await tx.orm.public.Roster.where({ organizationId }).all()
+      const peerAssignments = existing.filter((assignment) =>
+        isSchedulingPeerAssignment(assignment, roster, orgRosters),
+      )
 
-      assertNoDuplicateAssignment(existing, {
+      assertNoDuplicateAssignment(peerAssignments, {
         rosterId: roster.id,
         staffId: staff.id,
         shiftTypeId: shiftType.id,
@@ -246,7 +253,7 @@ export async function createAssignment(
       }).all()
 
       const assignmentsById = new Map<string, (typeof existing)[number]>()
-      for (const row of [...existing, ...rosterAssignments]) {
+      for (const row of [...peerAssignments, ...rosterAssignments]) {
         assignmentsById.set(String(row.id), row)
       }
 

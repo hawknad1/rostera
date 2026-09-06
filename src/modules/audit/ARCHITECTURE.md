@@ -67,7 +67,7 @@ Every insert stores `actor.organizationId`. Every viewer query adds `organizatio
 
 Wired today:
 
-- Rosters: create, update, submit for review, return to draft, publish, delete
+- Rosters: create, update, submit for review, return to draft, publish, amendment created, delete
 - Assignments: create, delete (no assignment update operation exists)
 - Leave: create, approve, reject, cancel
 - Shift swaps: request, complete, reject, cancel
