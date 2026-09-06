@@ -75,6 +75,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<DefaultRoleName, readonly Permissi
     permissions.leaveCreate,
     permissions.leaveApprove,
     permissions.leaveReject,
+    permissions.shiftSwapView,
     permissions.reportsView,
     permissions.reportsExport,
     permissions.usersView,

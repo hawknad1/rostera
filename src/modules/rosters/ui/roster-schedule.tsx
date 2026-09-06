@@ -1,8 +1,11 @@
+import Link from "next/link"
+
 import { coverageStatusLabel, type CoverageStatus } from "@/modules/rosters/services/coverage"
 import { RemoveAssignmentForm } from "@/modules/rosters/ui/remove-assignment-form"
 
 type AssignmentItem = {
   id: string
+  staffId?: string
   staffName: string
   staffNumber: string
   professionName: string
@@ -48,11 +51,15 @@ export function RosterSchedule({
   assignmentCount,
   canEdit,
   isDraft,
+  canRequestSwap,
+  ownStaffId,
 }: {
   days: Array<{ date: string; displayDate: string; shifts: ShiftGroup[] }>
   assignmentCount: number
   canEdit: boolean
   isDraft: boolean
+  canRequestSwap?: boolean
+  ownStaffId?: string | null
 }) {
   const showCoverageStatus = assignmentCount > 0
 
@@ -121,9 +128,19 @@ export function RosterSchedule({
                         {assignment.staffNumber ? ` · ${assignment.staffNumber}` : ""} ·{" "}
                         {assignment.professionName} · {assignment.timeLabel}
                       </span>
-                      {canEdit && isDraft ? (
-                        <RemoveAssignmentForm assignmentId={assignment.id} />
-                      ) : null}
+                      <span className="flex flex-wrap items-center gap-3">
+                        {canRequestSwap && ownStaffId && assignment.staffId === ownStaffId ? (
+                          <Link
+                            className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                            href={`/shift-swaps/new?sourceAssignmentId=${assignment.id}`}
+                          >
+                            Request swap
+                          </Link>
+                        ) : null}
+                        {canEdit && isDraft ? (
+                          <RemoveAssignmentForm assignmentId={assignment.id} />
+                        ) : null}
+                      </span>
                     </li>
                   ))}
                 </ul>

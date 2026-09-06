@@ -50,6 +50,14 @@ enum LeaveType {
   OTHER
 }
 
+enum ShiftSwapStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+  COMPLETED
+}
+
 model Organization {
   id        String   @id @default(uuid())
   name      String
@@ -78,6 +86,7 @@ model Organization {
   shiftAssignments     ShiftAssignment[]
   schedulingPolicy     OrganizationSchedulingPolicy?
   leaveRequests        LeaveRequest[]
+  shiftSwapRequests    ShiftSwapRequest[]
 
   @@rls
 }
@@ -97,6 +106,8 @@ model User {
   createdRosters         Roster[]
   requestedLeaveRequests LeaveRequest[] @relation("LeaveRequestedBy")
   reviewedLeaveRequests  LeaveRequest[] @relation("LeaveReviewedBy")
+  requestedShiftSwaps    ShiftSwapRequest[] @relation("ShiftSwapRequestedBy")
+  reviewedShiftSwaps     ShiftSwapRequest[] @relation("ShiftSwapReviewedBy")
 
   @@rls
 }
@@ -241,6 +252,8 @@ model StaffProfile {
   headedDepartment Department? @relation("DepartmentHead")
   shiftAssignments ShiftAssignment[]
   leaveRequests    LeaveRequest[]
+  requestedSwaps   ShiftSwapRequest[] @relation("ShiftSwapRequesterStaff")
+  targetedSwaps    ShiftSwapRequest[] @relation("ShiftSwapTargetStaff")
 
   @@unique([organizationId, staffNumber])
   @@unique([organizationId, userId])
@@ -310,8 +323,9 @@ model Roster {
 
   organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   department   Department       @relation(fields: [departmentId], references: [id])
-  createdBy    User             @relation(fields: [createdByUserId], references: [id])
+  createdBy    User              @relation(fields: [createdByUserId], references: [id])
   assignments  ShiftAssignment[]
+  shiftSwaps   ShiftSwapRequest[]
 
   @@index([organizationId])
   @@index([organizationId, departmentId])
@@ -342,6 +356,8 @@ model ShiftAssignment {
   staff        StaffProfile @relation(fields: [staffId], references: [id])
   shiftType    ShiftType    @relation(fields: [shiftTypeId], references: [id])
   profession   Profession   @relation(fields: [professionId], references: [id])
+  sourceSwaps  ShiftSwapRequest[] @relation("ShiftSwapSourceAssignment")
+  targetSwaps  ShiftSwapRequest[] @relation("ShiftSwapTargetAssignment")
 
   @@unique([rosterId, staffId, shiftTypeId, date], map: "shiftAssignment_combo_key")
   @@check(expression: "\"startDateTime\" < \"endDateTime\"", name: "shiftAssignment_window_order")
@@ -394,5 +410,44 @@ model LeaveRequest {
   @@index([organizationId, staffId])
   @@index([organizationId, status])
   @@index([staffId, status, startDate, endDate])
+  @@rls
+}
+
+model ShiftSwapRequest {
+  id                  String          @id @default(uuid())
+  organizationId      String
+  rosterId            String
+  departmentId        String
+  sourceAssignmentId  String
+  targetAssignmentId  String
+  requesterStaffId    String
+  targetStaffId       String
+  status              ShiftSwapStatus @default(PENDING)
+  reason              String?
+  reviewNotes         String?
+  requestedByUserId   String
+  reviewedByUserId    String?
+  reviewedAt          DateTime?
+  completedAt         DateTime?
+  createdAt           DateTime        @default(now())
+  updatedAt           temporal.updatedAt()
+
+  organization     Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  roster           Roster          @relation(fields: [rosterId], references: [id], onDelete: Cascade)
+  sourceAssignment ShiftAssignment @relation("ShiftSwapSourceAssignment", fields: [sourceAssignmentId], references: [id])
+  targetAssignment ShiftAssignment @relation("ShiftSwapTargetAssignment", fields: [targetAssignmentId], references: [id])
+  requesterStaff   StaffProfile    @relation("ShiftSwapRequesterStaff", fields: [requesterStaffId], references: [id])
+  targetStaff      StaffProfile    @relation("ShiftSwapTargetStaff", fields: [targetStaffId], references: [id])
+  requestedBy      User            @relation("ShiftSwapRequestedBy", fields: [requestedByUserId], references: [id])
+  reviewedBy       User?           @relation("ShiftSwapReviewedBy", fields: [reviewedByUserId], references: [id])
+
+  @@index([organizationId])
+  @@index([organizationId, status])
+  @@index([organizationId, departmentId])
+  @@index([rosterId])
+  @@index([sourceAssignmentId])
+  @@index([targetAssignmentId])
+  @@index([requesterStaffId])
+  @@index([targetStaffId])
   @@rls
 }

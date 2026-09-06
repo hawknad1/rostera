@@ -25,6 +25,7 @@ const MODEL_NAMES = [
   "Roster",
   "ShiftAssignment",
   "LeaveRequest",
+  "ShiftSwapRequest",
 ] as const
 
 type ModelName = (typeof MODEL_NAMES)[number]
@@ -345,6 +346,10 @@ function withCreateDefaults(model: ModelName, data: Row): Row {
     row.status ??= "PENDING"
   }
 
+  if (model === "ShiftSwapRequest") {
+    row.status ??= "PENDING"
+  }
+
   return row
 }
 
@@ -552,6 +557,7 @@ function createPublicOrm(
     Roster: createCollection(tables, queries, failCreates, "Roster", {}, []),
     ShiftAssignment: createCollection(tables, queries, failCreates, "ShiftAssignment", {}, []),
     LeaveRequest: createCollection(tables, queries, failCreates, "LeaveRequest", {}, []),
+    ShiftSwapRequest: createCollection(tables, queries, failCreates, "ShiftSwapRequest", {}, []),
   }
 }
 
@@ -572,6 +578,7 @@ function emptyTables(): Record<ModelName, Row[]> {
     Roster: [],
     ShiftAssignment: [],
     LeaveRequest: [],
+    ShiftSwapRequest: [],
   }
 }
 
@@ -598,6 +605,7 @@ export function createInMemoryPrisma() {
       Roster: tables.Roster.map((row) => ({ ...row })),
       ShiftAssignment: tables.ShiftAssignment.map((row) => ({ ...row })),
       LeaveRequest: tables.LeaveRequest.map((row) => ({ ...row })),
+      ShiftSwapRequest: tables.ShiftSwapRequest.map((row) => ({ ...row })),
     }
   }
 
